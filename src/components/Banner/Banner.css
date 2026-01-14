@@ -1,0 +1,155 @@
+/* --- Cấu trúc chung --- */
+.section-1 {
+   padding: 24px 0 12px 0; 
+  
+  background-color: #F3F4F6;
+  padding-bottom: 20px;
+  overflow: hidden;
+}
+
+/* --- Slider Wrapper --- */
+.main-slider-wrapper {
+  margin-bottom: 10px;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  position: relative;
+}
+
+.banner-item a {
+  display: block;
+  width: 100%;
+}
+
+/* --- Cấu hình hiển thị 2 loại ảnh --- */
+
+/* 1. Ảnh Desktop (Mặc định hiển thị, ẩn Mobile) */
+.img-desktop {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
+
+
+/* --- Mũi tên Slider (PC) --- */
+.main-slider-wrapper .slick-arrow {
+  z-index: 10;
+  width: 40px;
+  height: 40px;
+  background: rgba(255, 255, 255, 0.6);
+  border-radius: 50%;
+  transition: all 0.3s ease;
+}
+.main-slider-wrapper .slick-arrow:hover {
+  background: rgba(255, 255, 255, 0.9);
+}
+.main-slider-wrapper .slick-prev { left: 15px; }
+.main-slider-wrapper .slick-next { right: 15px; }
+.main-slider-wrapper .slick-arrow::before {
+  color: #333;
+  font-size: 24px;
+  opacity: 1;
+}
+
+/* --- Slider Text (Thumbnails) - PC --- */
+.thumb-slider-wrapper {
+  padding: 0 5px;
+}
+.thumb-item {
+  cursor: pointer;
+  padding: 10px 5px;
+  text-align: center;
+  transition: all 0.2s;
+  outline: none;
+  border-bottom: 2px solid transparent;
+}
+.thumb-content strong {
+  display: block;
+  font-size: 14px;
+  color: #333;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.thumb-content small {
+  display: block;
+  font-size: 12px;
+  color: #777;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.img-mobile {
+  display: none !important; /* Mặc định ẩn trên PC */
+}
+
+/* Active State */
+.thumb-slider-wrapper .slick-current .thumb-item {
+  border-bottom: 2px solid #d70018;
+}
+.thumb-slider-wrapper .slick-current .thumb-content strong {
+  color: #000;
+  font-weight: bold;
+}
+
+
+/* --- RESPONSIVE MOBILE (< 768px) --- */
+@media (max-width: 767.98px) {
+  
+  /* 1. Ẩn thanh Text và Ảnh Desktop */
+  .thumb-slider-wrapper,
+  .img-desktop {
+    display: none !important;
+  }
+
+  /* 2. Hiển thị ảnh Mobile và ÉP KÍCH THƯỚC */
+  .img-mobile {
+    display: block !important;
+    width: 100%;
+    
+    /* QUAN TRỌNG: Ép chiều cao tối thiểu để banner to hơn */
+    min-height: 200px; 
+    /* Dùng cover để ảnh phóng to lấp đầy khung 200px (sẽ cắt nhẹ 2 bên rìa) */
+    object-fit: cover; 
+    
+    border-radius: 0; /* Mobile tràn viền không bo góc */
+  }
+
+  /* 3. Tinh chỉnh Container để tràn màn hình */
+  .section-1 .container {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    max-width: 100%;
+  }
+
+  /* 4. Tinh chỉnh Slider Wrapper */
+  .main-slider-wrapper {
+    padding-bottom: 10px;
+    margin-bottom: 5px; /* Chừa chỗ cho dấu chấm */
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  /* 5. Ẩn mũi tên, style lại dấu chấm (Dots) */
+  .main-slider-wrapper .slick-arrow { display: none !important; }
+  
+  .main-slider-wrapper .slick-dots {
+    bottom: -15px;
+    display: flex !important;
+    justify-content: center;
+  }
+  .main-slider-wrapper .slick-dots li {
+    margin: 0 4px;
+  }
+  .main-slider-wrapper .slick-dots li button:before {
+    font-size: 8px;
+    color: #ccc;
+    opacity: 1;
+  }
+  .main-slider-wrapper .slick-dots li.slick-active button:before {
+    color: #d70018;
+  }
+}

@@ -1,0 +1,100 @@
+/* SearchBar.css */
+
+.inner-search {
+  /* 1. Làm điểm neo cho Hot keys */
+  position: relative; 
+  
+  width: 38%;
+  min-width: 200px;
+  margin-top: 0; /* Xóa margin để thẳng hàng với các nút khác */
+}
+
+/* Phần ô nhập liệu giữ nguyên chiều cao 40px */
+.inner-search form {
+  background: #fff;
+  border-radius: 50px; 
+  display: flex;
+  height: 40px; /* Chiều cao chuẩn để khớp với nút Menu/Cart */
+  align-items: center;
+  padding: 0 4px 0 16px;
+  overflow: hidden;
+  width: 100%;
+}
+
+.search-input {
+  border: none;
+  outline: none;
+  flex: 1;
+  font-size: 14px;
+}
+
+.search-submit {
+  background: #fcebeb; 
+  border: none;
+  width: 34px; 
+  height: 34px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0; 
+}
+
+.search-submit svg {
+    stroke: #cd1818; 
+}
+
+/* --- PHẦN HOT KEYS (ABSOLUTE) --- */
+.hot-keys {
+  /* 2. Tách khỏi dòng chảy văn bản, trôi nổi bên dưới */
+  position: absolute;
+  
+  /* 3. Vị trí: Nằm ngay dưới đít của ô search */
+  top: 100%; /* Cách đỉnh trên 100% chiều cao của cha */
+  left: 0;
+  width: 100%;
+  
+  /* Tinh chỉnh khoảng cách */
+  margin-top: 6px; /* Cách ô search một chút cho thoáng */
+  z-index: 10; /* Đảm bảo nổi lên trên các thành phần khác nếu bị che */
+  pointer-events: none; /* (Tuỳ chọn) Để click xuyên qua vùng trống nếu cần */
+}
+
+.hot-keys-list {
+  display: flex;
+  /* Nếu text dài quá thì ẩn đi, không cho xuống dòng làm vỡ layout */
+  white-space: nowrap; 
+  overflow: hidden; 
+  text-overflow: ellipsis;
+  justify-content: space-evenly;
+  gap: 12px;
+  list-style: none;
+  padding: 0 10px; /* Thụt vào một chút cho thẳng với text trong input */
+  margin: 0;
+  pointer-events: auto; /* Bật lại click cho các link */
+}
+
+.hot-keys-list li a {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 12px;
+  text-decoration: none;
+}
+
+.hot-keys-list li a:hover {
+  text-decoration: underline;
+  color: #fff;
+}
+
+/* --- MOBILE --- */
+@media (max-width: 768px) {
+  .inner-search {
+    width: 100%; 
+    flex: none;
+  }
+  
+  /* Ẩn hot keys trên mobile cho gọn */
+  .hot-keys {
+    display: none;
+  }
+}

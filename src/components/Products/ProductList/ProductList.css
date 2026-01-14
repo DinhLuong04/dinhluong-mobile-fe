@@ -1,0 +1,208 @@
+/* --- Container chung --- */
+.product-list-container {
+  padding:  0 10px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  width: 75%;
+}
+
+/* =========================================
+   PART 1: TREND SLIDER (Xu hướng)
+   ========================================= */
+.trend-wrapper {
+  background: #fff;
+  padding: 12px 16px;
+  border-radius: 8px;
+  border-bottom: 1px solid #e5e7eb;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  overflow-x: auto; /* Cho phép cuộn ngang trên mobile */
+  white-space: nowrap;
+  scrollbar-width: none; /* Ẩn thanh cuộn Firefox */
+}
+
+.trend-wrapper::-webkit-scrollbar {
+  display: none; /* Ẩn thanh cuộn Chrome/Safari */
+}
+
+.trend-label {
+  font-size: 14px;
+  color: #6b7280;
+  font-weight: 500;
+  min-width: fit-content;
+}
+
+.trend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  cursor: pointer;
+  background: #fff;
+  font-size: 13px;
+  font-weight: 500;
+  color: #1f2937;
+  transition: all 0.2s;
+  min-width: fit-content;
+}
+
+.trend-item:hover {
+  border-color: #cb1c22;
+  color: #cb1c22;
+}
+
+.trend-item svg {
+  width: 14px;
+  height: 14px;
+  fill: #1250DC; /* Màu xanh của icon gốc */
+}
+
+/* =========================================
+   PART 2: SORT FILTER BAR (Bộ lọc sắp xếp)
+   ========================================= */
+.sort-bar-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  margin-top: 16px;
+}
+
+.result-count {
+  font-size: 14px;
+  color: #1f2937;
+}
+
+.sort-options {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 4px; /* Tránh bị cắt shadow nếu có */
+}
+
+.sort-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: #fff; /* FPT Shop dùng nền trắng hoặc transparent */
+  border: none;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #6b7280;
+  cursor: pointer;
+  position: relative;
+  white-space: nowrap;
+}
+
+/* Dấu chấm tròn ngăn cách (giống mẫu) */
+.sort-btn::before {
+  content: "";
+  display: block;
+  width: 4px;
+  height: 4px;
+  background-color: #e5e7eb;
+  border-radius: 50%;
+  margin-right: 8px;
+}
+
+/* Nút đầu tiên (Nổi bật) không cần dấu chấm và có màu đỏ */
+.sort-btn:first-child::before {
+  display: none;
+}
+
+.sort-btn:first-child {
+  color: #cb1c22;
+}
+
+.sort-btn:hover, .sort-btn.active {
+  color: #1f2937; /* Màu đen khi hover */
+}
+
+.sort-btn.active .check-icon {
+  display: inline-block;
+}
+
+.check-icon {
+  display: none;
+  width: 10px;
+  height: 10px;
+}
+
+/* Responsive cho Sort Bar */
+@media (max-width: 768px) {
+  .sort-bar-container {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  
+  .sort-btn {
+    background-color: #fff;
+    border: 1px solid #e5e7eb; /* Trên mobile thường đóng khung */
+    padding: 6px 12px;
+  }
+  
+  .sort-btn::before {
+    display: none; /* Ẩn dấu chấm trên mobile */
+  }
+}
+
+/* =========================================
+   PART 3: PRODUCT GRID (Lưới sản phẩm - Giữ nguyên)
+   ========================================= */
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  background-color: #f3f4f6;
+  border-radius: 8px;
+  padding: 8px;
+}
+
+@media (min-width: 768px) {
+  .product-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    padding: 0px;
+  }
+}
+
+/* =========================================
+   PART 4: LOAD MORE BUTTON (Xem thêm)
+   ========================================= */
+.load-more-container {
+  display: flex;
+  justify-content: center;
+  padding: 32px 0 16px;
+}
+
+.btn-load-more {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background-color: #fff;
+  border: 1px solid #e5e7eb;
+  padding: 10px 24px;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #1f2937;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 200px;
+}
+
+.btn-load-more:hover {
+  background-color: #f9fafb;
+  border-color: #d1d5db;
+}
+
+.btn-load-more svg {
+  fill: #1f2937;
+}

@@ -1,0 +1,12 @@
+.inner-logo img {
+  width: auto;
+  height: 40px;
+  display: block; /* Sửa lỗi khoảng trắng dưới ảnh */
+}
+
+@media (max-width: 768px) {
+  .inner-logo img {
+      height: 35px; 
+      width: auto;/* Logo nhỏ lại chút trên mobile cho cân đối */
+  }
+}

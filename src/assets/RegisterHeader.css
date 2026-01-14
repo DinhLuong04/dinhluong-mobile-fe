@@ -1,0 +1,341 @@
+/* src/assets/RegisterHeader.css */
+
+:root {
+  --header-bg-gradient: linear-gradient(5deg, #cb1c22 67.61%, #d9503f 95.18%);
+  --white: #ffffff;
+  --text-gray: #6b7280;
+  --text-dark: #090d14; /* Màu chữ đen */
+  --container-width: 1240px;
+  --border-color: #e5e7eb; /* border-neutral-gray-2 */
+}
+
+/* --- Reset cơ bản --- */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: sans-serif; /* Hoặc font bạn đang dùng */
+}
+
+/* --- Layout Chung --- */
+.fpt-header-wrapper {
+    position: sticky;
+    top: 0;
+    z-index: 10000;
+    min-width: var(--container-width); /* pc:min-w */
+}
+
+/* Phần Header Đỏ (Chính) */
+.fpt-header-main {
+  background: var(--header-bg-gradient);
+  padding-bottom: 0.5rem; /* mobile padding bottom */
+}
+
+.fpt-container {
+  width: 100%;
+  padding-right: 1rem;
+  padding-left: 1rem;
+  margin-right: auto;
+  margin-left: auto;
+  overflow: visible;
+}
+
+/* Media query cho màn hình lớn (PC) */
+@media (min-width: 1024px) {
+  .fpt-container {
+    max-width: var(--container-width);
+    padding-bottom: 0;
+  }
+}
+
+/* --- Grid Layout Chính (Logo - Search - Cart) --- */
+.fpt-header-grid {
+  display: grid;
+  grid-template-columns: 40px 1fr 40px; /* Mobile */
+  gap: 0.75rem;
+  align-items: center;
+  padding-top: 0.5rem;
+}
+
+@media (min-width: 1024px) {
+  .fpt-header-grid {
+    grid-template-columns: 150px 1fr 245px; /* PC */
+    padding-top: 0;
+  }
+}
+
+/* --- Các thành phần ẩn/hiện --- */
+.mobile-spacer {
+  display: block;
+  z-index: 2;
+}
+
+.desktop-hidden {
+  display: none;
+}
+
+.mobile-hidden {
+    display: none;
+}
+
+@media (min-width: 1024px) {
+  .mobile-spacer {
+    display: none;
+  }
+  .desktop-hidden {
+    display: block;
+  }
+  .mobile-hidden {
+    display: block;
+  }
+}
+
+/* --- Logo --- */
+.fpt-logo-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.3s;
+}
+
+.fpt-logo-link {
+  display: flex;
+  align-items: center;
+}
+
+.fpt-logo-img {
+    height: 40px;
+    width: auto;
+    object-fit: contain;
+}
+
+/* --- User & Cart Section --- */
+.fpt-user-cart {
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.75rem;
+}
+
+/* Nút User */
+.fpt-user-btn {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  border-radius: 50%;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.fpt-user-btn:hover { background: rgba(255, 255, 255, 0.3); }
+
+/* Nút Cart */
+.fpt-cart-btn {
+  background: rgba(255, 255, 255, 0.2);
+  color: var(--white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 500;
+  transition: background 0.2s;
+  height: 44px;
+}
+@media (max-width: 1023px) {
+    .fpt-cart-btn { border-radius: 50%; width: 44px; padding: 0; }
+}
+.fpt-cart-btn:hover { background: rgba(255, 255, 255, 0.3); }
+
+.fpt-cart-text { margin-left: 0.5rem; font-size: 14px; }
+
+/* --- Search Section --- */
+.fpt-search-container {
+  grid-column: 1 / -1;
+  margin-top: 0.5rem;
+  transition: margin 0.3s;
+}
+@media (min-width: 1024px) {
+  .fpt-search-container {
+    grid-column: 2 / 3;
+    grid-row: 1 / 2;
+    margin-top: 0;
+  }
+}
+
+.fpt-search-inner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+/* Menu Button */
+.fpt-menu-btn-wrapper { height: 100%; }
+.fpt-menu-btn {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 0 10px;
+  height: 40px;
+  border-radius: 8px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+/* Search Form */
+.fpt-search-form-wrapper { width: 100%; position: relative; }
+@media (min-width: 1024px) {
+  .fpt-search-form-wrapper { margin-left: 1rem; max-width: 570px; }
+}
+
+.fpt-search-box {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  background-color: var(--white);
+  border-radius: 35px;
+  padding: 4px;
+  height: 40px;
+}
+.fpt-search-form { display: flex; width: 100%; align-items: center; height: 100%; }
+.fpt-search-input {
+  flex-grow: 1;
+  height: 100%;
+  border: none;
+  outline: none;
+  background: transparent;
+  padding-left: 1rem;
+  padding-right: 0.5rem;
+  color: #333;
+  font-size: 14px;
+}
+.fpt-search-submit {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: #fcebeb;
+  border: none;
+  border-radius: 50%;
+  margin-right: 4px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+/* Hot Keys */
+.fpt-hot-keys {
+  position: absolute;
+  left: 1rem;
+  top: 45px;
+  width: 100%;
+  display: none;
+}
+@media (min-width: 768px) { .fpt-hot-keys { display: block; } }
+
+.fpt-hot-keys-list {
+  display: flex;
+  gap: 0.75rem;
+  overflow-x: auto;
+  white-space: nowrap;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  scrollbar-width: none;
+}
+.fpt-hot-keys-list::-webkit-scrollbar { display: none; }
+.fpt-hot-link { color: rgba(255, 255, 255, 0.9); font-size: 13px; text-decoration: none; }
+.fpt-hot-link:hover { text-decoration: underline; }
+
+/* --- Nav Menu (Header Phụ Trắng) --- */
+.fpt-nav-menu {
+    border-bottom: 1px solid var(--border-color);
+    background-color: var(--white);
+}
+
+.fpt-nav-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+}
+@media (min-width: 1024px) {
+    .fpt-nav-container { padding-top: 0.25rem; padding-bottom: 0.25rem; }
+}
+
+/* Slider Section in Nav */
+.fpt-nav-slider-wrapper {
+    display: none; /* Ẩn trên mobile theo code gốc nếu cần, hoặc flex */
+    max-width: 970px;
+    transition: max-width 0.3s ease-in-out;
+}
+@media (min-width: 1024px) { .fpt-nav-slider-wrapper { display: block; } }
+
+.fpt-swiper-wrapper {
+    display: flex;
+    gap: 1rem; /* Khoảng cách giữa các item */
+    padding: 0 1rem;
+}
+@media (min-width: 1024px) { .fpt-swiper-wrapper { padding: 0; } }
+
+.fpt-nav-item {
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-dark);
+    text-decoration: none;
+    white-space: nowrap;
+}
+.fpt-nav-item img {
+    margin-right: 0.5rem;
+    width: 32px;
+    height: 32px;
+    object-fit: contain;
+}
+
+/* Location Selector (Bên phải Nav) */
+.fpt-location-selector {
+    display: none; /* Tạm ẩn trên mobile theo code gốc hoặc logic của bạn */
+}
+@media (min-width: 1024px) {
+    .fpt-location-selector { display: block; flex: none; }
+}
+
+.fpt-location-list {
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    transition: width 0.3s, opacity 0.3s;
+    width: 234px;
+}
+@media (min-width: 1024px) { .fpt-location-list { width: 243px; } }
+
+.fpt-location-item {
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-dark);
+    padding-left: 0.5rem;
+    white-space: nowrap;
+}
+@media (min-width: 1024px) {
+    .fpt-location-item.border-l {
+        border-left: 1px solid var(--border-color);
+    }
+}
+.fpt-location-item svg { margin-right: 0.5rem; }

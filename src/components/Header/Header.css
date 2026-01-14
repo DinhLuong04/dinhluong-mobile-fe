@@ -1,0 +1,77 @@
+/* --- CẤU TRÚC CHUNG --- */
+.header-wrapper, 
+.header-sticky { /* Hỗ trợ cả 2 tên class nếu bạn dùng cái nào */
+  /* position: sticky; */
+  top: 0;
+  z-index: 1000;
+  width: 100%;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.header-main {
+  padding: 16px 0 40px 0; 
+  background: linear-gradient(5deg, #cb1c22 67.61%, #d9503f 95.18%);
+  transition: all 0.3s ease;
+}
+
+.header .inner-wrap {
+  display: flex;
+  align-items: center;
+}
+
+/* --- CONTAINER RESPONSIVE (Hệ thống lưới chuẩn) --- */
+.container {
+  width: 100%;
+  padding-right: 15px;
+  padding-left: 15px;
+  margin-right: auto;
+  margin-left: auto;
+  box-sizing: border-box;
+}
+
+/* Màn hình PC lớn (Desktop) */
+@media (min-width: 1200px) {
+  .container {
+    max-width: 1180px;
+  }
+}
+
+/* Màn hình Laptop/PC nhỏ */
+@media (min-width: 992px) and (max-width: 1199.98px) {
+  .container {
+    max-width: 960px;
+  }
+}
+
+/* Màn hình Tablet (iPad dọc) */
+@media (min-width: 768px) and (max-width: 991.98px) {
+  .container {
+    max-width: 720px;
+  }
+  
+  /* Tablet header có thể gọn hơn PC chút */
+  .header-main {
+     padding: 12px 0;
+  }
+}
+
+/* --- MÀN HÌNH MOBILE (< 768px) --- */
+/* Đây là phần quan trọng nhất cho giao diện giống App */
+@media (max-width: 767.98px) {
+  .container {
+    max-width: 100%; /* Full màn hình */
+    padding-left: 10px; /* Padding nhỏ hơn để tiết kiệm diện tích */
+    padding-right: 10px;
+  }
+
+  .header-main {
+    /* Giảm độ cao Header trên điện thoại */
+    padding: 10px 0 10px 0; 
+  }
+  
+  /* Nếu bạn muốn header dính chặt trên mobile thì giữ sticky, 
+     còn nếu muốn cuộn đi thì đổi thành relative */
+  .header-sticky {
+      position: sticky; 
+  }
+}

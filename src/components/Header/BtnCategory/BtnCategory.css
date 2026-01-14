@@ -1,0 +1,58 @@
+/* BtnCategory.css */
+.inner-btn-category {
+    /* Wrapper */
+}
+
+.btn-category {
+    background-color:#090d1466;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 50px; 
+    height: 40px;
+    padding: 0 15px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    color: white;
+    font-weight: 500;
+    white-space: nowrap; 
+    transition: background 0.2s;
+}
+
+.btn-category:hover {
+    background-color: rgba(0, 0, 0, 0.3);
+}
+
+.btn-category-icon {
+    font-size: 20px;
+    margin-right: 5px;
+}
+
+/* PC: Hiện chữ Danh mục */
+.btn-category::after {
+    content: "Danh mục";
+    font-size: 14px;
+}
+
+/* --- RESPONSIVE MOBILE --- */
+@media (max-width: 768px) {
+    .btn-category {
+        padding: 0; /* Bỏ padding ngang */
+        width: 40px; /* Thành hình tròn */
+        justify-content: center;
+        border-radius: 50%;
+        background-color: transparent; /* Hoặc giữ nền nếu muốn */
+        border: none;
+    }
+    
+    .btn-category-icon {
+        margin-right: 0;
+        font-size: 24px; /* Icon to hơn xíu */
+    }
+
+    /* Ẩn chữ Danh mục */
+    .btn-category::after {
+        content: ""; 
+        display: none;
+    }
+}

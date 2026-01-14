@@ -1,0 +1,72 @@
+/* BrandSlider.css */
+
+.section-brand {
+    padding: 24px 0 12px 0; /* Giảm padding trên dưới chút cho gọn */
+    background-color: #F3F4F6;
+}
+
+.brand-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 10px;
+}
+
+/* --- Style cho từng ô Logo --- */
+.brand-item-wrapper {
+    padding: 4px; /* Giảm khoảng cách giữa các ô */
+    box-sizing: border-box;
+}
+
+.brand-item {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px; /* Hoặc 24px nếu muốn bo tròn kiểu viên thuốc */
+    
+    /* --- GIẢM KÍCH THƯỚC Ở ĐÂY --- */
+    height: 48px; /* Cũ là 60px -> Giảm xuống 48px */
+    
+    transition: all 0.3s ease;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.brand-item:hover {
+    border-color: #d70018;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.brand-img {
+    max-width: 75%; /* Giảm ảnh bên trong chút cho thoáng */
+    max-height: 25px; /* Giới hạn chiều cao ảnh */
+    object-fit: contain;
+}
+
+/* --- Responsive Mobile (< 768px) --- */
+@media (max-width: 767.98px) {
+    .section-brand {
+        padding: 10px 0;
+    }
+
+    /* Mũi tên ẩn trên mobile */
+    .brand-slider .slick-prev, 
+    .brand-slider .slick-next {
+        display: none !important;
+    }
+
+    /* Kích thước ô trên mobile nhỏ hơn nữa */
+    .brand-item {
+        height: 36px; /* Mobile cho nhỏ gọn hẳn */
+        border-radius: 6px;
+    }
+    
+    .brand-img {
+        max-height: 18px; /* Ảnh logo nhỏ lại tương ứng */
+    }
+
+    .brand-item-wrapper {
+        padding: 2px; /* Khoảng cách giữa các ô sát lại */
+    }
+}

@@ -1,0 +1,48 @@
+/* TopHeader.css */
+
+/* --- MẶC ĐỊNH (PC > 992px) --- */
+.inner-wrap {
+  display: flex;
+  align-items: center; /* Căn giữa dọc */
+  justify-content: space-between;
+  gap: 15px; /* Khoảng cách chuẩn */
+  width: 100%;
+}
+
+/* --- TABLET (768px -> 991px) --- */
+/* Container lúc này ~720px. Không gian hẹp, cần co gap lại */
+@media (max-width: 991.98px) {
+  .inner-wrap {
+    gap: 10px; /* Giảm khoảng cách các phần tử */
+  }
+}
+
+/* --- MOBILE (< 768px) --- */
+/* Chuyển sang layout dọc như App Mobile */
+@media (max-width: 767.98px) {
+  .inner-wrap {
+    flex-wrap: wrap; 
+    gap: 0; 
+  }
+
+  /* Đảo thứ tự: Menu (1) - Logo (2) - Cart (3) - Search (4) */
+  .inner-wrap > .inner-btn-category { order: 1; width: 40px; }
+  
+  .inner-wrap > .inner-logo { 
+    order: 2; 
+    flex-grow: 1; 
+    display: flex; 
+    justify-content: center; 
+  }
+  .inner-wrap > .inner-logo a { display: flex; justify-content: center; width: 100%; }
+
+  .inner-wrap > .inner-btn-cart { order: 3; width: 40px; display: flex; justify-content: flex-end; }
+  
+  .inner-wrap > .inner-search { order: 4; width: 100%;  margin-top: 10px; }
+  
+  .inner-wrap > .inner-btn-user { display: none; } 
+  
+
+
+  /* Ẩn user trên mobile */
+}

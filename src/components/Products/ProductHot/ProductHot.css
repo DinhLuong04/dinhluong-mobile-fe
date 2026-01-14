@@ -1,0 +1,111 @@
+
+/* 
+ */
+ /* ProductHot.css */
+
+.hot-sale-slider-container {
+    background: linear-gradient(180deg, #ff6a5c 0%, #ff4d4d 100%);
+    padding: 20px 10px 30px;
+    border-radius: 0 0 10px 10px;
+    position: relative; /* Để định vị nút bấm */
+}
+
+/* --- Vùng cuộn chính (Thay thế Slick Track) --- */
+.scroll-wrapper {
+    display: flex;
+    overflow-x: auto; /* Cho phép cuộn ngang */
+    scroll-behavior: smooth; /* Hiệu ứng trượt mượt */
+    
+    /* Kích hoạt Scroll Snap (Trượt theo nấc) */
+    scroll-snap-type: x mandatory; 
+    
+    /* Khoảng cách giữa các thẻ */
+    gap: 10px; 
+    
+    /* Ẩn thanh cuộn xấu xí */
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none;  /* IE/Edge */
+    padding-bottom: 10px; /* Tránh bóng đổ bị cắt */
+}
+
+/* Ẩn thanh cuộn trên Chrome/Safari */
+.scroll-wrapper::-webkit-scrollbar {
+    display: none;
+}
+
+/* --- Từng thẻ sản phẩm --- */
+.scroll-item {
+    /* QUAN TRỌNG: Không cho thẻ co lại */
+    flex: 0 0 auto; 
+    
+    /* Điểm neo để khi thả tay nó tự hít vào đúng vị trí */
+    scroll-snap-align: start; 
+    
+    display: flex;
+    flex-direction: column;
+}
+
+/* Đảm bảo ProductCard full height */
+.scroll-item > div { 
+    height: 100%;
+}
+
+/* --- Nút điều hướng (Tự chế) --- */
+.nav-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    background: white;
+    border: none;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    cursor: pointer;
+    z-index: 10;
+    font-size: 18px;
+    color: #333;
+}
+.nav-btn.prev { left: -15px; }
+.nav-btn.next { right: -15px; }
+
+/* --- RESPONSIVE (Chia cột bằng CSS thuần) --- */
+
+/* 1. PC: Chia 5 cột */
+.scroll-item {
+    /* 100% / 5 = 20%, trừ đi gap */
+    width: calc((100% - 40px) / 5); 
+}
+
+/* 2. Tablet (iPad): Chia 3 cột */
+@media (max-width: 1024px) {
+    .scroll-item {
+        width: calc((100% - 20px) / 3);
+    }
+}
+
+/* 3. Mobile: Giao diện kiểu Shopee/App */
+@media (max-width: 768px) {
+    .hot-sale-slider-container {
+        padding: 15px 0 20px 10px; /* Padding trái để thẻ đầu tiên không sát lề */
+        background: #FF5F4E;
+    }
+
+    /* Ẩn nút bấm trên mobile (Vuốt tay sướng hơn) */
+    .nav-btn {
+        display: none;
+    }
+
+    .scroll-wrapper {
+        /* Cho phép thẻ cuối cùng có khoảng trống bên phải */
+        padding-right: 15px; 
+    }
+
+    .scroll-item {
+        /* Set cứng chiều rộng hoặc % để lộ thẻ sau */
+        /* Cách 1: Set cứng pixel (dễ kiểm soát nhất) */
+        width: 180px; 
+        
+        /* Cách 2: Set theo viewport (Hiện 1.5 thẻ) */
+        /* width: 70vw; */
+    }
+}

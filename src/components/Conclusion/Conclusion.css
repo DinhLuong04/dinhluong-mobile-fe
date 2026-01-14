@@ -1,0 +1,182 @@
+/* Section5.css */
+
+/* --- Container & Layout --- */
+.section-5-container {
+    margin-top: 24px;
+    padding: 0 16px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    color: #444;
+    line-height: 1.6;
+}
+
+@media (min-width: 1024px) {
+    .section-5-container {
+        margin-top: 48px;
+        padding: 0;
+    }
+}
+
+/* --- Responsive Banners --- */
+.seo-banner {
+    width: 100%;
+    margin-bottom: 30px;
+}
+
+.seo-banner img {
+    width: 100%;
+    height: auto;
+    border-radius: 18px;
+    display: block;
+}
+
+.banner-pc { display: none !important; }
+.banner-mobile { display: block; }
+
+@media (min-width: 1024px) {
+    .banner-pc { display: block; }
+    .banner-mobile { display: none; }
+}
+
+/* --- Article Content Wrapper --- */
+.article-wrapper {
+    position: relative;
+    margin: 0 auto;
+    max-width: 100%;
+}
+
+@media (min-width: 1024px) {
+    .article-wrapper {
+        width: 800px; /* Giới hạn chiều rộng bài viết cho dễ đọc trên PC */
+    }
+}
+
+/* --- Content Styling --- */
+.article-content {
+    overflow: hidden;
+    transition: max-height 0.5s ease-in-out;
+}
+
+.article-content.collapsed {
+    max-height: 300px; /* Chiều cao khi thu gọn */
+    mask-image: linear-gradient(to bottom, black 60%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to bottom, black 60%, transparent 100%);
+}
+
+.article-content.expanded {
+    max-height: none; /* Hiển thị toàn bộ */
+    mask-image: none;
+    -webkit-mask-image: none;
+}
+
+/* Typography trong bài viết */
+.article-content h2 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-top: 24px;
+    margin-bottom: 12px;
+    color: #000;
+}
+
+.article-content h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-top: 20px;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.article-content p {
+    margin-bottom: 12px;
+    text-align: justify;
+}
+
+.article-content ul {
+    list-style-type: disc;
+    padding-left: 24px;
+    margin-bottom: 12px;
+}
+
+.article-content li {
+    margin-bottom: 6px;
+}
+
+.article-content img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    margin: 16px 0;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.article-content a {
+    color: #0056b3;
+    text-decoration: none;
+}
+
+.article-content a:hover {
+    text-decoration: underline;
+}
+
+/* --- Table Styling --- */
+.article-table-wrapper {
+    overflow-x: auto; /* Cuộn ngang nếu bảng quá rộng trên mobile */
+    margin: 20px 0;
+}
+
+.article-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+}
+
+.article-table td, .article-table th {
+    border: 1px solid #ddd;
+    padding: 8px;
+}
+
+.article-table tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.article-table tr:hover {
+    background-color: #f1f1f1;
+}
+
+/* --- Show More Button --- */
+.show-more-btn-container {
+    display: flex;
+    justify-content: center;
+    padding-top: 10px;
+    padding-bottom: 20px;
+}
+
+.btn-show-more {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    color: #333;
+    transition: all 0.3s;
+}
+
+.btn-show-more:hover {
+    border-color: #cb1c22;
+    color: #cb1c22;
+    background-color: #fef2f2;
+}
+
+.btn-show-more svg {
+    transition: transform 0.3s;
+}
+
+.btn-show-more.expanded svg {
+    transform: rotate(180deg);
+}

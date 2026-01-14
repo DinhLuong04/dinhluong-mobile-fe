@@ -1,0 +1,148 @@
+/* Auth.css - Phiên bản đồng bộ màu Đỏ Header */
+@import url('https://fonts.googleapis.com/css?family=Lato:300,400,700&display=swap');
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: "Lato", Arial, sans-serif; background-color: #f8f9fd; color: #666; }
+
+.auth-page-container {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+.auth-card {
+  display: flex;
+  width: 100%;
+  max-width: 1000px;
+  background: #fff;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0px 10px 34px -15px rgba(0, 0, 0, 0.24);
+}
+
+/* --- SỬA PHẦN NÀY: Dùng màu Header --- */
+.auth-banner-side {
+  width: 50%;
+  /* Gradient đỏ giống Header của bạn */
+  background: linear-gradient(135deg, #cb1c22 0%, #d9503f 100%);
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 40px;
+  text-align: center;
+}
+
+.auth-banner-heading { font-weight: 700; font-size: 26px; margin-bottom: 10px; }
+.auth-banner-text { margin-bottom: 20px; font-size: 16px; }
+
+.btn-switch-page {
+  border: 2px solid #fff;
+  background: transparent;
+  color: #fff;
+  text-transform: uppercase;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  border-radius: 30px;
+  padding: 10px 30px;
+  text-decoration: none;
+  transition: 0.3s;
+  display: inline-block;
+  cursor: pointer;
+}
+
+/* Hover nút chuyển trang: chữ đỏ */
+.btn-switch-page:hover {
+  background: #fff;
+  color: #cb1c22; 
+}
+
+/* --- PHẦN FORM --- */
+.auth-form-side { width: 50%; padding: 50px 40px; background: #fff; }
+.auth-form-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+.auth-title { font-weight: 300; font-size: 24px; text-transform: uppercase; letter-spacing: 1px; color: #000; }
+
+.social-group { display: flex; gap: 10px; }
+.social-icon {
+  width: 30px; height: 30px; border: 1px solid #e1e1e1; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  color: #999; text-decoration: none; font-size: 14px; transition: 0.3s;
+}
+/* Hover icon social: nền đỏ */
+.social-icon:hover {
+  background: #cb1c22;
+  color: #fff;
+  border-color: #cb1c22;
+}
+
+.input-group { margin-bottom: 20px; }
+.input-label { font-size: 12px; text-transform: uppercase; font-weight: 700; color: #000; letter-spacing: 1px; display: block; margin-bottom: 8px; }
+.input-field {
+  width: 100%; height: 48px; background: #f2f2f2; border: none; border-radius: 25px;
+  padding: 0 20px; font-size: 15px; color: #333; outline: none; transition: 0.3s;
+}
+.input-field:focus { background: #e6e6e6; }
+
+/* --- SỬA PHẦN NÀY: Nút Submit màu đỏ --- */
+.btn-submit {
+  width: 100%;
+  background: #cb1c22; /* Màu đỏ FPT */
+  color: #fff;
+  border: none;
+  border-radius: 30px;
+  padding: 14px;
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+  cursor: pointer;
+  margin-top: 10px;
+  margin-bottom: 20px;
+  transition: 0.3s;
+  /* Bóng đổ nhẹ màu đỏ */
+  box-shadow: 0 4px 10px rgba(203, 28, 34, 0.3);
+}
+
+.btn-submit:hover {
+  background: #a6171c; /* Màu đỏ tối hơn khi hover */
+}
+
+.form-footer { display: flex; justify-content: space-between; align-items: center; font-size: 14px; }
+.link-forgot { color: #808080; text-decoration: none; }
+.link-forgot:hover { color: #cb1c22; }
+
+/* Checkbox màu đỏ */
+.checkbox-container { display: flex; align-items: center; cursor: pointer; color: #cb1c22; user-select: none; }
+.checkbox-container input { display: none; }
+.checkmark {
+  width: 16px; height: 16px; border: 1px solid #cb1c22; border-radius: 3px; margin-right: 8px;
+  display: flex; align-items: center; justify-content: center; transition: 0.2s;
+}
+.checkbox-container input:checked + .checkmark { background: #cb1c22; }
+.checkmark::after {
+  content: ''; width: 4px; height: 8px; border: solid white;
+  border-width: 0 2px 2px 0; transform: rotate(45deg); display: none;
+}
+.checkbox-container input:checked + .checkmark::after { display: block; }
+
+@media (max-width: 768px) {
+  .auth-card { flex-direction: column; }
+  .auth-banner-side, .auth-form-side { width: 100%; }
+  .auth-banner-side { order: -1; padding: 30px 20px; }
+  .auth-form-side { padding: 30px 20px; }
+}
+
+.field-error-msg {
+  color: #d9503f; /* Màu đỏ */
+  font-size: 12px;
+  margin-top: 5px;
+  margin-left: 10px;
+  text-align: left;
+}
+
+.input-field.error {
+  border: 1px solid #d9503f; /* Viền đỏ cho input khi lỗi */
+}

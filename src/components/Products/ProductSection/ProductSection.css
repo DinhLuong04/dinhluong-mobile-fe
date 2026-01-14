@@ -1,4 +1,17 @@
+.product-section{
+    padding: 24px 12px;
+}
 .inner-container{
     display: flex;
    
+}
+
+@media (max-width: 768px){ 
+    .inner-container .advance-filter-container{
+        display: none;
+    }
+    .product-section .container {
+        max-width: 100%;
+        padding: 0 2px 0 2px;
+    }
 }

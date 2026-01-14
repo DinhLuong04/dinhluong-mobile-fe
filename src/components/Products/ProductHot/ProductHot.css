@@ -9,7 +9,11 @@
     border-radius: 0 0 10px 10px;
     position: relative; /* Để định vị nút bấm */
 }
-
+.hot-sale-banner img{
+    border-radius: 10px   10px 0 0;
+    width: 100%;
+   
+}
 /* --- Vùng cuộn chính (Thay thế Slick Track) --- */
 .scroll-wrapper {
     display: flex;

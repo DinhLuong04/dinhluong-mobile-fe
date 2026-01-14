@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef ,useState,type MouseEvent } from 'react';
 // import Slider, { type Settings } from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
@@ -203,6 +203,39 @@ const mockProducts: Product[] = [
 const ProductHot: React.FC = () => {
     // Ref để xử lý nút bấm (nếu cần)
     const scrollRef = useRef<HTMLDivElement>(null);
+    // --- STATE CHO VIỆC KÉO CHUỘT (DRAG) ---
+    const [isDragging, setIsDragging] = useState(false);
+    const [startX, setStartX] = useState(0);
+    const [scrollLeft, setScrollLeft] = useState(0);
+
+    // 1. Khi nhấn chuột xuống (Bắt đầu kéo)
+    const handleMouseDown = (e: MouseEvent<HTMLDivElement>) => {
+        if (!scrollRef.current) return;
+        setIsDragging(true);
+        setStartX(e.pageX - scrollRef.current.offsetLeft);
+        setScrollLeft(scrollRef.current.scrollLeft);
+    };
+
+    // 2. Khi di chuột ra khỏi khu vực (Dừng kéo)
+    const handleMouseLeave = () => {
+        setIsDragging(false);
+    };
+
+    // 3. Khi thả chuột ra (Dừng kéo)
+    const handleMouseUp = () => {
+        setIsDragging(false);
+    };
+
+    // 4. Khi di chuyển chuột (Đang kéo)
+    const handleMouseMove = (e: MouseEvent<HTMLDivElement>) => {
+        if (!isDragging || !scrollRef.current) return;
+        
+        e.preventDefault(); // Ngăn chặn việc bôi đen text khi kéo
+        
+        const x = e.pageX - scrollRef.current.offsetLeft;
+        const walk = (x - startX) * 2; // Nhân 2 để kéo nhanh hơn (tùy chỉnh tốc độ)
+        scrollRef.current.scrollLeft = scrollLeft - walk;
+    };
 
     // Hàm xử lý nút bấm (Optional - nếu bạn muốn giữ nút Next/Prev trên PC)
     const scroll = (direction: 'left' | 'right') => {
@@ -218,23 +251,29 @@ const ProductHot: React.FC = () => {
     return (
         <div className="section-hot-sale">
             <div className="container">
-                {/* Banner Top (Giữ nguyên) */}
                 <div className="hot-sale-banner">
-                    <img src="..." alt="Hot Sale Banner" />
+                    <img src="https://res.cloudinary.com/dhujtl4cm/image/upload/v1768385656/N%E1%BB%81n_SP_pd4b6i.jpg" alt="Hot Sale Banner" />
                 </div>
 
-                {/* Container Chính */}
                 <div className="hot-sale-slider-container">
-                    
-                    {/* Nút bấm điều hướng (Chỉ hiện ở PC bằng CSS) */}
                     <button className="nav-btn prev" onClick={() => scroll('left')}>❮</button>
                     <button className="nav-btn next" onClick={() => scroll('right')}>❯</button>
 
-                    {/* Vùng cuộn (Scroll Area) */}
-                    <div className="scroll-wrapper" ref={scrollRef}>
+                    {/* Thêm các sự kiện chuột vào div này */}
+                    <div 
+                        className={`scroll-wrapper ${isDragging ? 'dragging' : ''}`} 
+                        ref={scrollRef}
+                        onMouseDown={handleMouseDown}
+                        onMouseLeave={handleMouseLeave}
+                        onMouseUp={handleMouseUp}
+                        onMouseMove={handleMouseMove}
+                    >
                         {mockProducts.map((prod) => (
                             <div key={prod.id} className="scroll-item">
-                                <ProductCard product={prod} />
+                                {/* Thêm pointer-events-none khi đang kéo để tránh click nhầm vào sản phẩm */}
+                                <div style={{ pointerEvents: isDragging ? 'none' : 'auto' }}>
+                                    <ProductCard product={prod} />
+                                </div>
                             </div>
                         ))}
                     </div>

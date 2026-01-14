@@ -223,9 +223,14 @@ const PRODUCTS: Product[] = [
   }
 ];
 
-const ProductList: React.FC = () => {
+// 1. Định nghĩa Interface Props
+interface ProductListProps {
+  onOpenFilter?: () => void; // Hàm này sẽ được truyền từ cha xuống
+}
+import MobileFilterBar from "../../Fillter/FilterBar/FilterBar"; 
+const ProductList: React.FC<ProductListProps> = ({ onOpenFilter }) => {
   const [activeSort, setActiveSort] = useState<string>('featured');
-
+  
   return (
     <div className="product-list-container">
       
@@ -243,7 +248,7 @@ const ProductList: React.FC = () => {
       {/* 2. THANH SẮP XẾP (SORT BAR) */}
       <div className="sort-bar-container">
         <p className="result-count">Tìm thấy <strong>157</strong> kết quả</p>
-        
+         <MobileFilterBar onOpenFilter={onOpenFilter || (() => {})} />
         <div className="sort-options">
           {SORT_OPTIONS.map((option) => (
             <button

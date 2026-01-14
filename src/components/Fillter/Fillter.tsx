@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState ,useEffect} from 'react';
 import Slider from 'rc-slider';
 import 'rc-slider/assets/index.css'; // Import CSS mặc định của rc-slider
 import './Fillter.css';
@@ -121,8 +121,13 @@ const CheckboxFilterGroup: React.FC<{
     </div>
 );
 
+interface AdvanceFilterProps {
+  isOpen?: boolean;
+  onClose?: () => void;
+}
+
 // --- Main Component ---
-const AdvanceFilter: React.FC = () => {
+const AdvanceFilter: React.FC<AdvanceFilterProps> = ({ isOpen, onClose }) => {
   // State for Accordions
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({
     brand: true,
@@ -189,15 +194,39 @@ const AdvanceFilter: React.FC = () => {
       }
   };
 
+  // --- THÊM ĐOẠN NÀY ĐỂ KHÓA CUỘN TRANG MAIN ---
+  useEffect(() => {
+    if (isOpen) {
+      // Khi mở filter -> Khóa cuộn body
+      document.body.style.overflow = 'hidden';
+      
+      // (Mẹo nhỏ) Thêm padding-right để tránh giao diện bị giật nếu thanh cuộn PC biến mất
+      // document.body.style.paddingRight = '15px'; 
+    } else {
+      // Khi đóng filter -> Mở lại cuộn
+      document.body.style.overflow = 'unset';
+      // document.body.style.paddingRight = '0px';
+    }
+
+    // Cleanup khi component bị hủy (hoặc chuyển trang)
+    return () => {
+      document.body.style.overflow = 'unset';
+      // document.body.style.paddingRight = '0px';
+    };
+  }, [isOpen]);
+
   return (
-    <div className="advance-filter-container">
+    
+      <div className={`advance-filter-container ${isOpen ? 'open' : ''}`}>
+      {/* Header */}
       {/* Header */}
       <div className="filter-header">
         <span className="flex items-center gap-2">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M10 18H14V16H10V18ZM3 6V8H21V6H3ZM6 13H18V11H6V13Z" fill="#090D14"/></svg>
+            {/* Icon filter... */}
             Bộ lọc tìm kiếm
         </span>
-        <span className="cursor-pointer" style={{fontSize: '20px'}}>✕</span>
+        {/* Gắn sự kiện onClose vào nút X */}
+        <span className="cursor-pointer" style={{fontSize: '20px'}} onClick={onClose}>✕</span>
       </div>
 
       <div className="filter-body">
@@ -330,11 +359,13 @@ const AdvanceFilter: React.FC = () => {
         <button className="btn-reset" onClick={() => window.location.reload()}>
             Thiết lập lại
         </button>
-        <button className="btn-apply">
+        {/* Nút Áp dụng cũng nên đóng Filter */}
+        <button className="btn-apply" onClick={onClose}>
             Áp dụng
         </button>
       </div>
     </div>
+   
   );
 };
 

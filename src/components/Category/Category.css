@@ -1,0 +1,188 @@
+.mega-menu-wrapper {
+    position: absolute;
+    top: 100%; /* Bắt đầu từ đáy của Header */
+    left: 0;   /* Căn trái sát mép Header */
+    width: 100%; /* Rộng bằng đúng Header (1200px) */
+    z-index: 1000;
+}
+
+/* Category Container bên trong giữ nguyên hoặc chỉnh lại chút */
+
+.category-container {
+    position: absolute  ;
+    background-color: white;
+    width: 250px;
+    border-radius: 0 0 4px 4px; /* Bo góc dưới */
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    font-family: Arial, sans-serif;
+     z-index: 1000;
+    /* display: none;
+    */
+}
+
+.category-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.category-item {
+    padding: 12px 16px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    color: #333;
+    border-bottom: 1px solid #f3f4f6;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.2s;
+}
+
+/* Hover vào item danh mục chính */
+.category-item:hover {
+    background-color: #fff1f1; /* Màu hồng nhạt */
+    color: #cb1c22; /* Màu đỏ FPT */
+    font-weight: 600;
+}
+
+.arrow-right {
+    font-size: 14px;
+    color: #9ca3af;
+}
+
+/* --- MEGA MENU POPUP --- */
+.mega-menu {
+    position: absolute;
+    top: 0;
+    left: 100%; /* Bay sang phải */
+    width: 950px; /* Độ rộng bảng to */
+    min-height: 100%; /* Cao bằng danh mục cha tối thiểu */
+    background-color: white;
+    box-shadow: 4px 0 10px rgba(0,0,0,0.1);
+    border-left: 1px solid #e5e7eb;
+    padding: 24px;
+    display: none; /* Mặc định ẩn */
+    border-radius: 0 8px 8px 8px;
+}
+
+/* Logic hiện menu khi hover */
+.category-item:hover .mega-menu {
+    display: block;
+    animation: fadeIn 0.15s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateX(-5px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+/* --- NỘI DUNG MEGA MENU --- */
+.trend-section {
+    margin-bottom: 24px;
+}
+
+.section-title {
+    font-weight: 700;
+    font-size: 16px;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.trend-grid {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.trend-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    width: 100px;
+    cursor: pointer;
+}
+
+.trend-img {
+    width: 48px;
+    height: 48px;
+    margin-bottom: 8px;
+    object-fit: contain;
+    padding: 4px;
+    border-radius: 50%;
+    background-color: #f9fafb;
+    border: 1px solid #eee;
+}
+
+.trend-text {
+    font-size: 12px;
+    color: #4b5563;
+    line-height: 1.2;
+}
+
+.trend-item:hover .trend-text {
+    color: #cb1c22;
+}
+
+/* Hãng */
+.brand-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 24px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.brand-badge {
+    border: 1px solid #e5e7eb;
+    padding: 6px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    background: white;
+    transition: border-color 0.2s;
+}
+
+.brand-badge:hover {
+    border-color: #cb1c22;
+}
+
+.brand-badge img {
+    height: 18px;
+    width: auto;
+    object-fit: contain;
+}
+
+/* Cột danh sách */
+.menu-columns {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+}
+
+.col-title {
+    font-weight: 700;
+    font-size: 14px;
+    margin-bottom: 12px;
+    color: #111827;
+}
+
+.sub-list {
+    list-style: none;
+    padding: 0;
+}
+
+.sub-item {
+    font-size: 13px;
+    color: #4b5563;
+    padding: 6px 0;
+    cursor: pointer;
+}
+
+.sub-item:hover {
+    color: #cb1c22;
+    text-decoration: underline;
+}

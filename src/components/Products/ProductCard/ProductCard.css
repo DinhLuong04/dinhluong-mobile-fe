@@ -1,318 +1,226 @@
 :root {
-    --text-primary: #1F2937;
-    --text-secondary: #6B7280;
-    --text-blue: #1250DC;
-    --text-red: #CB1C22;
-    --text-green: #16A34A;
-    --text-orange: #F59E0B;
-    --bg-gray: #F3F4F6;
-    --border-color: #E5E7EB;
+  --text-primary: #1F2937;
+  --text-secondary: #6B7280;
+  --text-blue: #1250DC;
+  --text-red: #CB1C22;
+  --text-green: #16A34A;
+  --text-orange: #F59E0B;
+  --bg-gray: #F3F4F6;
+  --border-color: #E5E7EB;
 }
 
 /* =========================================
-   STYLE MẶC ĐỊNH (PC / Màn hình lớn > 1024px)
+   PHẦN 1: GIAO DIỆN PC (Màn hình > 768px)
+   Giữ nguyên độ thoáng và đẹp
    ========================================= */
-
 .product-card {
-    background: #fff;
-    border-radius: 12px;
-    padding: 12px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    height: 100%;
-    position: relative;
-    transition: all 0.3s ease;
-    border: 1px solid transparent;
-    cursor: pointer;
+  background: #fff;
+  border-radius: 12px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+  position: relative;
+  transition: all 0.3s ease;
+  border: 1px solid transparent;
+  cursor: pointer;
+  box-sizing: border-box;
 }
 
 .product-card:hover {
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
-    z-index: 2;
-    border-color: var(--border-color);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  z-index: 2;
+  border-color: var(--border-color);
 }
 
-/* 1. ẢNH SẢN PHẨM */
 .card-image-wrapper {
-    position: relative;
-    height: 200px; /* PC: Ảnh cao thoáng */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 12px;
-    width: 100%;
+  position: relative;
+  height: 200px; /* PC ảnh lớn */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 12px;
+  width: 100%;
 }
-
 .card-image-wrapper img {
-    max-height: 100%;
-    max-width: 100%;
-    object-fit: contain;
-    transition: transform 0.3s ease;
+  max-height: 100%; max-width: 100%; object-fit: contain; transition: transform 0.3s ease;
 }
+.product-card:hover .card-image-wrapper img { transform: scale(1.05); }
 
-.product-card:hover .card-image-wrapper img {
-    transform: scale(1.05);
-}
+/* Specs PC */
+.card-specs { display: flex; justify-content: center; gap: 8px; margin-bottom: 12px; min-height: 52px; }
+.spec-item { display: flex; flex-direction: column; align-items: center; width: 55px; text-align: center; }
+.spec-icon { width: 24px; height: 24px; margin-bottom: 2px; display: flex; align-items: center; justify-content: center; }
+.spec-icon img { width: 100%; height: 100%; opacity: 0.7; filter: grayscale(100%); }
+.spec-item span { font-size: 10px; color: var(--text-secondary); line-height: 1.2; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 
-/* 2. SPECS (Thông số) */
-.card-specs {
-    display: flex;
-    justify-content: center;
-    gap: 8px;
-    margin-bottom: 12px;
-    min-height: 52px;
-}
+/* Info PC */
+.card-info { flex: 1; display: flex; flex-direction: column; }
+.card-badges { min-height: 24px; margin-bottom: 4px; }
+.badge-installment { display: inline-block; font-size: 11px; background: var(--bg-gray); padding: 3px 8px; border-radius: 4px; color: var(--text-primary); white-space: nowrap; }
 
-.spec-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 55px;
-    text-align: center;
-}
+.card-price-area { min-height: 66px; display: flex; flex-direction: column; justify-content: center; margin-bottom: 4px; }
+.price-row { display: flex; align-items: center; gap: 6px; font-size: 13px; margin-bottom: 2px; }
+.price-original { color: var(--text-secondary); text-decoration: line-through; }
+.discount-percent { color: var(--text-red); font-weight: 600; }
+.price-current { font-size: 18px; font-weight: 700; color: var(--text-primary); line-height: 1.2; }
+.price-note { font-size: 12px; color: var(--text-green); margin-top: 2px; font-weight: 500; min-height: 18px; }
+.card-countdown { font-size: 11px; color: var(--text-orange); font-weight: 600; margin-bottom: 4px; min-height: 17px; }
 
-.spec-icon {
-    width: 24px;
-    height: 24px;
-    margin-bottom: 2px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-.spec-icon img {
-    width: 100%; height: 100%; opacity: 0.7; filter: grayscale(100%);
-}
+.card-title { font-size: 15px; font-weight: 600; color: var(--text-primary); margin: 0 0 10px 0; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; min-height: 42px; }
 
-.spec-item span {
-    font-size: 10px;
-    color: var(--text-secondary);
-    line-height: 1.2;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-}
+.card-colors { display: flex; gap: 6px; margin-bottom: 8px; min-height: 14px; }
+.color-dot { width: 12px; height: 12px; border-radius: 50%; border: 1px solid var(--border-color); }
 
-/* 3. INFO BODY */
-.card-info {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-}
-
-/* Badge Trả góp */
-.card-badges {
-    min-height: 24px;
-    margin-bottom: 4px;
-}
-.badge-installment {
-    display: inline-block;
-    font-size: 11px;
-    background: var(--bg-gray);
-    padding: 3px 8px;
-    border-radius: 4px;
-    color: var(--text-primary);
-    white-space: nowrap;
-}
-
-/* Khu vực Giá */
-.card-price-area {
-    min-height: 66px; 
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    margin-bottom: 4px;
-}
-
-.price-row {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 13px;
-    margin-bottom: 2px;
-}
-
-.price-original {
-    color: var(--text-secondary);
-    text-decoration: line-through;
-}
-
-.discount-percent {
-    color: var(--text-red);
-    font-weight: 600;
-}
-
-.price-current {
-    font-size: 18px;
-    font-weight: 700;
-    color: var(--text-primary);
-    line-height: 1.2;
-}
-
-.price-note {
-    font-size: 12px;
-    color: var(--text-green);
-    margin-top: 2px;
-    font-weight: 500;
-    min-height: 18px;
-}
-
-/* Countdown */
-.card-countdown {
-    font-size: 11px;
-    color: var(--text-orange);
-    font-weight: 600;
-    margin-bottom: 4px;
-    min-height: 17px;
-}
-
-/* Tên sản phẩm */
-.card-title {
-    font-size: 15px;
-    font-weight: 600;
-    color: var(--text-primary);
-    margin: 0 0 10px 0;
-    line-height: 1.4;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    min-height: 42px; 
-}
-
-/* Colors & Variants */
-.card-colors {
-    display: flex;
-    gap: 6px;
-    margin-bottom: 8px;
-    min-height: 14px;
-}
-.color-dot {
-    width: 12px; height: 12px;
-    border-radius: 50%;
-    border: 1px solid var(--border-gray);
-}
-
-.card-variants {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-    margin-bottom: 12px;
-    min-height: 28px;
-}
-
-.variant-btn {
-    position: relative;
-    font-size: 11px;
-    padding: 4px 8px;
-    border: 1px solid var(--border-color);
-    border-radius: 4px;
-    background: #fff;
-    cursor: pointer;
-    min-width: 50px;
-    color: var(--text-primary);
-    overflow: hidden;
-}
+.card-variants { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; min-height: 28px; }
+.variant-btn { position: relative; font-size: 11px; padding: 4px 8px; border: 1px solid var(--border-color); border-radius: 4px; background: #fff; cursor: pointer; min-width: 50px; color: var(--text-primary); overflow: hidden; }
 .variant-btn:hover { border-color: var(--text-secondary); }
 .variant-btn.active { border-color: var(--text-red); color: #000; font-weight: 500; }
-.variant-btn.active::after {
-    content: ''; position: absolute; top: 0; right: 0;
-    width: 16px; height: 16px;
-    background-color: var(--text-red);
-    clip-path: polygon(0 0, 100% 0, 100% 100%);
-}
-.variant-check-icon {
-    position: absolute; top: 1px; right: 1px;
-    width: 6px; height: 6px; z-index: 2;
-}
+.variant-btn.active::after { content: ''; position: absolute; top: 0; right: 0; width: 16px; height: 16px; background-color: var(--text-red); clip-path: polygon(0 0, 100% 0, 100% 100%); }
+.variant-check-icon { position: absolute; top: 1px; right: 1px; width: 6px; height: 6px; z-index: 2; }
 
-/* Footer */
-.card-footer {
-    margin-top: auto;
-    border-top: 1px dashed var(--border-gray);
-    padding-top: 8px;
-}
-
-.promo-logos {
-    display: flex; gap: 4px; margin-bottom: 6px; min-height: 26px;
-}
-.promo-img {
-    width: 24px; height: 24px; border-radius: 4px; border: 1px solid var(--border-color); object-fit: contain;
-}
-.promo-text {
-    font-size: 11px; color: var(--text-primary);
-    line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical; overflow: hidden;
-    margin-bottom: 8px; min-height: 28px;
-}
-.btn-compare {
-    display: flex; align-items: center;
-    font-size: 13px; color: var(--text-blue);
-    background: none; border: none; padding: 0; cursor: pointer;
-}
+/* Footer PC */
+.card-footer { margin-top: auto; border-top: 1px dashed var(--border-color); padding-top: 8px; }
+.promo-logos { display: flex; gap: 4px; margin-bottom: 6px; min-height: 26px; }
+.promo-img { width: 24px; height: 24px; border-radius: 4px; border: 1px solid var(--border-color); object-fit: contain; }
+.promo-text { font-size: 11px; color: var(--text-primary); line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; margin-bottom: 8px; min-height: 28px; }
+.btn-compare { display: flex; align-items: center; font-size: 13px; color: var(--text-blue); background: none; border: none; padding: 0; cursor: pointer; }
 .btn-compare svg { margin-right: 4px; width: 14px; fill: currentColor; }
 
 
-/* ProductCard.css */
+/* =========================================
+   PHẦN 2: MOBILE COMPACT (Màn hình < 768px)
+   Mục tiêu: Giống hệt ảnh FPT Shop bạn gửi
+   ========================================= */
 
 @media (max-width: 768px) {
-    /* ... */
+  /* 1. Tổng thể Card: Padding siêu nhỏ */
+  .product-card {
+    padding: 8px 4px; /* Trên dưới 8px, Trái phải 4px để tận dụng tối đa chiều ngang */
+    border-radius: 8px;
+    border: 1px solid #f0f0f0; /* Viền mờ nhẹ */
+  }
 
-    /* Giảm chiều cao ảnh xuống nữa nếu cần */
-    .card-image-wrapper {
-        height: 140px; /* Thử giảm từ 150 -> 140px */
-        margin-bottom: 8px;
-    }
+  /* 2. Ảnh sản phẩm: Thu nhỏ lại ~120px */
+  .card-image-wrapper {
+    height: 120px; /* Giảm mạnh chiều cao */
+    margin-bottom: 8px;
+  }
 
-    /* Giảm min-height của tên sản phẩm */
-    .card-title {
-        font-size: 13px;
-        min-height: 34px; /* Giảm xuống xíu */
-        margin-bottom: 4px;
-    }
-    
-    /* Giảm min-height vùng giá */
-    .card-price-area {
-        min-height: 50px; 
-    }
-    
-    /* Promo text có thể ẩn bớt dòng thứ 2 hoặc giảm min-height */
-    .promo-text {
-        font-size: 10px;
-        min-height: 24px; /* 2 dòng text nhỏ */
-    }
-}
+  /* 3. Tên sản phẩm: Font 13px, tối đa 2 dòng */
+  .card-title {
+    font-size: 13px;
+    line-height: 1.3;
+    margin-bottom: 4px;
+    min-height: 34px; /* Đủ cho 2 dòng, ko chiếm chỗ trống */
+    font-weight: 500;
+  }
 
-@media (max-width: 480px) {
-    /* Giảm chiều cao ảnh để thẻ không quá dài */
-    .card-image-wrapper {
-        height: 160px; 
-        margin-bottom: 8px;
-    }
-    
-    /* Giảm font size tên sản phẩm */
-    .card-title {
-        font-size: 13px;
-        min-height: 36px; /* 2 dòng */
-        margin-bottom: 4px;
-    }
-    
-    /* Giảm kích thước nút variant */
-    .variant-btn {
-        font-size: 10px;
-        padding: 3px 6px;
-        min-width: 40px;
-    }
-    
-    /* Giảm font giá tiền */
-    .price-current {
-        font-size: 15px;
-    }
-    
-    /* Giảm padding của card */
-    .product-card {
-        padding: 8px;
-        border-radius: 8px;
-    }
+  /* 4. Giá tiền: Compact lại */
+  .card-price-area {
+    min-height: auto;
+    margin-bottom: 6px;
+  }
+  .price-row {
+    font-size: 11px;
+    gap: 4px;
+    margin-bottom: 0;
+  }
+  .price-current {
+    font-size: 15px; /* Số to vừa phải */
+    font-weight: 700;
+    margin-top: 2px;
+  }
+  .price-note {
+    font-size: 10px; /* "Giảm xxx" bé lại */
+    min-height: auto;
+  }
+  .card-countdown {
+    font-size: 10px;
+    margin-bottom: 2px;
+    min-height: auto;
+  }
+
+  /* 5. Thông số (Specs): Icon tròn nhỏ xíu */
+  .card-specs {
+    margin-bottom: 8px;
+    min-height: auto;
+    gap: 4px;
+  }
+  .spec-item {
+    width: auto; /* Để tự co theo nội dung */
+    max-width: 40px;
+  }
+  .spec-icon {
+    width: 20px; height: 20px;
+    background: #f3f4f6; /* Nền xám tròn như FPT */
+    border-radius: 50%;
+    padding: 3px;
+    margin-bottom: 2px;
+  }
+  .spec-item span {
+    display: none; /* MẸO: Ẩn chữ thông số trên mobile cho đỡ rối, hoặc font 8px */
+  }
+
+  /* 6. Variants (Dung lượng): Dùng GRID như FPT Shop */
+  .card-variants {
+    display: grid;
+    /* Chia làm 3 cột đều nhau, giống hệt mẫu FPT */
+    grid-template-columns: repeat(3, 1fr); 
+    gap: 4px;
+    min-height: auto;
+    margin-bottom: 8px;
+    width: 100%;
+  }
+  .variant-btn {
+    width: 100%; /* Full ô grid */
+    text-align: center;
+    padding: 3px 0;
+    font-size: 10px;
+    border-radius: 4px;
+    min-width: 0; /* Cho phép co nhỏ hơn content */
+  }
+
+  /* 7. Màu sắc: Bé lại */
+  .card-colors {
+    margin-bottom: 6px;
+    min-height: auto;
+  }
+  .color-dot {
+    width: 10px; height: 10px;
+  }
+
+  /* 8. Footer Khuyến mãi */
+  .card-footer {
+    padding-top: 6px;
+    border-top: 1px dashed #eee;
+  }
+  .promo-logos {
+    min-height: auto;
+    margin-bottom: 4px;
+  }
+  .promo-img {
+    width: 20px; height: 20px;
+  }
+  .promo-text {
+    font-size: 10px;
+    line-height: 1.2;
+    min-height: auto;
+    display: -webkit-box;
+    -webkit-line-clamp: 1; /* Chỉ hiện 1 dòng trên mobile cho gọn */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  
+  /* Ẩn nút so sánh trên mobile cho đỡ chật */
+  .btn-compare {
+    display: none;
+  }
+  
+  /* Badge trả góp */
+  .badge-installment {
+    font-size: 9px;
+    padding: 2px 4px;
+  }
 }

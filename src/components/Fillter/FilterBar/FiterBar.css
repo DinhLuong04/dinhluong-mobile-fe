@@ -1,0 +1,69 @@
+/* Mặc định ẩn trên PC */
+.mobile-filter-bar {
+    display: none;
+}
+
+/* Chỉ hiện trên Mobile/Tablet */
+@media (max-width: 1024px) {
+    .mobile-filter-bar {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: #fff;
+        padding: 8px 12px;
+        border-top: 1px solid #e5e7eb;
+        border-bottom: 1px solid #e5e7eb;
+        /* Sticky để dính lên đỉnh khi cuộn */
+        position: sticky;
+        top: 0; 
+        z-index: 90;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+
+    .mobile-sort-scroll {
+        flex: 1;
+        display: flex;
+        gap: 8px;
+        overflow-x: auto;
+        padding-right: 12px;
+        scrollbar-width: none; /* Firefox */
+    }
+    .mobile-sort-scroll::-webkit-scrollbar { display: none; }
+
+    .mobile-sort-btn {
+        white-space: nowrap;
+        padding: 6px 12px;
+        border: 1px solid #e5e7eb; /* Viền xám nhạt */
+        border-radius: 4px;
+        background: #fff;
+        font-size: 13px;
+        font-weight: 500;
+        color: #4b5563;
+    }
+    
+    .mobile-sort-btn.active {
+        border-color: #cb1c22;
+        color: #cb1c22;
+        background: #fef2f2;
+    }
+
+    .mobile-filter-divider {
+        width: 1px;
+        height: 24px;
+        background-color: #e5e7eb;
+        margin: 0 8px;
+    }
+
+    .mobile-filter-trigger-btn {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        background: none;
+        border: none;
+        font-size: 14px;
+        font-weight: 600;
+        color: #090d14;
+        cursor: pointer;
+    }
+}

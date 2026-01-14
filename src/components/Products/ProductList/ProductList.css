@@ -1,8 +1,10 @@
 /* --- Container chung --- */
 .product-list-container {
-  padding:  0 10px;
+  padding: 0 10px;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  width: 75%;
+  /* Mặc định Desktop: Chiếm 75% vì bên trái có Filter chiếm 25% */
+  width: 75%; 
+  box-sizing: border-box;
 }
 
 /* =========================================
@@ -17,7 +19,7 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  overflow-x: auto; /* Cho phép cuộn ngang trên mobile */
+  overflow-x: auto; /* Cho phép cuộn ngang */
   white-space: nowrap;
   scrollbar-width: none; /* Ẩn thanh cuộn Firefox */
 }
@@ -57,7 +59,7 @@
 .trend-item svg {
   width: 14px;
   height: 14px;
-  fill: #1250DC; /* Màu xanh của icon gốc */
+  fill: #1250DC;
 }
 
 /* =========================================
@@ -75,12 +77,16 @@
   font-size: 14px;
   color: #1f2937;
 }
-
+/* Btn sort */
 .sort-options {
   display: flex;
   gap: 8px;
   overflow-x: auto;
-  padding-bottom: 4px; /* Tránh bị cắt shadow nếu có */
+  padding-bottom: 4px;
+  scrollbar-width: none; /* Ẩn thanh cuộn */
+}
+.sort-options::-webkit-scrollbar {
+  display: none;
 }
 
 .sort-btn {
@@ -88,8 +94,8 @@
   align-items: center;
   gap: 6px;
   padding: 6px 12px;
-  background: #fff; /* FPT Shop dùng nền trắng hoặc transparent */
-  border: none;
+  background: transparent;
+  border: 1px solid transparent; /* Để tránh nhảy layout khi hover */
   border-radius: 4px;
   font-size: 14px;
   font-weight: 500;
@@ -99,7 +105,7 @@
   white-space: nowrap;
 }
 
-/* Dấu chấm tròn ngăn cách (giống mẫu) */
+/* Dấu chấm tròn ngăn cách (Desktop) */
 .sort-btn::before {
   content: "";
   display: block;
@@ -110,66 +116,36 @@
   margin-right: 8px;
 }
 
-/* Nút đầu tiên (Nổi bật) không cần dấu chấm và có màu đỏ */
+/* Nút đầu tiên (Nổi bật) */
 .sort-btn:first-child::before {
   display: none;
 }
 
-.sort-btn:first-child {
-  color: #cb1c22;
-}
 
 .sort-btn:hover, .sort-btn.active {
-  color: #1f2937; /* Màu đen khi hover */
+  color: #1f2937;
 }
 
-.sort-btn.active .check-icon {
-  display: inline-block;
-}
+ 
+    
+    .sort-btn.active {
+       
+        color: #cb1c22;
+        
+    }
 
-.check-icon {
-  display: none;
-  width: 10px;
-  height: 10px;
-}
+    
 
-/* Responsive cho Sort Bar */
-@media (max-width: 768px) {
-  .sort-bar-container {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 10px;
-  }
-  
-  .sort-btn {
-    background-color: #fff;
-    border: 1px solid #e5e7eb; /* Trên mobile thường đóng khung */
-    padding: 6px 12px;
-  }
-  
-  .sort-btn::before {
-    display: none; /* Ẩn dấu chấm trên mobile */
-  }
-}
-
+/* Btn sort */
 /* =========================================
-   PART 3: PRODUCT GRID (Lưới sản phẩm - Giữ nguyên)
+   PART 3: PRODUCT GRID (Lưới sản phẩm)
    ========================================= */
 .product-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 8px;
-  background-color: #f3f4f6;
-  border-radius: 8px;
-  padding: 8px;
-}
-
-@media (min-width: 768px) {
-  .product-grid {
-    grid-template-columns: repeat(4, 1fr);
-    gap: 12px;
-    padding: 0px;
-  }
+  /* Mặc định Desktop: 4 cột */
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  padding: 0;
 }
 
 /* =========================================
@@ -197,12 +173,87 @@
   transition: all 0.2s ease;
   min-width: 200px;
 }
-
 .btn-load-more:hover {
   background-color: #f9fafb;
   border-color: #d1d5db;
 }
-
 .btn-load-more svg {
   fill: #1f2937;
+}
+
+/* =========================================
+   RESPONSIVE BREAKPOINTS
+   ========================================= */
+
+/* --- TABLET & MOBILE (Dưới 1024px) --- */
+@media (max-width: 1024px) {
+  /* 1. Mở rộng container vì Sidebar Filter đã bị ẩn ở màn hình nhỏ */
+  .product-list-container {
+    width: 100%; /* Full width */
+    padding: 0; /* Có thể bỏ padding container nếu muốn tràn viền hoặc giữ 10px */
+  }
+
+  /* 2. Grid sản phẩm chuyển thành 3 cột (Tablet) */
+  .product-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+  }
+  .sort-options{
+    display: none;
+  }
+}
+
+/* --- MOBILE (Dưới 768px) --- */
+@media (max-width: 768px) {
+  /* 1. Grid sản phẩm chuyển thành 2 cột */
+  .product-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    padding: 0 8px; /* Thêm padding nhỏ 2 bên cho grid */
+  }
+
+  /* 2. Sort Bar (Thanh sắp xếp) */
+  .sort-bar-container {
+    flex-direction: column; /* Xếp dọc: Kết quả tìm kiếm trên, nút lọc dưới */
+    align-items: flex-start;
+    gap: 12px;
+    padding: 0 10px;
+  }
+
+  .sort-options {
+    width: 100%;
+    justify-content: flex-start; /* Căn trái để cuộn */
+    padding-bottom: 0;
+  }
+
+  .sort-btn {
+    border: 1px solid #e5e7eb; /* Thêm viền cho giống nút bấm mobile */
+    padding: 6px 12px;
+    background: #fff;
+  }
+  
+  /* Ẩn dấu chấm tròn ngăn cách trên mobile */
+  .sort-btn::before {
+    display: none;
+  }
+  
+  /* Reset màu chữ nút đầu tiên nếu muốn đồng bộ */
+  .sort-btn:first-child {
+    /* Giữ màu đỏ hoặc reset về xám tùy thiết kế */
+    /* color: #6b7280; */ 
+    font-weight: 500;
+  }
+  
+  /* Style Active trên mobile (Nền đỏ chữ trắng hoặc viền đỏ) */
+  .sort-btn.active {
+    border-color: #cb1c22;
+    color: #cb1c22;
+    background: #fef2f2;
+  }
+
+  /* 3. Trend Wrapper (Xu hướng) */
+  .trend-wrapper {
+    margin: 0 10px 16px 10px; /* Thêm margin 2 bên */
+    padding: 10px;
+  }
 }

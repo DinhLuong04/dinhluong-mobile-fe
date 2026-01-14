@@ -369,3 +369,89 @@
     padding: 0;
     font-weight: 500;
 }
+
+/* --- STYLES CHO MOBILE / TABLET --- */
+@media (max-width: 1024px) {
+    /* Mặc định ẩn filter trên mobile */
+    .advance-filter-container {
+        display: block !important; /* Ghi đè display: none cũ nếu có */
+        position: fixed;
+        bottom: -100%; /* Giấu xuống dưới đáy màn hình */
+        left: 0;
+        width: 100%;
+        height: 85vh; /* Chiếm 85% chiều cao màn hình */
+        z-index: 1000; /* Nằm trên tất cả */
+        border-radius: 16px 16px 0 0; /* Bo tròn 2 góc trên */
+        box-shadow: 0 -4px 20px rgba(0,0,0,0.2);
+        transition: bottom 0.3s ease-in-out; /* Hiệu ứng trượt */
+        
+        /* Reset các thuộc tính của PC */
+        top: auto;
+        position: fixed;
+        max-width: 100%;
+        border: none;
+    }
+
+    /* Class .open được thêm vào khi bấm nút Lọc */
+    .advance-filter-container.open {
+        bottom: 0; /* Trượt lên vị trí 0 */
+    }
+}
+
+/* Overlay (Lớp nền đen mờ) */
+.filter-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 999; /* Nằm dưới Filter nhưng trên content */
+    display: block;
+}
+
+/* AdvanceFilter.css */
+
+@media (max-width: 1024px) {
+    /* 1. Container chính: Đã set height 85vh (tốt) */
+    .advance-filter-container {
+        display: flex !important;
+        flex-direction: column;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 85vh; /* 85% màn hình */
+        background: #fff;
+        z-index: 1000;
+        border-radius: 16px 16px 0 0;
+        transform: translateY(100%);
+        transition: transform 0.3s ease-in-out;
+    }
+
+    .advance-filter-container.open {
+        transform: translateY(0);
+    }
+
+    /* 2. Header & Footer: Cố định */
+    .filter-header, .filter-footer {
+        flex-shrink: 0; 
+        background: #fff; /* Đảm bảo nền trắng */
+        z-index: 10; /* Nổi lên trên nội dung khi cuộn */
+    }
+
+    /* 3. BODY: PHẦN CUỘN (QUAN TRỌNG NHẤT) */
+    .filter-body {
+        /* Bắt buộc phải có để chiếm không gian còn lại */
+        flex: 1; 
+        
+        /* Set chiều cao cụ thể để overflow hoạt động */
+        height: 100%; 
+        min-height: 0; /* Fix lỗi flexbox trên một số trình duyệt cũ */
+        
+        /* Kích hoạt cuộn */
+        overflow-y: auto !important; 
+        -webkit-overflow-scrolling: touch;
+        
+        /* Padding để nội dung không dính sát lề */
+        padding-bottom: 20px; 
+        padding-top: 10px;
+    }
+}

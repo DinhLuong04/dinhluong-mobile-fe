@@ -1,29 +1,30 @@
-.mega-menu-wrapper {
-    position: absolute;
-    top: 100%; /* Bắt đầu từ đáy của Header */
-    left: 0;   /* Căn trái sát mép Header */
-    width: 100%; /* Rộng bằng đúng Header (1200px) */
-    z-index: 1000;
-}
+/* src/Category/Category.css */
 
-/* Category Container bên trong giữ nguyên hoặc chỉnh lại chút */
-
+/* --- CONTAINER CHÍNH --- */
 .category-container {
-    position: absolute  ;
+    /* [QUAN TRỌNG] Flex column để xếp dọc: List ở trên, Banner ở dưới */
+    display: flex;
+    flex-direction: column;
+
     background-color: white;
-    width: 250px;
-    border-radius: 0 0 4px 4px; /* Bo góc dưới */
+    width: 320px; /* Độ rộng cột trái */
+    border-radius: 4px; /* Bo góc tổng thể */
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
     font-family: Arial, sans-serif;
-     z-index: 1000;
-    /* display: none;
-    */
+    
+    /* Vị trí */
+    /* position: absolute; -> Bật lại nếu cần nó đè lên content, tắt nếu đang dùng wrapper */
+    z-index: 1000;
+    min-height: 100%; /* Chiều cao tối thiểu bao trọn nội dung */
 }
 
+/* --- DANH SÁCH MENU --- */
 .category-list {
     list-style: none;
     padding: 0;
     margin: 0;
+    /* [QUAN TRỌNG] Chiếm hết khoảng trống để đẩy banner xuống đáy */
+    flex: 1; 
 }
 
 .category-item {
@@ -39,11 +40,13 @@
     transition: all 0.2s;
 }
 
-/* Hover vào item danh mục chính */
-.category-item:hover {
-    background-color: #fff1f1; /* Màu hồng nhạt */
-    color: #cb1c22; /* Màu đỏ FPT */
+/* Style khi Hover hoặc Active */
+.category-item:hover,
+.category-item.active { 
+    background-color: #fff1f1; /* Nền hồng nhạt */
+    color: #cb1c22; /* Chữ đỏ */
     font-weight: 600;
+    border-left: 3px solid #cb1c22; /* Viền đỏ bên trái */
 }
 
 .arrow-right {
@@ -51,138 +54,327 @@
     color: #9ca3af;
 }
 
-/* --- MEGA MENU POPUP --- */
-.mega-menu {
-    position: absolute;
-    top: 0;
-    left: 100%; /* Bay sang phải */
-    width: 950px; /* Độ rộng bảng to */
-    min-height: 100%; /* Cao bằng danh mục cha tối thiểu */
-    background-color: white;
-    box-shadow: 4px 0 10px rgba(0,0,0,0.1);
-    border-left: 1px solid #e5e7eb;
-    padding: 24px;
-    display: none; /* Mặc định ẩn */
-    border-radius: 0 8px 8px 8px;
+/* --- BANNER DƯỚI MENU (STYLE MỚI) --- */
+.left-menu-banner {
+    padding: 12px; /* Khoảng cách lề */
+    border-top: 1px solid #f3f4f6; /* Đường kẻ ngăn cách với danh sách */
+    background-color: #fff;
+    border-radius: 0 0 4px 4px; /* Bo tròn góc dưới khớp container */
+    margin-top: auto; /* Đẩy xuống đáy cùng */
 }
+
+.left-menu-banner img {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.left-menu-banner img:hover {
+    transform: scale(1.03); /* Zoom nhẹ khi di chuột */
+}
+
+/* --- MEGA MENU POPUP (BÊN PHẢI) --- */
+/* Logic hiển thị: Hover hoặc Active thì hiện */
+/* --- QUAN TRỌNG: Hiển thị Mega Menu --- */
+
+/* Hiện menu khi hover HOẶC khi có class .active */
+
+.category-item:hover .mega-menu,
+
+.category-item.active .mega-menu {
+
+    display: block;
+
+    animation: fadeIn 0.15s ease-out;
+
+    z-index: 2000; /* Đảm bảo nó nổi lên trên cùng */
+
+}
+
+
+
+.arrow-right {
+
+    font-size: 14px;
+
+    color: #9ca3af;
+
+}
+
+
+
+/* --- MEGA MENU POPUP --- */
+
+.mega-menu {
+
+   
+
+    position: absolute;
+
+    top: 10px;
+
+    left: 100%; /* Bay sang phải */
+
+    width: 920px; /* Độ rộng bảng to */
+
+    min-height: 100%; /* Cao bằng danh mục cha tối thiểu */
+
+    background-color: white;
+
+    box-shadow: 4px 0 10px rgba(0,0,0,0.1);
+
+    border-left: 1px solid #e5e7eb;
+
+    padding: 24px;
+
+    display: none;
+
+    border-radius: 0 8px 8px 8px;
+
+}
+
+
 
 /* Logic hiện menu khi hover */
+
 .category-item:hover .mega-menu {
+
     display: block;
+
     animation: fadeIn 0.15s ease-out;
+
 }
+
+
 
 @keyframes fadeIn {
+
     from { opacity: 0; transform: translateX(-5px); }
+
     to { opacity: 1; transform: translateX(0); }
+
 }
+
+
 
 /* --- NỘI DUNG MEGA MENU --- */
+
 .trend-section {
+
     margin-bottom: 24px;
+
 }
+
+
 
 .section-title {
+
     font-weight: 700;
+
     font-size: 16px;
+
     margin-bottom: 16px;
+
     display: flex;
+
     align-items: center;
+
     gap: 8px;
+
 }
+
+
 
 .trend-grid {
+
     display: flex;
+
     justify-content: space-between;
+
     gap: 12px;
+
 }
+
+
 
 .trend-item {
+
     display: flex;
+
     flex-direction: column;
+
     align-items: center;
+
     text-align: center;
+
     width: 100px;
+
     cursor: pointer;
+
 }
+
+
 
 .trend-img {
+
     width: 48px;
+
     height: 48px;
+
     margin-bottom: 8px;
+
     object-fit: contain;
+
     padding: 4px;
+
     border-radius: 50%;
+
     background-color: #f9fafb;
+
     border: 1px solid #eee;
+
 }
+
+
 
 .trend-text {
+
     font-size: 12px;
+
     color: #4b5563;
+
     line-height: 1.2;
+
 }
+
+
 
 .trend-item:hover .trend-text {
+
     color: #cb1c22;
+
 }
+
+
 
 /* Hãng */
+
 .brand-grid {
+
     display: flex;
+
     flex-wrap: wrap;
+
     gap: 12px;
+
     margin-bottom: 24px;
+
     padding-bottom: 20px;
+
     border-bottom: 1px solid #f3f4f6;
+
 }
+
+
 
 .brand-badge {
+
     border: 1px solid #e5e7eb;
+
     padding: 6px 16px;
+
     border-radius: 6px;
+
     cursor: pointer;
+
     background: white;
+
     transition: border-color 0.2s;
+
 }
+
+
 
 .brand-badge:hover {
+
     border-color: #cb1c22;
+
 }
+
+
 
 .brand-badge img {
+
     height: 18px;
+
     width: auto;
+
     object-fit: contain;
+
 }
+
+
 
 /* Cột danh sách */
+
 .menu-columns {
+
     display: grid;
+
     grid-template-columns: repeat(4, 1fr);
+
     gap: 24px;
+
 }
+
+
 
 .col-title {
+
     font-weight: 700;
+
     font-size: 14px;
+
     margin-bottom: 12px;
+
     color: #111827;
+
 }
+
+
 
 .sub-list {
+
     list-style: none;
+
     padding: 0;
+
 }
+
+
 
 .sub-item {
+
     font-size: 13px;
+
     color: #4b5563;
+
     padding: 6px 0;
+
     cursor: pointer;
+
 }
 
+
+
 .sub-item:hover {
+
     color: #cb1c22;
+
     text-decoration: underline;
-}
+
+} 

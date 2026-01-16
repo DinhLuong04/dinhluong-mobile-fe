@@ -1,0 +1,175 @@
+/* src/components/Header/Search/SearchSuggestions.css */
+
+.search-suggestions-container {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    background-color: white;
+    border-radius: 0 0 8px 8px; /* Bo 2 góc dưới */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 1000;
+    margin-top: 0px; 
+    overflow: hidden;
+    padding-bottom: 8px;
+}
+
+/* --- Keyword Suggestions List (Phần trên) --- */
+.keyword-list {
+    list-style: none;
+    padding: 8px 0;
+    margin: 0;
+}
+
+.keyword-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 16px;
+    cursor: pointer;
+    font-size: 14px;
+    color: #333;
+    transition: background-color 0.2s;
+}
+
+.keyword-item:hover {
+    background-color: #f5f5f5;
+}
+
+/* Mũi tên chéo icon */
+.keyword-icon svg {
+    width: 12px;
+    height: 12px;
+    stroke: #999;
+}
+
+.query-text {
+    font-weight: 400; /* Chữ thường */
+}
+
+/* Dòng highlight đặc biệt (VD: iphone trong Apple...) */
+.keyword-item.highlight {
+    color: #333;
+}
+.keyword-item.highlight .context-text {
+    color: #1250DC; /* Màu xanh link */
+    font-weight: 500;
+}
+
+/* --- Product Suggestions Section (Phần Sản phẩm đề xuất) --- */
+.product-suggestions {
+    border-top: 1px solid #e5e7eb; /* Đường kẻ mờ ngăn cách */
+    padding: 12px 16px;
+}
+
+.product-suggestions-title {
+    font-size: 16px;
+    font-weight: 700; /* In đậm tiêu đề */
+    margin: 0 0 12px 0;
+    color: #000;
+}
+
+.product-list-suggestions {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.product-suggestions-item {
+    margin-bottom: 12px;
+    width: 100%;
+}
+
+.product-suggestions-link {
+    display: flex;
+    align-items: center; /* Căn giữa theo chiều dọc */
+    text-decoration: none;
+    color: inherit;
+    gap: 12px; /* Khoảng cách giữa ảnh và chữ */
+    transition: background-color 0.2s;
+    padding: 4px;
+    border-radius: 6px;
+}
+
+.product-suggestions-link:hover {
+    background-color: #f5f5f5;
+}
+
+/* Ảnh sản phẩm */
+.product-suggestions-image {
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    border: 1px solid #f0f0f0; /* Viền mờ quanh ảnh */
+    border-radius: 4px;
+    padding: 2px;
+    background: #fff;
+}
+
+.product-suggestions-image img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+/* Thông tin sản phẩm */
+.product-suggestions-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Tên sản phẩm */
+.product-suggestions-name {
+    margin: 0 0 2px 0;
+    font-size: 14px;
+    font-weight: 400; /* Chữ thường, không đậm */
+    color: #111;
+    line-height: 1.4;
+    
+    /* Cắt dòng nếu tên quá dài */
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* Box chứa giá */
+.product-suggestions-price-box {
+    display: flex;
+    flex-direction: column; /* Xếp giá hiện tại lên trên, giá cũ xuống dưới */
+}
+
+/* Dòng giá hiện tại + % Giảm */
+.price-suggestions-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.current-price {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 700; /* In đậm giá tiền */
+    color: #000;
+}
+
+.discount-tag {
+    color: #CB1C22; /* Màu đỏ FPT */
+    font-size: 12px;
+    font-weight: 400;
+}
+
+/* Giá cũ gạch ngang */
+.old-price {
+    font-size: 12px;
+    color: #9CA3AF; /* Màu xám nhạt */
+    text-decoration: line-through;
+    margin-top: 2px;
+}

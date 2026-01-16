@@ -1,6 +1,6 @@
 import React from 'react';
 import './ProductList.css';
-
+import { useCompare } from '../../../contexts/CompareContext';
 // --- Import kiểu dữ liệu Product ---
 import {type Product } from '../ProductCard/ProductCard';
 // --- Import Component ProductCard ---
@@ -230,7 +230,10 @@ interface ProductListProps {
 import MobileFilterBar from "../../Fillter/FilterBar/FilterBar"; 
 const ProductList: React.FC<ProductListProps> = ({ onOpenFilter }) => {
   const [activeSort, setActiveSort] = useState<string>('featured');
-  
+  const { addToCompare } = useCompare();
+  const handleCompare = (product: Product) => {
+    addToCompare(product);
+  };
   return (
     <div className="product-list-container">
       
@@ -265,7 +268,7 @@ const ProductList: React.FC<ProductListProps> = ({ onOpenFilter }) => {
       {/* 3. LƯỚI SẢN PHẨM (GRID) */}
       <div className="product-grid">
         {PRODUCTS.map(product => (
-          <ProductCard key={product.id} product={product} />
+          <ProductCard key={product.id} product={product} onCompare={handleCompare} />
         ))}
       </div>
 

@@ -2,7 +2,7 @@ import React, { useRef ,useState,type MouseEvent } from 'react';
 // import Slider, { type Settings } from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-
+import { useCompare } from '../../../contexts/CompareContext';
 // Import đúng tên interface là Product (theo file ProductCard đã sửa)
 import ProductCard, { type Product } from '../ProductCard/ProductCard';
 import './ProductHot.css';
@@ -201,6 +201,11 @@ const mockProducts: Product[] = [
 //     );
 // };
 const ProductHot: React.FC = () => {
+    const { addToCompare } = useCompare();
+
+    const handleCompare = (product: Product) => {
+        addToCompare(product);
+    };
     // Ref để xử lý nút bấm (nếu cần)
     const scrollRef = useRef<HTMLDivElement>(null);
     // --- STATE CHO VIỆC KÉO CHUỘT (DRAG) ---
@@ -272,7 +277,7 @@ const ProductHot: React.FC = () => {
                             <div key={prod.id} className="scroll-item">
                                 {/* Thêm pointer-events-none khi đang kéo để tránh click nhầm vào sản phẩm */}
                                 <div style={{ pointerEvents: isDragging ? 'none' : 'auto' }}>
-                                    <ProductCard product={prod} />
+                                    <ProductCard  product={prod} onCompare={handleCompare} />
                                 </div>
                             </div>
                         ))}

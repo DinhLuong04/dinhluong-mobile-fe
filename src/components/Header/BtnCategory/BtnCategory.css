@@ -1,8 +1,5 @@
 /* BtnCategory.css */
-.inner-btn-category {
-   /* position: relative; */
-   background-color: turquoise;
-}
+
 .inner-btn-category:hover .category-container {
     display: block;
 }

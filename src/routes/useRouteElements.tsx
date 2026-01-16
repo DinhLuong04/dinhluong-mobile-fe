@@ -1,9 +1,9 @@
 // src/useRouteElements.tsx (hoặc nơi bạn để file này)
 import { useRoutes } from "react-router-dom";
-import ProductSection from "./components/Products/ProductSection/ProductSection";
-import Login from "./pages/Login";
-import Register from "./pages/Register";
-import MainLayout from "./layouts/MainLayout/MainLayout"; // 1. Import MainLayout
+import ProductSection from "../components/Products/ProductSection/ProductSection";
+import Login from "../pages/Login";
+import Register from "../pages/Register";
+import MainLayout from "../layouts/MainLayout/MainLayout"; // 1. Import MainLayout
 
 export default function useRouteElements() {
     const routeElements = useRoutes([

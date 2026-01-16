@@ -1,0 +1,182 @@
+/* src/components/Header/Search/SearchContent.css */
+
+.search-content-dropdown {
+    position: absolute;
+    top: 100%; /* Positions it directly below the SearchBar */
+    left: 0;
+    width: 100%; /* Matches width of SearchBar */
+    background-color: white;
+    border-radius: 8px; /* Standard border radius */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 1000; /* Ensures it sits above other content */
+    padding-bottom: 12px;
+    margin-top: 4px; /* Small gap from the search input */
+    overflow: hidden;
+}
+
+/* Banner Slider Section */
+.search-banner-slider {
+    margin-bottom: 8px;
+    padding: 8px 12px 0 12px;
+}
+
+.search-banner-item img {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+    object-fit: cover;
+}
+
+/* History Section */
+.search-history {
+    padding: 0 12px;
+}
+
+.search-history ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.history-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 0;
+    cursor: pointer;
+    font-size: 14px;
+    color: #333;
+}
+
+.history-item:hover {
+    background-color: #f9f9f9;
+}
+
+.history-icon {
+    display: flex;
+    align-items: center;
+    margin-right: 8px;
+}
+
+.history-text {
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-weight: 400;
+}
+
+.history-remove {
+    display: flex;
+    align-items: center;
+    padding: 4px;
+}
+
+.history-clear {
+    text-align: center;
+    padding: 8px 0;
+    font-size: 14px;
+    font-weight: 500;
+    color: #1250DC; /* Blue link color */
+    cursor: pointer;
+}
+
+/* Trending Section */
+.search-trending {
+    border-top: 8px solid #F3F4F6; /* Grey separator bar */
+    padding: 12px;
+}
+
+.trending-title {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 12px;
+    color: #333;
+}
+
+.trending-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.trending-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background-color: #F8F9FA;
+    border: 1px solid #E5E7EB;
+    border-radius: 4px;
+    padding: 6px 12px;
+    font-size: 13px;
+    color: #333;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.trending-item:hover {
+    background-color: #f0f0f0;
+    border-color: #d1d5db;
+}
+
+/* Suggestions Section */
+.search-suggestions {
+    border-top: 8px solid #F3F4F6;
+    padding: 12px;
+}
+
+.suggestions-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.suggestions-header h5 {
+    font-size: 16px;
+    font-weight: 600;
+    margin: 0;
+    color: #333;
+}
+
+.suggestions-link {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 14px;
+    color: #1250DC;
+    text-decoration: none;
+}
+
+.suggestions-list {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* Two columns like FPT Shop */
+    gap: 16px;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.suggestion-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    color: #333;
+}
+
+.suggestion-item img {
+    width: 52px;
+    height: 52px;
+    border-radius: 4px;
+    object-fit: cover;
+}
+
+.suggestion-item span {
+    font-size: 13px;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}

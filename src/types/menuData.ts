@@ -4,8 +4,8 @@
 export interface TrendIcon {
   id: number;
   name: string;
-  img: string; // URL ảnh icon
-  path: string; // Đường dẫn khi click (ví dụ: /dien-thoai-5g)
+  img: string;
+  path: string;
 }
 
 export interface SubMenuColumn {
@@ -15,7 +15,7 @@ export interface SubMenuColumn {
 
 export interface MegaMenuData {
   trendIcons: TrendIcon[];
-  brands: string[]; // List URL logo hãng
+  brands: string[];
   columns: SubMenuColumn[];
 }
 
@@ -24,9 +24,11 @@ export interface CategoryItem {
   label: string;
   hasMegaMenu: boolean;
   path: string;
+  // --- THÊM DÒNG NÀY ---
+  bannerImages?: string[]; // Dấu ? nghĩa là không bắt buộc, có danh mục có, có danh mục không
 }
 
-// 2. Dữ liệu mẫu (Hardcode theo yêu cầu của bạn)
+// 2. Dữ liệu mẫu
 export const phoneMegaData: MegaMenuData = {
   trendIcons: [
     { id: 1, name: "Điện thoại 5G", img: "https://cdn-icons-png.flaticon.com/512/545/545245.png", path: "/dt-5g" },
@@ -64,8 +66,18 @@ export const phoneMegaData: MegaMenuData = {
 };
 
 export const mainCategories: CategoryItem[] = [
-  { id: 1, label: "Điện Thoại", hasMegaMenu: true, path: "/dien-thoai" },
-  { id: 2, label: "Phụ Kiện", hasMegaMenu: false, path: "/phu-kien" },
+  { 
+    id: 1, 
+    label: "Điện Thoại", 
+    hasMegaMenu: true, 
+    path: "/dien-thoai",
+    // --- THÊM DỮ LIỆU BANNER Ở ĐÂY ---
+    bannerImages: [
+        "https://cdn2.fptshop.com.vn/unsafe/256x0/filters:format(webp):quality(75)/RC_1_83129d2313.png",
+        "https://cdn2.fptshop.com.vn/unsafe/256x0/filters:format(webp):quality(75)/opt1_36152d3691.png"
+    ]
+  },
+  { id: 2, label: "Phụ Kiện", hasMegaMenu: false, path: "/phu-kien" }, // Các mục khác không có banner thì thôi
   { id: 3, label: "Máy cũ giá rẻ", hasMegaMenu: false, path: "/may-cu" },
   { id: 4, label: "Tin tức", hasMegaMenu: false, path: "/tin-tuc" },
 ];

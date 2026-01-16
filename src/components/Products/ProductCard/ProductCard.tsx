@@ -38,9 +38,10 @@ export interface Product {
 interface ProductCardProps {
   product: Product; // Đổi tên prop từ 'data' sang 'product' cho chuẩn ngữ nghĩa
   onClick?: (product: Product) => void;
+  onCompare?: (product: Product) => void;
 }
 
-const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
+const ProductCard: React.FC<ProductCardProps> = ({ product, onClick,onCompare }) => {
 
   // --- Helper: Format tiền tệ (VND) ---
   const formatCurrency = (amount: number) => {
@@ -162,6 +163,9 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
             className="btn-compare" 
             onClick={(e) => {
                 e.stopPropagation(); // Ngăn click vào card khi bấm nút so sánh
+                if (onCompare) {
+                    onCompare(product); // Gọi hàm onCompare và truyền sản phẩm vào
+                }
                 console.log('Thêm vào so sánh:', product.name);
             }}
         >

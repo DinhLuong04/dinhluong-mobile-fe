@@ -8,7 +8,7 @@ import BrandSlider from '../../components/BrandSlider/BrandSlider';
 import ProductHot from '../../components/Products/ProductHot/ProductHot';
 import Conclusion from '../../components/Conclusion/Conclusion';
 import Footer from '../../components/Footter';
-import StickyCompareBar from '../../components/StickyCompareBar/StickyCompareBar';
+
 export default function MainLayout() {
     return (
         <div>
@@ -26,7 +26,6 @@ export default function MainLayout() {
 
             {/* <Footer /> */}
             <Footer />
-            <StickyCompareBar />
         </div>
     );
 }

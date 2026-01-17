@@ -23,7 +23,6 @@
 
 /* Default style (Expanded/Visible state) */
 .btn-toggle {
-  position: absolute;
   top: -40px;
   right: 20px;
   background-color: #212121; /* Matches bar color */
@@ -66,6 +65,10 @@
 /* Icon rotation fix */
 .btn-toggle svg {
   transition: transform 0.3s;
+ 
+}
+.btn-toggle {
+ transform: rotate(180deg);
 }
 
 /* If bar is visible, rotate the close arrow */
@@ -163,7 +166,9 @@
   font-size: 14px;
   white-space: nowrap;
 }
-
+.icon-expanded{
+  transform: rotate(45deg);
+}
 .btn-clear { background-color: white; color: #333; }
 .btn-compare-1 { background-color: #cb1c22; color: white; }
 .btn-compare-1:hover { background-color: #a9161b; }

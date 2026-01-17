@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { authService } from '../../service/authService';
+import { useAuth } from '../../contexts/AuthContext';
 import './Login.css';
 
 const LoginPage: React.FC = () => {
   const navigate = useNavigate();
-
+  const { login } = useAuth();
   const [formData, setFormData] = useState({
     email: '',
     password: ''
@@ -43,11 +44,17 @@ const LoginPage: React.FC = () => {
     setFieldErrors({ email: '', password: '', general: '' });
 
     try {
-      const user = await authService.login({
+      const response = await authService.login({
         email: formData.email,
         password: formData.password
       });
-      console.log('Login success:', user);
+      const authData = response;
+      const userData = {
+          name: authData.name,   // Lấy từ authData.name
+          email: authData.email, // Lấy từ authData.email
+          token: authData.token
+      };
+      login(userData);
       navigate('/');
     } catch (error: unknown) {
       let msg = 'Đăng nhập thất bại';

@@ -1,7 +1,7 @@
 // src/contexts/CompareProvider.tsx
 import React, { useState, useEffect, type ReactNode } from 'react';
 import type { Product } from '../components/Products/ProductCard/ProductCard'; // Đảm bảo đường dẫn đúng
-import { CompareContext } from './CompareContext'; // Import Context từ file vừa tạo ở Bước 1
+import { CompareContext } from '../contexts/CompareContext'; // Import Context từ file vừa tạo ở Bước 1
 
 export const CompareProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   

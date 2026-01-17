@@ -1,0 +1,31 @@
+/* src/components/Minicompare/Minicompare.css */
+
+.minicompare {
+  position: fixed; /* Quan trọng: Giữ nút cố định */
+  bottom: 20px;    /* Cách đáy 20px */
+        /* Canh giữa màn hình */
+  
+  z-index: 1000;   /* Luôn nổi lên trên cùng */
+
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  
+  background-color: #00483d; /* Màu nền (ví dụ màu xanh đậm) */
+  color: white;
+  padding: 10px 20px;
+  border-radius: 50px; /* Bo tròn hình viên thuốc */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: 600;
+}
+
+.minicompare:hover {
+  background-color: #006a5a;
+  
+}
+
+.pill-text {
+  font-size: 14px;
+}

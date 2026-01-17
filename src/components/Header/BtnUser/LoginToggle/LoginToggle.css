@@ -1,0 +1,87 @@
+/* Container chính của Dropdown */
+.login-toggle-container {
+    position: absolute; /* Quan trọng: Để nó nổi lên */
+    top: 130%;          /* Cách đáy nút User khoảng 30% chiều cao nút */
+    right: 0;           /* Căn phải thẳng hàng với nút cha */
+    width: 350px;       /* Độ rộng cố định giống Notification */
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 25px rgba(0, 0, 0, 0.2); /* Đổ bóng đậm để nổi bật */
+    z-index: 9999;      /* Đảm bảo nó đè lên các thành phần khác */
+    overflow: hidden;   /* Bo tròn góc cho nội dung con */
+    animation: fadeIn 0.2s ease-in-out;
+    padding-top: 5px;
+}
+
+/* Hiệu ứng mũi tên nhọn chỉ lên trên (Optional - cho đẹp) */
+.login-toggle-container::before {
+    content: "";
+    position: absolute;
+    top: -6px;
+    right: 40px; /* Căn chỉnh vị trí mũi tên */
+    width: 12px;
+    height: 12px;
+    background-color: white;
+    transform: rotate(45deg);
+    box-shadow: -2px -2px 5px rgba(0,0,0,0.05);
+}
+
+/* --- Style cho Link "Thông tin cá nhân" --- */
+.menu-item-link {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 15px;
+    text-decoration: none;
+    color: #333;
+    transition: background-color 0.2s;
+    margin: 5px 10px;
+    border-radius: 8px;
+    border: 1px solid transparent;
+}
+
+.menu-item-link:hover {
+    background-color: #f3f4f6; /* Màu nền xám nhẹ khi hover */
+    border-color: #e5e7eb;
+}
+
+.menu-item-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.menu-item-icon {
+    width: 30px;
+    height: 30px;
+    object-fit: contain;
+}
+
+.menu-item-text {
+    font-size: 14px;
+    font-weight: 600;
+    color: #d70018; /* Màu đỏ Smember */
+}
+
+.menu-item-arrow {
+    color: #9ca3af;
+}
+
+/* Đường gạch ngang phân cách giữa User Info và Notification */
+.toggle-separator {
+    height: 1px;
+    background-color: #e5e7eb;
+    margin: 0 15px;
+}
+
+/* --- Keyframes Animation --- */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

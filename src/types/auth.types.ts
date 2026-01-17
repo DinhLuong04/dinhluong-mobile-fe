@@ -19,5 +19,11 @@ export interface ApiResponse<T> {
     timestamp: string;
     data: T;
 }
+export interface User {
+    name: string;
+    email: string;
+    token?: string;
+}
+
 
 export type LoginResponse = ApiResponse<AuthData>;

@@ -13,11 +13,33 @@
     gap: 8px;
     transition: 0.2s;
     padding: 0 15px ;
+    position: relative;
    
 }
+
 .user-text{
     font-size: 14px;
     font-weight: 500;
+}
+
+.user-text-login {
+    /* --- BỘ 3 QUAN TRỌNG ĐỂ CẮT CHỮ --- */
+    
+    /* 1. Không cho text xuống dòng */
+    white-space: nowrap;
+    
+    /* 2. Ẩn phần text bị tràn ra ngoài */
+    overflow: hidden;
+    
+    /* 3. Thêm dấu ... vào cuối */
+    text-overflow: ellipsis;
+
+    /* --- GIỚI HẠN CHIỀU RỘNG --- */
+    /* Bạn cần set chiều rộng tối đa cho text để nó biết khi nào thì bắt đầu cắt */
+    max-width: 100px; /* Tùy chỉnh số này: ví dụ 80px, 120px tùy giao diện */
+    font-weight: 500;
+    /* Đảm bảo khối hoạt động đúng */
+    display: block; 
 }
 .inner-btn-user:hover {
     background-color: rgba(0, 0, 0, 0.3);

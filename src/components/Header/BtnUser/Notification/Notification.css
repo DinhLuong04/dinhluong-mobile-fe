@@ -1,0 +1,148 @@
+/* Container chính (nền trắng, full size) */
+.notification-container {
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+    width: 350px; /* Set cứng width cho popup hoặc để 100% tùy container cha */
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15); /* Thêm bóng đổ cho đẹp */
+    overflow: hidden;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+/* --- Banner Smember --- */
+.smember-banner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 10px;
+    padding: 6px 8px;
+    border: 1px solid #d70018; /* text-primary-500 */
+    border-radius: 8px; /* rounded-lg */
+    color: #d70018;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    transition: transform 0.2s;
+}
+
+.smember-banner:hover {
+    transform: scale(0.98); /* hover:scale-95 */
+    background-color: #fffafa;
+}
+
+.smember-content {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.smember-icon {
+    width: 36px; /* size-9 roughly */
+    height: 36px;
+    object-fit: contain;
+}
+
+/* --- Body Wrapper --- */
+.notification-body-wrapper {
+    display: flex;
+    flex-direction: column;
+    height: 400px; /* Thay cho calc(80vh...) để demo, bạn có thể chỉnh lại */
+}
+
+/* --- Header --- */
+.notification-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    border-bottom: 1px solid #d4d4d4; /* border-neutral-300 */
+}
+
+.notification-title {
+    font-size: 16px;
+    font-weight: 600;
+    margin: 0;
+    color: #333;
+}
+
+.notification-status {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 12px;
+    color: #16a34a; /* text-green-600 */
+    cursor: default;
+}
+
+/* --- List Content (Scrollable) --- */
+.notification-list {
+    flex: 1; /* flex-1: chiếm phần còn lại */
+    overflow-y: auto; /* scrollbar */
+    padding: 0;
+}
+
+/* Custom Scrollbar (cho giống class scrollbar-thin) */
+.notification-list::-webkit-scrollbar {
+    width: 6px;
+}
+.notification-list::-webkit-scrollbar-track {
+    background: transparent;
+}
+.notification-list::-webkit-scrollbar-thumb {
+    background-color: #a3a3a3;
+    border-radius: 10px;
+}
+
+/* --- Empty State --- */
+.notification-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    text-align: center;
+    height: 100%;
+    gap: 10px;
+}
+
+.empty-img {
+    width: 92px; /* size-23 roughly */
+    height: 92px;
+    margin-bottom: 10px;
+}
+
+.empty-text-wrapper {
+    padding: 0 20px;
+}
+
+.empty-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #374151; /* text-gray-700 */
+    margin: 0 0 5px 0;
+}
+
+.empty-desc {
+    font-size: 14px;
+    color: #525252; /* text-neutral-600 */
+    margin: 0;
+}
+
+/* --- Footer Button --- */
+.notification-close-btn {
+    height: 50px; /* h-12.5 */
+    width: 100%;
+    border: none;
+    border-top: 1px solid #d4d4d4; /* border-neutral-300 */
+    background: white;
+    color: #3b82f6; /* text-blue-500 */
+    font-weight: 600;
+    font-size: 15px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.notification-close-btn:hover {
+    background-color: #f5f5f5;
+}

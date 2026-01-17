@@ -1,4 +1,4 @@
-import React, { useRef ,useState,type MouseEvent } from 'react';
+import React, { useRef ,useState} from 'react';
 // import Slider, { type Settings } from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
@@ -201,45 +201,62 @@ const mockProducts: Product[] = [
 //     );
 // };
 const ProductHot: React.FC = () => {
+    
     const { addToCompare } = useCompare();
 
     const handleCompare = (product: Product) => {
+        // Kiểm tra xem hàm này có chạy không
+        console.log('Đã thêm so sánh:', product.name);
         addToCompare(product);
     };
-    // Ref để xử lý nút bấm (nếu cần)
+
     const scrollRef = useRef<HTMLDivElement>(null);
-    // --- STATE CHO VIỆC KÉO CHUỘT (DRAG) ---
+    
+    // Sử dụng useRef cho các biến không cần gây re-render để tăng hiệu năng
+    const isDown = useRef(false);
+    const startX = useRef(0);
+    const scrollLeft = useRef(0);
+
+    // State này chỉ dùng để disable pointer-events khi thực sự đang kéo
     const [isDragging, setIsDragging] = useState(false);
-    const [startX, setStartX] = useState(0);
-    const [scrollLeft, setScrollLeft] = useState(0);
 
-    // 1. Khi nhấn chuột xuống (Bắt đầu kéo)
-    const handleMouseDown = (e: MouseEvent<HTMLDivElement>) => {
+    // 1. Mouse Down
+    const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
         if (!scrollRef.current) return;
-        setIsDragging(true);
-        setStartX(e.pageX - scrollRef.current.offsetLeft);
-        setScrollLeft(scrollRef.current.scrollLeft);
-    };
-
-    // 2. Khi di chuột ra khỏi khu vực (Dừng kéo)
-    const handleMouseLeave = () => {
-        setIsDragging(false);
-    };
-
-    // 3. Khi thả chuột ra (Dừng kéo)
-    const handleMouseUp = () => {
-        setIsDragging(false);
-    };
-
-    // 4. Khi di chuyển chuột (Đang kéo)
-    const handleMouseMove = (e: MouseEvent<HTMLDivElement>) => {
-        if (!isDragging || !scrollRef.current) return;
+        isDown.current = true;
+        startX.current = e.pageX - scrollRef.current.offsetLeft;
+        scrollLeft.current = scrollRef.current.scrollLeft;
         
-        e.preventDefault(); // Ngăn chặn việc bôi đen text khi kéo
+        // LƯU Ý: Không set setIsDragging(true) ở đây ngay!
+    };
+
+    // 2. Mouse Leave
+    const handleMouseLeave = () => {
+        isDown.current = false;
+        setIsDragging(false);
+    };
+
+    // 3. Mouse Up
+    const handleMouseUp = () => {
+        isDown.current = false;
+        // Delay nhẹ để đảm bảo sự kiện click kịp chạy trước khi reset state
+        setTimeout(() => setIsDragging(false), 0);
+    };
+
+    // 4. Mouse Move
+    const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+        if (!isDown.current || !scrollRef.current) return;
+        
+        e.preventDefault();
         
         const x = e.pageX - scrollRef.current.offsetLeft;
-        const walk = (x - startX) * 2; // Nhân 2 để kéo nhanh hơn (tùy chỉnh tốc độ)
-        scrollRef.current.scrollLeft = scrollLeft - walk;
+        const walk = (x - startX.current) * 2; 
+        
+        // LOGIC QUAN TRỌNG: Chỉ bật chế độ Dragging khi di chuyển chuột > 5px
+        if (Math.abs(x - startX.current) > 5) {
+            if (!isDragging) setIsDragging(true); // Chỉ set state 1 lần
+            scrollRef.current.scrollLeft = scrollLeft.current - walk;
+        }
     };
 
     // Hàm xử lý nút bấm (Optional - nếu bạn muốn giữ nút Next/Prev trên PC)
@@ -265,7 +282,7 @@ const ProductHot: React.FC = () => {
                     <button className="nav-btn next" onClick={() => scroll('right')}>❯</button>
 
                     {/* Thêm các sự kiện chuột vào div này */}
-                    <div 
+                   <div 
                         className={`scroll-wrapper ${isDragging ? 'dragging' : ''}`} 
                         ref={scrollRef}
                         onMouseDown={handleMouseDown}
@@ -275,9 +292,13 @@ const ProductHot: React.FC = () => {
                     >
                         {mockProducts.map((prod) => (
                             <div key={prod.id} className="scroll-item">
-                                {/* Thêm pointer-events-none khi đang kéo để tránh click nhầm vào sản phẩm */}
+                                {/* Chỉ disable pointer-events khi thực sự đang KÉO */}
                                 <div style={{ pointerEvents: isDragging ? 'none' : 'auto' }}>
-                                    <ProductCard  product={prod} onCompare={handleCompare} />
+                                    <ProductCard 
+                                        product={prod} 
+                                        // Truyền prop onCompare xuống
+                                        onCompare={handleCompare} 
+                                    />
                                 </div>
                             </div>
                         ))}

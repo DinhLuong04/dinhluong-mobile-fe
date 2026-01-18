@@ -1,0 +1,28 @@
+/* src/components/ProductDetail/ProductDetailSection/Section1/Section1.css */
+
+.Section-1 {
+    background-color: #FFFFFF;
+    padding-top: 20px; /* Thêm khoảng cách phía trên để Breadcrumb không dính sát header */
+}
+
+.inner-section1-product-detail {
+    display: flex;
+    /* justify-content: space-between; <--- Bạn có thể bỏ dòng này nếu đã dùng gap */
+    
+    /* 1. TĂNG KHOẢNG CÁCH TẠI ĐÂY */
+    gap: 40px; /* Tăng từ 10px lên 30px, 40px hoặc 50px tùy mắt nhìn */
+    
+    /* 2. QUAN TRỌNG: Căn hàng từ trên xuống */
+    /* Giúp phần sticky (ghim ảnh) hoạt động đúng và 2 cột không bị kéo giãn chiều cao bằng nhau */
+    align-items: flex-start; 
+    
+    margin-top: 20px; /* Cách Breadcrumb một chút */
+}
+
+/* Responsive cho Mobile: Khi màn hình nhỏ thì quay về cột dọc */
+@media (max-width: 768px) {
+    .inner-section1-product-detail {
+        flex-direction: column;
+        gap: 20px;
+    }
+}

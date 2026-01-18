@@ -1,0 +1,204 @@
+/* ProductGallery.css */
+
+/* Container chính của cột trái */
+.pd-left-col {
+    flex:0 0 50%;
+    /* Nếu bạn muốn fix width cứng giống FPT Shop (661px) thì thêm: */
+    /* max-width: 661px; */
+}
+
+/* --- PHẦN ẢNH (GALLERY) --- */
+.pd-gallery-container {
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    
+    position: relative;
+   
+   
+    z-index: 10;
+}
+
+.pd-main-image {
+    
+    width: 100%;
+    height: 400px; /* Chiều cao cố định cho khung ảnh lớn */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 15px;
+    overflow: hidden;
+}
+
+.pd-main-image img {
+    padding: 10px;
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    transition: transform 0.3s ease;
+}
+
+.pd-main-image img:hover {
+   
+    transform: scale(1.05); /* Zoom nhẹ khi hover */
+}
+
+/* Thumbnails list */
+.pd-thumbnails {
+    display: flex;
+    gap: 10px;
+    justify-content: center; /* Căn giữa các ảnh nhỏ */
+    overflow-x: auto; /* Cho phép cuộn ngang nếu nhiều ảnh */
+}
+
+.pd-thumb-item {
+    width: 60px;
+    height: 60px;
+    border: 1px solid #e5e7eb;
+    border-radius: 4px;
+    padding: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.6;
+    transition: all 0.2s;
+}
+
+.pd-thumb-item:hover,
+.pd-thumb-item.active {
+    border-color: #cb1c22; /* Màu đỏ FPT */
+    opacity: 1;
+}
+
+.pd-thumb-item img {
+    max-width: 100%;
+    max-height: 100%;
+}
+
+/* --- CÁC SECTION CHUNG (Thông số, Chính sách) --- */
+.pd-section {
+    margin-top: 20px;
+}
+
+.pd-section.mt-20 {
+    margin-top: 20px;
+}
+
+.pd-section.border-top {
+    border-top: 8px solid #f3f4f6; /* Đường kẻ xám dày ngăn cách */
+    padding-top: 15px;
+}
+
+.pd-section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.pd-section-header h3 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+    margin: 0;
+}
+
+.pd-link-view-all {
+    font-size: 13px;
+    color: #1250dc; /* Màu xanh link */
+    text-decoration: none;
+}
+
+.pd-link-view-all:hover {
+    text-decoration: underline;
+}
+
+/* --- THÔNG SỐ (Dùng Flex thay Grid) --- */
+.pd-specs-flex {
+    display: flex;
+    /* Để chia đều 3 cột: dùng gap hoặc margin */
+    gap: 1px; /* Tạo khe hở nhỏ */
+    background-color: #e5e7eb; /* Màu nền cho khe hở (tạo hiệu ứng border) */
+    border: 1px solid #e5e7eb;
+    border-radius: 4px;
+    
+}
+
+.pd-spec-item {
+    flex: 1; /* Chia đều 3 phần bằng nhau */
+    background-color: #fff; /* Nền trắng đè lên nền xám */
+    padding: 10px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.spec-icon-wrapper {
+    width: 32px;
+    height: 32px;
+    margin-bottom: 5px;
+    background: #f3f4f6;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.spec-icon-wrapper img {
+    width: 20px;
+    height: 20px;
+}
+
+.spec-label {
+    font-size: 12px;
+    color: #6b7280;
+    margin: 0 0 2px 0;
+}
+
+.spec-value {
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+}
+
+/* --- CHÍNH SÁCH (Dùng Flex thay Grid) --- */
+.pd-policies-flex {
+    display: flex;
+    flex-wrap: wrap; /* Cho phép xuống dòng */
+    gap: 15px; /* Khoảng cách giữa các item */
+}
+
+.pd-policy-item {
+    /* Tính toán width: (100% - gap) / 2 */
+    width: calc(50% - 10px); 
+    display: flex;
+    align-items: flex-start; /* Căn icon lên trên cùng dòng */
+    gap: 10px;
+}
+
+.policy-icon {
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0; /* Không cho icon bị co lại */
+}
+
+.policy-text {
+    font-size: 13px;
+    color: #333;
+    line-height: 1.4;
+}
+
+/* Responsive Mobile */
+@media (max-width: 768px) {
+    .pd-specs-flex {
+        flex-direction: row; /* Vẫn giữ ngang trên mobile hoặc wrap tùy ý */
+        overflow-x: auto; /* Nếu quá dài thì cuộn ngang */
+    }
+    
+    .pd-policy-item {
+        width: 100%; /* Trên mobile thì 1 dòng 1 cái */
+    }
+}

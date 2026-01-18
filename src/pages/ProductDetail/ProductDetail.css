@@ -1,0 +1,54 @@
+/* src/components/ProductDetail/ProductDetail.css */
+
+:root {
+    --primary-red: #cb1c22;
+    --primary-blue: #1250dc;
+    --text-main: #333;
+    --text-gray: #6b7280;
+    --bg-gray: #f3f4f6;
+    --border-color: #e5e7eb;
+}
+
+/* Layout Chung */
+.pd-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px 15px;
+    font-family: Inter, sans-serif;
+}
+
+.pd-layout {
+    display: flex;
+    gap: 30px;
+    margin-top: 20px;
+}
+
+/* Breadcrumb */
+.pd-breadcrumb {
+    list-style: none;
+    display: flex;
+    gap: 8px;
+    padding: 0;
+    margin: 0;
+    font-size: 14px;
+    color: var(--text-gray);
+}
+.pd-breadcrumb li:last-child {
+    color: var(--text-main);
+    font-weight: 600;
+}
+
+
+
+
+
+/* Responsive Mobile */
+@media (max-width: 768px) {
+    .pd-layout {
+        flex-direction: column;
+    }
+    .pd-left-col, .pd-right-col {
+        flex: 100%;
+        max-width: 100%;
+    }
+}

@@ -1,6 +1,6 @@
 import React from 'react';
 import './ProductCard.css';
-
+import type { Product } from '../../../types/Product.types';
 // --- 1. Định nghĩa kiểu dữ liệu (Interface) ---
 // Bạn có thể chuyển phần này sang file types.ts nếu muốn dùng chung
 export interface ProductSpec {
@@ -18,21 +18,7 @@ export interface ProductColor {
   hex: string;
 }
 
-export interface Product {
-  id: string | number;
-  name: string;
-  image: string;
-  price: number;
-  originalPrice?: number;
-  discountNote?: string;    // Ví dụ: "Giảm 300.000đ"
-  installmentText?: string; // Ví dụ: "Trả góp 0%"
-  countDown?: string;       // Ví dụ: "Còn 02 ngày..."
-  specs: ProductSpec[];     // Icon thông số (Chip, Màn hình...)
-  colors: ProductColor[];   // Danh sách màu
-  variants: ProductVariant[]; // Các phiên bản bộ nhớ
-  promotions: string[];     // Link ảnh logo khuyến mãi
-  promotionText?: string;   // Text khuyến mãi
-}
+
 
 // --- 2. Props của Component ---
 interface ProductCardProps {
@@ -100,12 +86,12 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick,onCompare })
                 {product.discountNote && <span className="price-note">{product.discountNote}</span>}
             </div>
 
-            {/* 5. Countdown (Đếm ngược) */}
+            {/* 5. Countdown (Đếm ngược)
             {product.countDown && (
                 <div style={{fontSize: '12px', color:'#F59E0B', fontWeight: 600, marginBottom:'4px'}}>
                     ⏱ {product.countDown}
                 </div>
-            )}
+            )} */}
 
             {/* 6. Tên sản phẩm */}
             <h3 className="card-title" title={product.name}>{product.name}</h3>

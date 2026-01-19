@@ -1,7 +1,7 @@
 // src/api/httpClient.ts
 
 import { API_CONFIG } from '../config/api.config';
-
+type SearchParams = Record<string, string | number | boolean | undefined>;
 // Định nghĩa kiểu cho lỗi API (để TypeScript hiểu object lỗi có field message)
 interface ApiError {
     message?: string;
@@ -34,7 +34,41 @@ const httpClient = {
         return responseData as TResponse;
     },
 
-    // Bạn có thể thêm get, put, delete...
+    get: async <TResponse>(endpoint: string, params?: SearchParams): Promise<TResponse> => {
+        let url = `${API_CONFIG.BASE_URL}${endpoint}`;
+
+        if (params) {
+            // Lọc bỏ các giá trị undefined/null trước khi đưa vào URLSearchParams
+            const validParams: Record<string, string> = {};
+            
+            Object.keys(params).forEach(key => {
+                const value = params[key];
+                if (value !== undefined && value !== null) {
+                    // Convert tất cả sang string để URLSearchParams hiểu
+                    validParams[key] = String(value);
+                }
+            });
+
+            const queryString = new URLSearchParams(validParams).toString();
+            url += `?${queryString}`;
+        }
+
+        const response = await fetch(url, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+
+        const responseData = await response.json();
+
+        if (!response.ok) {
+            const errorData = responseData as ApiError;
+            throw new Error(errorData.message || 'Get data failed');
+        }
+
+        return responseData as TResponse;
+    }
 };
 
 export default httpClient;

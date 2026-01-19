@@ -1,0 +1,314 @@
+/* src/components/ProductDetail/ComboUuDai/PromotionCombo.css */
+
+/* =========================================
+   WRAPPER & CONTAINER
+   ========================================= */
+.combo-wrapper {
+    background-color: #f3f4f6; /* Màu nền xám nhạt của section */
+    padding: 15px 0;
+    margin-top: 20px;
+    font-family: 'Inter', sans-serif;
+}
+
+.combo-container {
+    margin: 0 auto;
+    background: #fff;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+/* =========================================
+   HEADER (Icon + Title)
+   ========================================= */
+.combo-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 15px 20px;
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.combo-icon {
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+}
+
+.combo-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #333;
+    margin: 0;
+    text-transform: uppercase;
+}
+
+/* =========================================
+   TABS (Gói phụ kiện)
+   ========================================= */
+.combo-tabs {
+    padding: 15px 20px;
+    display: flex;
+    gap: 10px;
+}
+
+.combo-tab-item {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 16px;
+    border: 1px solid #cb1c22;
+    background-color: #fef2f2; /* Nền đỏ rất nhạt */
+    color: #cb1c22;
+    border-radius: 20px; /* Bo tròn kiểu Pill */
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+/* =========================================
+   LIST PRODUCTS (Scroll ngang)
+   ========================================= */
+.combo-list {
+    display: flex;
+    gap: 12px;
+    padding: 0 20px 20px;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    /* Ẩn thanh cuộn mặc định */
+    scrollbar-width: none; 
+    -ms-overflow-style: none;
+}
+
+.combo-list::-webkit-scrollbar {
+    display: none;
+}
+
+.combo-item {
+    flex: 0 0 300px; /* Chiều rộng cố định cho mỗi card combo */
+    display: flex;
+    gap: 12px;
+    padding: 12px;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    cursor: pointer;
+    background: #fff;
+    transition: all 0.2s ease;
+    align-items: flex-start;
+}
+
+.combo-item:hover {
+    border-color: #cb1c22;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.combo-item-img {
+    width: 70px;
+    height: 70px;
+    object-fit: contain;
+    flex-shrink: 0;
+    border-radius: 4px;
+    border: 1px solid #f3f4f6;
+    padding: 2px;
+}
+
+.combo-item-info {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 4px;
+    flex: 1;
+}
+
+.combo-item-name {
+    font-size: 14px;
+    font-weight: 500;
+    color: #333;
+    line-height: 1.4;
+    margin: 0;
+    /* Cắt dòng nếu tên quá dài */
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.combo-price-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.combo-price-new {
+    font-weight: 700;
+    color: #333;
+    font-size: 15px;
+}
+
+.combo-price-old {
+    text-decoration: line-through;
+    color: #9ca3af;
+    font-size: 13px;
+}
+
+.combo-saving {
+    font-size: 13px;
+    color: #16a34a; /* Màu xanh lá cho tiết kiệm */
+    font-weight: 600;
+    margin: 0;
+}
+
+/* =========================================
+   FOOTER (Tổng tiền & Nút bấm)
+   ========================================= */
+.combo-footer {
+    border-top: 1px solid #e5e7eb;
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #fff;
+    gap: 20px;
+}
+
+/* --- Phần thông tin tổng tiền (Bên trái) --- */
+.combo-total-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.combo-total-row {
+    display: flex;
+    align-items: baseline; /* Căn chân chữ cho đều */
+    gap: 8px;
+}
+
+.combo-label {
+    color: #6b7280;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.combo-total-price {
+    font-weight: 700;
+    color: #333;
+    font-size: 18px;
+}
+
+.combo-total-old {
+    text-decoration: line-through;
+    color: #9ca3af;
+    font-size: 14px;
+}
+
+.combo-total-percent {
+    color: #cb1c22;
+    background: #fef2f2;
+    padding: 0 4px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.combo-saving-row {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 14px;
+    color: #16a34a;
+}
+
+/* --- Phần Nút bấm (Bên phải) --- */
+.combo-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Nút Icon Giỏ hàng (Tròn) */
+.combo-btn-cart-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: 1px solid #cb1c22;
+    background-color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    flex-shrink: 0; /* Không bị bóp méo */
+}
+
+.combo-btn-cart-icon:hover {
+    background-color: #fff1f1;
+}
+
+.combo-btn-cart-icon svg {
+    width: 22px;
+    height: 22px;
+    fill: #cb1c22; /* Icon màu đỏ */
+}
+
+/* Nút Chọn mua kèm (Chữ nhật bo góc) */
+.combo-btn-buy {
+    background-color: #cb1c22;
+    color: white;
+    border: none;
+    height: 44px; /* Cao bằng nút tròn */
+    padding: 0 20px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 15px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    white-space: nowrap;
+}
+
+.combo-btn-buy:hover {
+    background-color: #b0181d;
+}
+
+/* =========================================
+   RESPONSIVE MOBILE
+   ========================================= */
+@media (max-width: 768px) {
+    .combo-item {
+        flex: 0 0 260px; /* Thẻ nhỏ hơn xíu trên mobile */
+    }
+
+    .combo-footer {
+        flex-direction: column; /* Xếp chồng dọc */
+        align-items: stretch; /* Kéo giãn full width */
+        gap: 15px;
+    }
+
+    .combo-total-info {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .combo-total-row {
+        flex-direction: column; /* Giá cũ giá mới xếp chồng */
+        align-items: flex-start;
+        gap: 0;
+    }
+    
+    .combo-label { display: none; } /* Ẩn chữ "Tổng:" cho gọn nếu cần */
+
+    .combo-saving-row {
+        display: none; /* Ẩn dòng tiết kiệm trên mobile nếu chật */
+    }
+
+    .combo-actions {
+        width: 100%;
+    }
+
+    .combo-btn-buy {
+        flex: 1; /* Nút mua giãn hết cỡ */
+    }
+}

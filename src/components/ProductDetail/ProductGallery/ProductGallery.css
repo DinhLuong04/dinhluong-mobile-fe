@@ -86,7 +86,7 @@
 }
 
 .pd-section.border-top {
-    border-top: 8px solid #f3f4f6; /* Đường kẻ xám dày ngăn cách */
+    border-top: 2px solid #f3f4f6; /* Đường kẻ xám dày ngăn cách */
     padding-top: 15px;
 }
 

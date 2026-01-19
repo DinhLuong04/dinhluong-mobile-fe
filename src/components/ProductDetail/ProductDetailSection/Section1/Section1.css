@@ -1,8 +1,14 @@
 /* src/components/ProductDetail/ProductDetailSection/Section1/Section1.css */
 
-.Section-1 {
+.Section-1-bg{
     background-color: #FFFFFF;
-    padding-top: 20px; /* Thêm khoảng cách phía trên để Breadcrumb không dính sát header */
+   
+}
+
+.Section-1 {
+    
+    padding-top: 20px; 
+    padding-bottom: 15px;/* Thêm khoảng cách phía trên để Breadcrumb không dính sát header */
 }
 
 .inner-section1-product-detail {
@@ -24,5 +30,33 @@
     .inner-section1-product-detail {
         flex-direction: column;
         gap: 20px;
+    }
+}
+
+.pd-specs-mobile {
+    display: none;
+    margin-top: 20px; /* Khoảng cách với ProductInfo */
+}
+
+.pd-specs-desktop {
+    display: block;
+}
+
+/* Responsive Mobile (Dưới 768px) */
+@media (max-width: 768px) {
+    /* Ẩn bản desktop (nằm trong cột trái) */
+    .pd-specs-desktop {
+        display: none;
+    }
+
+    /* Hiện bản mobile (nằm dưới cùng) */
+    .pd-specs-mobile {
+        display: block;
+        padding: 0 15px; /* Căn lề cho đẹp trên mobile */
+    }
+    
+    /* Đảm bảo layout cột dọc */
+    .inner-section1-product-detail {
+        flex-direction: column;
     }
 }

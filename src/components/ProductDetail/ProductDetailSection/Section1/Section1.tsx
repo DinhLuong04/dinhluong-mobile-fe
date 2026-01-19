@@ -4,7 +4,7 @@ import Breadcrumb from "../../Breadcrumb/Breadcrumb";
 import ProductGallery from "../../ProductGallery/ProductGallery";
 import ProductInfo from "../../ProductInfo/ProductInfo";
 import StickyProductBar from "../../StickyProductBar/StickyProductBar";
-
+import ProductSpecs from "../../ProductSpecs/ProductSpecs";
 const Section1 = () => {
     const [showStickyBar, setShowStickyBar] = useState(false);
 
@@ -27,14 +27,20 @@ const Section1 = () => {
     }, []);
 
     return (
-        <div className="Section-1">
+        <div className="Section-1-bg">
+<div className="container Section-1">
             <StickyProductBar isVisible={showStickyBar} />
             <Breadcrumb />
             <div className="inner-section1-product-detail">
                 <ProductGallery />
                 <ProductInfo />
+                <div className="pd-specs-mobile">
+                <ProductSpecs />
+            </div>
             </div>
         </div>
+        </div>
+        
     );
 };
 

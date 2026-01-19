@@ -1,0 +1,260 @@
+/* src/components/ProductDetail/ProductComparison/ProductComparison.css */
+
+.pc-wrapper {
+    background-color: #f3f4f6;
+    padding: 20px 0;
+    margin-top: 20px;
+    font-family: Inter, sans-serif;
+    color: #333;
+}
+
+.pc-container {
+   
+    background: #fff;
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+
+/* --- HEADER --- */
+.pc-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #e5e7eb;
+    padding-bottom: 15px;
+    margin-bottom: 15px;
+}
+
+.pc-title-group {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.pc-title {
+    font-size: 20px;
+    font-weight: 700;
+    margin: 0;
+}
+
+/* Badge AI Gradient */
+.pc-ai-badge {
+    display: inline-flex;
+    padding: 1px; /* Tạo độ dày cho border gradient */
+    border-radius: 8px;
+    background: linear-gradient(96.11deg, #FBBF24 -7.88%, #F59E0B 122.23%);
+}
+
+.pc-ai-content {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    background: #fff;
+    border-radius: 7px; /* Nhỏ hơn parent 1px */
+    padding: 4px 8px;
+}
+
+.pc-ai-text {
+    font-size: 14px;
+    font-weight: 600;
+    color: #b45309; /* Màu vàng đậm */
+}
+
+/* Nút tìm sản phẩm khác */
+.pc-btn-search {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background-color: #f3f4f6;
+    padding: 8px 16px;
+    border-radius: 32px;
+    text-decoration: none;
+    color: #1250dc;
+    font-weight: 500;
+    font-size: 14px;
+    transition: background-color 0.2s;
+}
+.pc-btn-search:hover {
+    background-color: #e5e7eb;
+}
+
+/* --- LIST SẢN PHẨM (SCROLL) --- */
+.pc-list {
+    display: flex;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    /* Ẩn thanh cuộn */
+    scrollbar-width: none; 
+    -ms-overflow-style: none;
+}
+.pc-list::-webkit-scrollbar {
+    display: none;
+}
+
+.pc-item {
+    flex: 0 0 240px; /* Chiều rộng cố định cho Desktop */
+    padding: 15px;
+    border-right: 1px solid #f3f4f6;
+    display: flex;
+    flex-direction: column;
+}
+
+.pc-item:last-child {
+    border-right: none;
+}
+
+/* Phần trên: Ảnh + Tên + Giá */
+.pc-item-top {
+    height: 274px; /* Chiều cao cố định phần trên để các dòng dưới thẳng hàng */
+    display: flex;
+    flex-direction: column;
+}
+
+.pc-img-box {
+    height: 100px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.pc-img {
+    max-width: 80px;
+    max-height: 80px;
+    object-fit: contain;
+}
+
+.pc-name {
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1.4;
+    color: #333;
+    margin-bottom: 8px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    min-height: 40px;
+    text-decoration: none;
+}
+
+.pc-price-current {
+    font-size: 16px;
+    font-weight: 700;
+    color: #333;
+    display: block;
+}
+
+.pc-price-old {
+    font-size: 12px;
+    color: #9ca3af;
+    text-decoration: line-through;
+}
+
+/* Badge & Link hành động */
+.pc-action-box {
+    margin-top: 10px;
+}
+
+.pc-badge-current {
+    font-size: 14px;
+    font-weight: 500;
+    background: linear-gradient(31.31deg, #8B7D75 62.94%, #DAC392 124.63%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.pc-link-compare {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    color: #1250dc;
+    font-size: 14px;
+    font-weight: 500;
+    text-decoration: none;
+}
+.pc-link-compare:hover {
+    text-decoration: underline;
+}
+
+/* Phần thông số (Rows) */
+.pc-spec-row {
+    margin-top: 10px;
+}
+
+.pc-spec-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 5px;
+}
+
+.pc-spec-label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+    white-space: nowrap;
+}
+
+.pc-spec-line {
+    flex-grow: 1;
+    height: 1px;
+    background-color: #e5e7eb;
+    border: none;
+}
+
+.pc-spec-value {
+    font-size: 14px;
+    color: #6b7280;
+    min-height: 20px;
+}
+
+/* Nút tìm kiếm trên Mobile */
+.pc-mobile-btn-container {
+    display: none;
+    justify-content: center;
+    margin-top: 15px;
+}
+
+/* --- RESPONSIVE --- */
+@media (max-width: 768px) {
+    .pc-container {
+        padding: 0;
+        background: transparent;
+        border-radius: 0;
+        box-shadow: none;
+    }
+    
+    .pc-header {
+        background: #fff;
+        padding: 15px;
+        margin-bottom: 0;
+    }
+
+    .pc-btn-search {
+        display: none; /* Ẩn nút trên header mobile */
+    }
+
+   
+
+    .pc-item {
+        flex: 0 0 140px; /* Thẻ nhỏ hơn trên mobile */
+        padding: 10px;
+        background: #fff;
+        border-right: 1px solid #f3f4f6;
+    }
+    
+    .pc-item:last-child {
+        margin-right: 15px; /* Margin phải cho item cuối */
+    }
+
+    .pc-mobile-btn-container {
+        display: flex;
+        padding-bottom: 15px;
+    }
+    
+    /* Ẩn label thông số ở các cột sau cột đầu tiên (nếu muốn giống bảng) 
+       Tuy nhiên thiết kế FPT hiện tại lặp lại label ở mỗi cột nên giữ nguyên
+    */
+}

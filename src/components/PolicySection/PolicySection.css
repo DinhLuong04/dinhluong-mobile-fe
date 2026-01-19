@@ -1,0 +1,85 @@
+/* src/components/ProductDetail/PolicySection/PolicySection.css */
+
+.policy-wrapper {
+    background-color: #f3f4f6; /* bgGrayDefault */
+    font-family: Inter, sans-serif;
+}
+
+.policy-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 15px;
+}
+
+.policy-grid {
+    display: grid;
+    /* Mặc định PC: 4 cột */
+    grid-template-columns: repeat(4, 1fr);
+    padding: 40px 0;
+    gap: 20px;
+}
+
+.policy-item {
+    display: flex;
+    flex-direction: column; /* PC: Xếp dọc (Icon trên, Text dưới) */
+    align-items: center;
+    text-align: center;
+}
+
+.policy-icon-box {
+    width: 60px;
+    height: 60px;
+    margin-bottom: 16px;
+    flex-shrink: 0;
+}
+
+.policy-icon-box img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.policy-content {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.policy-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #333; /* textOnWhitePrimary */
+    margin: 0;
+}
+
+.policy-desc {
+    font-size: 14px;
+    color: #6b7280;
+    margin: 0;
+}
+
+/* --- RESPONSIVE MOBILE --- */
+@media (max-width: 768px) {
+    .policy-wrapper {
+        background-color: #fff; /* Mobile nền trắng */
+    }
+
+    .policy-grid {
+        grid-template-columns: 1fr; /* Mobile: 1 cột */
+        padding: 24px 0;
+        gap: 16px;
+    }
+
+    .policy-item {
+        flex-direction: row; /* Mobile: Xếp ngang (Icon trái, Text phải) */
+        align-items: flex-start;
+        text-align: left;
+    }
+
+    .policy-icon-box {
+        width: 44px;
+        height: 44px;
+        margin-bottom: 0;
+        margin-right: 16px;
+    }
+}

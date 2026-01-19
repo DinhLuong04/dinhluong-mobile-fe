@@ -1,0 +1,377 @@
+/* src/components/ProductDetail/ProductReviews/ProductReviews.css */
+
+.pr-wrapper {
+    background-color: #f3f4f6;
+    padding: 20px 0;
+    margin-top: 20px;
+    font-family: Inter, sans-serif;
+    color: #333;
+}
+
+.pr-container {
+    background: #fff;
+    border-radius: 12px;
+    padding: 30px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+
+.pr-title {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 20px;
+}
+
+/* --- 1. SUMMARY SECTION --- */
+.pr-summary {
+    display: flex;
+    gap: 40px;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.pr-summary-left {
+    text-align: center;
+    width: 200px;
+    flex-shrink: 0;
+}
+
+.pr-score-num {
+    font-size: 48px;
+    font-weight: 700;
+    color: #333;
+    line-height: 1;
+}
+
+.pr-score-stars {
+    display: flex;
+    justify-content: center;
+    gap: 4px;
+    margin: 8px 0;
+}
+
+.pr-score-count {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 12px;
+}
+
+.pr-btn-rate {
+    background-color: #cb1c22;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 10px 20px;
+    font-weight: 600;
+    cursor: pointer;
+    width: 100%;
+    font-size: 14px;
+}
+
+.pr-summary-right {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.pr-progress-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+}
+
+.pr-star-label {
+    width: 35px;
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    font-weight: 500;
+}
+
+.pr-progress-track {
+    flex: 1;
+    height: 8px;
+    background-color: #e5e7eb;
+    border-radius: 10px;
+    overflow: hidden;
+    max-width: 500px; /* Giới hạn chiều dài thanh */
+}
+
+.pr-progress-fill {
+    height: 100%;
+    background-color: #cb1c22;
+    border-radius: 10px;
+}
+
+.pr-count-label {
+    width: 30px;
+    color: #666;
+}
+
+.pr-divider {
+    height: 1px;
+    background-color: #eee;
+    margin: 20px 0;
+}
+
+/* --- 2. FILTER & INPUT SECTION --- */
+.pr-filter-section {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.pr-filter-title {
+    font-size: 18px;
+    font-weight: 700;
+    margin: 0;
+}
+
+.pr-filters {
+    display: flex;
+    gap: 8px;
+}
+
+.pr-filter-pill {
+    padding: 6px 14px;
+    border: 1px solid #d1d5db;
+    border-radius: 20px;
+    font-size: 14px;
+    cursor: pointer;
+    background: #fff;
+    color: #333;
+}
+
+.pr-filter-pill.active {
+    border-color: #cb1c22;
+    color: #cb1c22;
+    background: #fff;
+    font-weight: 600;
+}
+
+.pr-input-wrapper {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.pr-text-input {
+    flex: 1;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 12px;
+    font-size: 14px;
+    outline: none;
+}
+
+.pr-btn-submit {
+    background-color: #000;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 0 25px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.pr-upload-action {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #1250dc; /* Màu xanh link */
+    font-size: 14px;
+    cursor: pointer;
+    margin-bottom: 25px;
+}
+
+/* --- 3. COMMENT LIST --- */
+.pr-comment-item {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 25px;
+    align-items: flex-start;
+}
+
+.pr-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #9ca3af; /* Màu xám avatar */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    color: white;
+    flex-shrink: 0;
+    font-size: 16px;
+}
+
+.pr-comment-body {
+    flex: 1;
+}
+
+.pr-user-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+}
+
+.pr-username {
+    font-weight: 700;
+    font-size: 15px;
+}
+
+.pr-dot {
+    color: #9ca3af;
+    font-size: 12px;
+}
+
+.pr-time {
+    color: #9ca3af;
+    font-size: 13px;
+}
+
+.pr-content {
+    font-size: 15px;
+    line-height: 1.5;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.pr-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.pr-action-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: transparent;
+    border: 1px solid #e5e7eb;
+    border-radius: 20px;
+    padding: 4px 12px;
+    font-size: 13px;
+    color: #555;
+    cursor: pointer;
+}
+
+.pr-action-btn:hover {
+    background-color: #f9fafb;
+    color: #cb1c22; /* Hover màu đỏ */
+    border-color: #cb1c22;
+}
+
+/* --- ADMIN REPLY BOX --- */
+.pr-reply-box {
+    margin-top: 15px;
+    background-color: #f3f4f6; /* Nền xám nhạt */
+    padding: 15px;
+    border-radius: 12px;
+    display: flex;
+    gap: 12px;
+    position: relative;
+}
+
+/* Mũi tên trỏ lên của box reply */
+.pr-reply-box::before {
+    content: "";
+    position: absolute;
+    top: -8px;
+    left: 20px;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-bottom: 8px solid #f3f4f6;
+}
+
+.pr-avatar-img {
+    width: 36px;
+    height: 36px;
+    flex-shrink: 0;
+}
+
+.pr-avatar-img img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+}
+
+.pr-badge-admin {
+    background: linear-gradient(90deg, #d6a567 0%, #b38549 100%); /* Màu vàng đồng quản trị viên */
+    color: white;
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-weight: 600;
+}
+
+.pr-reply-content {
+    flex: 1;
+}
+
+/* --- PAGINATION --- */
+.pr-pagination {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 30px;
+}
+
+.pr-page-item {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+    color: #555;
+}
+
+.pr-page-item.active {
+    background-color: #cb1c22;
+    color: white;
+    font-weight: 600;
+}
+
+.pr-page-item:hover:not(.active) {
+    background-color: #f3f4f6;
+}
+
+/* --- RESPONSIVE MOBILE --- */
+@media (max-width: 768px) {
+    .pr-summary {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .pr-summary-left {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    .pr-summary-right {
+        width: 100%;
+    }
+    .pr-progress-track {
+        max-width: none;
+    }
+    .pr-filter-section {
+        flex-direction: row;
+        align-items: center;
+    }
+    .pr-input-wrapper {
+        flex-direction: column;
+    }
+    .pr-btn-submit {
+        width: 100%;
+        padding: 10px;
+    }
+}

@@ -1,0 +1,83 @@
+/* src/components/Home/ViewedProducts/ViewedProducts.css */
+
+.vp-wrapper {
+    background-color: #f3f4f6; /* Nền xám nhạt toàn section */
+    padding: 20px 0;
+    margin-top: 20px;
+    font-family: Inter, sans-serif;
+}
+
+.vp-container {
+    margin: 0 auto;
+    background: #fff;
+    border-radius: 12px;
+    padding: 20px;
+    /* padding-bottom: 0; */ /* Nếu muốn sát đáy */
+}
+
+/* Header */
+.vp-title {
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #e5e7eb;
+    color: #333;
+}
+
+/* Slider (Scroll ngang) */
+.vp-slider {
+    display: flex;
+    gap: 10px; /* Khoảng cách giữa các card */
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    padding-bottom: 10px; /* Chừa chỗ cho shadow nếu có */
+    
+    /* Ẩn thanh cuộn */
+    scrollbar-width: none; 
+    -ms-overflow-style: none;
+}
+
+.vp-slider::-webkit-scrollbar {
+    display: none;
+}
+
+.vp-slider-item {
+    flex: 0 0 242px; /* Chiều rộng cố định giống mẫu */
+    display: flex; /* Để card con full height */
+}
+
+/* --- TÙY CHỈNH PRODUCT CARD TRONG SECTION NÀY --- */
+/* Ghi đè CSS của ProductCard nếu cần thiết */
+
+/* Ẩn nút so sánh trong section này */
+.vp-wrapper .btn-compare {
+    display: none !important;
+}
+
+/* Ẩn nút so sánh icon trên mobile (nếu có trong card gốc) */
+/* .vp-wrapper .card-compare-icon { display: none; } */
+
+/* Responsive */
+@media (max-width: 768px) {
+    .vp-container {
+        padding: 0; /* Mobile full width */
+        background: transparent;
+    }
+    
+    .vp-title {
+        background: #fff;
+        padding: 15px 20px;
+        margin-bottom: 0;
+        border-bottom: none;
+    }
+
+    .vp-slider {
+        padding: 10px 15px; /* Padding 2 bên trên mobile */
+        gap: 10px;
+    }
+
+    .vp-slider-item {
+        flex: 0 0 170px; /* Card nhỏ hơn trên mobile */
+    }
+}

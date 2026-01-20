@@ -90,7 +90,7 @@
   gap: 15px;
 }
 
-.product-item {
+.product-list .product-item {
   background-color: white;
   border-radius: 8px;
   padding: 8px;
@@ -178,5 +178,5 @@
   .product-list { margin-bottom: 10px; }
   .action-buttons { justify-content: space-between; }
   .btn { flex: 1; }
-  .product-item:nth-child(3), .empty-slot:nth-child(3) { display: none; }
+  .product-list .product-item:nth-child(3), .empty-slot:nth-child(3) { display: none; }
 }

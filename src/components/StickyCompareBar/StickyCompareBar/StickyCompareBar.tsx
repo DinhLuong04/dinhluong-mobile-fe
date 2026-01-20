@@ -1,6 +1,6 @@
 import React from 'react';
 import './StickyCompareBar.css';
-import type { Product } from '../../Products/ProductCard/ProductCard'; 
+import type { Product } from '../../../types/Product.types'; 
 
 interface StickyCompareBarProps {
     compareList: Product[]; 

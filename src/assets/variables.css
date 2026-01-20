@@ -59,3 +59,17 @@ body {
   .desktop-only { display: block; }
   .mobile-only { display: none; }
 }
+
+.breadcrumb {
+    list-style: none;
+    display: flex;
+    gap: 8px;
+    padding: 0;
+    margin: 0;
+    font-size: 14px;
+    color: var(--text-gray);
+}
+.breadcrumb li:last-child {
+    color: var(--text-main);
+    font-weight: 600;
+}

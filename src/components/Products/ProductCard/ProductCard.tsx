@@ -1,8 +1,7 @@
 import React from 'react';
 import './ProductCard.css';
 import type { Product } from '../../../types/Product.types';
-// --- 1. Định nghĩa kiểu dữ liệu (Interface) ---
-// Bạn có thể chuyển phần này sang file types.ts nếu muốn dùng chung
+import { useNavigate } from 'react-router-dom';
 export interface ProductSpec {
   icon: string;
   label: string;
@@ -19,15 +18,25 @@ export interface ProductColor {
 }
 
 
-
 // --- 2. Props của Component ---
 interface ProductCardProps {
   product: Product; // Đổi tên prop từ 'data' sang 'product' cho chuẩn ngữ nghĩa
-  onClick?: (product: Product) => void;
   onCompare?: (product: Product) => void;
 }
 
-const ProductCard: React.FC<ProductCardProps> = ({ product, onClick,onCompare }) => {
+const ProductCard: React.FC<ProductCardProps> = ({ product ,onCompare }) => {
+
+    const navigate = useNavigate();
+
+  // Xử lý chuyển trang
+  const handleGoToDetail = (e: React.MouseEvent) => {
+    e.stopPropagation(); // Chặn sự kiện nổi bọt
+    
+    // QUAN TRỌNG: Dùng luôn product.id vì nó đã là slug (VD: xiaomi-redmi-note-15)
+    // Đường dẫn sẽ là: domain.com/xiaomi-redmi-note-15
+    navigate(`/${product.id}`, { state: { product } }); 
+  };
+
 
   // --- Helper: Format tiền tệ (VND) ---
   const formatCurrency = (amount: number) => {
@@ -44,12 +53,13 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick,onCompare })
     ? calculateDiscountPercent(product.originalPrice, product.price) 
     : null;
 
+   
   return (
-    <div className="product-card" onClick={() => onClick && onClick(product)}>
+    <div className="product-card" >
       <div className="card-top">
         
         {/* 1. Ảnh sản phẩm */}
-        <div className="card-image-wrapper">
+        <div className="card-image-wrapper" onClick={handleGoToDetail}>
             <img src={product.image} alt={product.name} loading="lazy" />
         </div>
 
@@ -94,7 +104,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick,onCompare })
             )} */}
 
             {/* 6. Tên sản phẩm */}
-            <h3 className="card-title" title={product.name}>{product.name}</h3>
+            <h3 className="card-title" onClick={handleGoToDetail} title={product.name}>{product.name}</h3>
             
             {/* 7. Màu sắc */}
             {product.colors && (
@@ -109,23 +119,17 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick,onCompare })
             {product.variants && (
                 <div className="card-variants">
                     {product.variants.map((v, idx) => (
-                        <button 
+                        <div 
                             key={idx} 
                             className={`variant-btn ${v.active ? 'active' : ''}`}
-                            type="button"
-                            // Thêm onClick xử lý logic chọn variant tại đây nếu cần
+                           
                         >
                             {v.label}
                             
-                            {/* --- BỔ SUNG ĐOẠN NÀY --- */}
-                            {v.active && (
-                                <svg className="variant-check-icon" viewBox="0 0 7 7" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M5.9 1.9C6 2 6 2.2 5.9 2.4L2.3 5.7C2.1 5.8 1.9 5.8 1.7 5.7L0.5 4.5C0.4 4.3 0.4 4.1 0.5 4C0.6 3.9 0.9 3.9 1 4L2 5L5.4 1.9C5.6 1.8 5.8 1.8 5.9 1.9Z" fill="white" stroke="white" strokeWidth="0.4" strokeLinecap="round"></path>
-                                </svg>
-                            )}
-                            {/* ------------------------- */}
                             
-                        </button>
+                            
+                            
+                        </div>
                     ))}
                 </div>
             )}

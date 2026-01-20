@@ -1,0 +1,134 @@
+/* --- Accordion Container --- */
+.all-specifics-container {
+  background-color: transparent;
+}
+
+.accordion-item {
+  background-color: #fff;
+  border-radius: 8px; /* Bo góc trên mobile */
+  margin-bottom: 8px; /* Khoảng cách giữa các khối */
+  overflow: hidden;
+}
+
+/* --- Header (Thanh tiêu đề bấm vào để mở) --- */
+.accordion-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background-color: #f3f4f6; /* bg-bgGrayDefault: màu xám nhạt */
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+/* Trên PC thì nền trắng và bo góc trên */
+@media (min-width: 1024px) {
+  .accordion-item {
+    margin-bottom: 24px;
+    border: none;
+    border-radius: 0;
+  }
+  
+  .accordion-header {
+    background-color: #fff;
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+    padding: 16px;
+  }
+}
+
+.accordion-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #111;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+/* Icon mũi tên */
+.accordion-icon {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.3s ease;
+}
+
+.accordion-icon svg {
+  width: 16px;
+  height: 16px;
+  fill: #090d14;
+}
+
+/* Xoay mũi tên khi mở */
+.accordion-header.active .accordion-icon {
+  transform: rotate(180deg);
+}
+
+/* --- Body (Phần nội dung xổ xuống) --- */
+.accordion-collapse {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease-out;
+  background-color: #fff;
+}
+
+.accordion-collapse.open {
+  max-height: 2000px; /* Đủ lớn để chứa nội dung */
+  border-bottom-left-radius: 12px;
+  border-bottom-right-radius: 12px;
+}
+
+/* --- Nội dung chi tiết (Tái sử dụng style của phần trước) --- */
+.spec-row {
+  padding: 15px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.spec-row-header {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  width: 100%;
+}
+
+.spec-row-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1f2937;
+  white-space: nowrap;
+}
+
+.spec-dashed {
+  flex: 1;
+  border-bottom: 1px dashed #d1d5db; /* Đường kẻ đứt */
+}
+
+/* Grid 3 cột giá trị */
+.spec-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* 3 cột thẳng hàng với phần trên */
+  /* gap: 12px; Nếu bên trên có gap thì mở dòng này */
+}
+
+.spec-cell {
+  padding-right: 10px;
+  font-size: 14px;
+  color: #4b5563;
+  word-wrap: break-word;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  /* Trên mobile chuyển thành flex column để tiết kiệm diện tích nếu cần, 
+     nhưng yêu cầu của bạn là giữ 3 cột nên ta giữ nguyên Grid */
+  .accordion-title {
+    font-size: 14px;
+  }
+  .spec-cell {
+    font-size: 12px;
+  }
+}

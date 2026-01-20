@@ -1,0 +1,81 @@
+/* --- Khung bao ngoài --- */
+.highlight-section {
+  border: 1px solid #d70018; /* Viền đỏ */
+  border-radius: 8px;
+  background-color: #fff;
+  margin-bottom: 20px;
+  overflow: hidden; /* Để bo góc header không bị lòi ra */
+}
+
+/* --- Header Đỏ --- */
+.highlight-header {
+  background-color: #d70018;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #fff;
+}
+
+.highlight-header svg {
+  width: 18px;
+  height: 18px;
+  fill: currentColor;
+}
+
+.highlight-header h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+/* --- Các dòng thông số --- */
+.spec-group {
+  padding: 15px 16px;
+  /* border-bottom: 1px solid #f3f4f6; */ /* Tuỳ chọn nếu muốn kẻ ngang giữa các dòng */
+}
+
+/* Label + Đường kẻ đứt */
+.spec-label-row {
+  display: flex;
+  align-items: baseline; /* Canh chân chữ */
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.spec-label {
+  font-weight: 600;
+  font-size: 14px;
+  color: #1f2937;
+  white-space: nowrap; /* Giữ tiêu đề trên 1 dòng */
+}
+
+.spec-dashed-line {
+  flex: 1; /* Chiếm hết phần còn lại */
+  border-bottom: 1px dashed #d1d5db; /* Đường kẻ đứt */
+}
+
+/* --- Lưới giá trị (Match với 3 cột sản phẩm) --- */
+.spec-values-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* 3 Cột đều nhau */
+  /* gap: 0; phải khớp với gap của phần list sản phẩm ở trên nếu có */
+}
+
+.spec-value-item {
+  padding-right: 10px; /* Khoảng cách an toàn */
+  font-size: 14px;
+  color: #4b5563;
+  word-wrap: break-word;
+}
+
+/* Mobile Tweak: Giữ nguyên 3 cột nhưng chữ nhỏ lại */
+@media (max-width: 480px) {
+  .spec-value-item {
+    font-size: 12px;
+  }
+  .highlight-header h3 {
+    font-size: 14px;
+  }
+}

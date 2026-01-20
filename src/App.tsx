@@ -6,17 +6,18 @@ import { AuthProvider } from "./provider/AuthProvider";
 // Import Provider và Component So sánh cũ
 import { CompareProvider } from "./provider/CompareProvider"; 
 import StickyCompareMain from "./components/StickyCompareBar/StickyCompareMain";
-
+import ScrollToTop from "./components/ScrollToTop";
 function App() {
   const routeElements = useRouteElements();
 
   return (
+    
     // 2. Bọc AuthProvider ở vòng ngoài cùng (để toàn bộ app đều biết user là ai)
     <AuthProvider>
       
       {/* 3. Sau đó đến CompareProvider */}
       <CompareProvider>
-        
+        <ScrollToTop />
         {/* Nội dung các trang (Router) */}
         <div>{routeElements}</div>
 

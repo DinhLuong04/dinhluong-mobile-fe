@@ -2,7 +2,7 @@ import React from 'react';
 
 const Breadcrumb = () => {
     return (
-        <ul className="pd-breadcrumb">
+        <ul className="breadcrumb">
             <li>Trang chủ</li>
             <li>/</li>
             <li>Điện thoại</li>

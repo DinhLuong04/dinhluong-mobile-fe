@@ -4,31 +4,32 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { useCompare } from '../../../contexts/CompareContext';
 // Import đúng tên interface là Product (theo file ProductCard đã sửa)
-import ProductCard, { type Product } from '../ProductCard/ProductCard';
+import type { Product } from '../../../types/Product.types';
 import './ProductHot.css';
+import ProductCard from '../ProductCard/ProductCard';
 
 // --- Dữ liệu mẫu (Đã chuẩn hóa theo Interface Product mới) ---
 const mockProducts: Product[] = [
     {
-        id: 1,
+        id: "iPhone 17 Pro Max",
         name: "iPhone 17 Pro Max 256GB",
         image: "https://cdn2.fptshop.com.vn/unsafe/360x0/filters:format(webp):quality(75)/iphone_17_pro_max_silver_1_7b25d56e26.png",
         price: 37690000,
         originalPrice: 37990000,
         discountNote: "Giảm 300.000đ",
         installmentText: "Trả góp 0%",
-        countDown: "Còn 02 ngày 09:49:11",
+       
         specs: [
             { icon: "https://cdn2.fptshop.com.vn/svg/screen_6_9_0bc42d6b8c.svg", label: "6.9\"", subLabel: "cực lớn" },
             { icon: "https://cdn2.fptshop.com.vn/svg/ic_chipset_5e2f01b828.svg", label: "A19 Pro", subLabel: "Mới" },
         ],
         colors: [{ hex: "#ededeb" }, { hex: "#fa8c4a" }, { hex: "#404555" }],
-        variants: [{ label: "256GB", active: true }, { label: "512GB" }, { label: "1TB" }],
+        variants: [{ label: "256GB", active: true }, { label: "512GB", active: false }, { label: "1TB" , active: false}],
         promotions: ["https://cdn2.fptshop.com.vn/promotion/unsafe/48x0/filters:format(webp):quality(75)/images-promotion/logo-zalopay-1746679378243.png"],
         promotionText: "Thanh toán qua ví Zalopay giảm đến 500,000đ"
     },
     {
-        id: 2,
+        id: "Honor Magic V3 5G 12GB 512GB",
         name: "Honor Magic V3 5G 12GB 512GB",
         image: "https://cdn2.fptshop.com.vn/unsafe/360x0/filters:format(webp):quality(75)/honor_magic_v3_xanh_2_2e82ae0429.png",
         price: 29990000,
@@ -45,7 +46,7 @@ const mockProducts: Product[] = [
         promotionText: "Giảm 800.000đ khi thanh toán qua thẻ Visa SCB."
     },
     {
-        id: 3,
+        id: "Xiaomi Poco M7 Pro 5G 8GB 256GB",
         name: "Xiaomi Poco M7 Pro 5G 8GB 256GB",
         image: "https://cdn2.fptshop.com.vn/unsafe/360x0/filters:format(webp):quality(75)/xiaomi_poco_m7_pro_xanh_5_20cec22a7c.jpg",
         price: 5490000,
@@ -61,7 +62,7 @@ const mockProducts: Product[] = [
         promotionText: "Giảm 5% tối đa 50,000đ cho Khách hàng thân thiết"
     },
     {
-        id: 4,
+        id: "OPPO Find N3 5G 16GB 512GB",
         name: "OPPO Find N3 5G 16GB 512GB",
         image: "https://cdn2.fptshop.com.vn/unsafe/360x0/filters:format(webp):quality(75)/2023_11_7_638349536349641250_oppo-find-n3-5g-den-7.jpg",
         price: 26990000,
@@ -77,7 +78,7 @@ const mockProducts: Product[] = [
         promotionText: "Chủ thẻ MB Bank MasterCard: Giảm 10%"
     },
     {
-        id: 5,
+        id: "Tecno Spark 40C 8GB 256GB",
         name: "Tecno Spark 40C 8GB 256GB",
         image: "https://cdn2.fptshop.com.vn/unsafe/360x0/filters:format(webp):quality(75)/tecno_spark_40c_xanh_5_c23af5300b.png",
         price: 3290000,
@@ -93,38 +94,38 @@ const mockProducts: Product[] = [
         promotionText: "Trả góp 0%"
     },
     {
-        id: 6,
+        id: "iPhone 17 Pro Max 111",
         name: "iPhone 17 Pro Max 256GB",
         image: "https://cdn2.fptshop.com.vn/unsafe/360x0/filters:format(webp):quality(75)/iphone_17_pro_max_silver_1_7b25d56e26.png",
         price: 37690000,
         originalPrice: 37990000,
         discountNote: "Giảm 300.000đ",
         installmentText: "Trả góp 0%",
-        countDown: "Còn 02 ngày 09:49:11",
+       
         specs: [
             { icon: "https://cdn2.fptshop.com.vn/svg/screen_6_9_0bc42d6b8c.svg", label: "6.9\"", subLabel: "cực lớn" },
             { icon: "https://cdn2.fptshop.com.vn/svg/ic_chipset_5e2f01b828.svg", label: "A19 Pro", subLabel: "Mới" },
         ],
         colors: [{ hex: "#ededeb" }, { hex: "#fa8c4a" }, { hex: "#404555" }],
-        variants: [{ label: "256GB", active: true }, { label: "512GB" }, { label: "1TB" }],
+        variants: [{ label: "256GB", active: true }, { label: "512GB", active: false }, { label: "1TB", active: false }],
         promotions: ["https://cdn2.fptshop.com.vn/promotion/unsafe/48x0/filters:format(webp):quality(75)/images-promotion/logo-zalopay-1746679378243.png"],
         promotionText: "Thanh toán qua ví Zalopay giảm đến 500,000đ"
     },
     {
-        id: 7,
+        id: "iPhone 17 Pro Max 256GBđaa",
         name: "iPhone 17 Pro Max 256GB",
         image: "https://cdn2.fptshop.com.vn/unsafe/360x0/filters:format(webp):quality(75)/iphone_17_pro_max_silver_1_7b25d56e26.png",
         price: 37690000,
         originalPrice: 37990000,
         discountNote: "Giảm 300.000đ",
         installmentText: "Trả góp 0%",
-        countDown: "Còn 02 ngày 09:49:11",
+       
         specs: [
             { icon: "https://cdn2.fptshop.com.vn/svg/screen_6_9_0bc42d6b8c.svg", label: "6.9\"", subLabel: "cực lớn" },
             { icon: "https://cdn2.fptshop.com.vn/svg/ic_chipset_5e2f01b828.svg", label: "A19 Pro", subLabel: "Mới" },
         ],
         colors: [{ hex: "#ededeb" }, { hex: "#fa8c4a" }, { hex: "#404555" }],
-        variants: [{ label: "256GB", active: true }, { label: "512GB" }, { label: "1TB" }],
+        variants: [{ label: "256GB", active: true }, { label: "512GB", active: false }, { label: "1TB", active: false }],
         promotions: ["https://cdn2.fptshop.com.vn/promotion/unsafe/48x0/filters:format(webp):quality(75)/images-promotion/logo-zalopay-1746679378243.png"],
         promotionText: "Thanh toán qua ví Zalopay giảm đến 500,000đ"
     },

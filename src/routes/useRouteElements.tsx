@@ -24,7 +24,7 @@ export default function useRouteElements() {
                     
                     // Cách 2: Đường dẫn động (Khuyên dùng)
                     // Ví dụ: domain.com/iphone-17-pro-max
-                    path: ':nameId', 
+                    path: ':slug', 
                     element: <ProductDetail />
                 },
                 {

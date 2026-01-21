@@ -1,6 +1,6 @@
 import httpClient from "../api/axiosClient";
 import { API_CONFIG } from '../config/api.config';
-import type { Product, PageResponse, ApiResponse } from "../types/Product.types";
+import type { Product,ProductDetail, PageResponse, ApiResponse } from "../types/Product.types";
 
 // Khớp với @RequestParam trong Controller
 export interface ProductParams {
@@ -31,6 +31,43 @@ export const productService = {
       return response.data;
     } catch (error) {
       console.error("Product Service Error:", error);
+      throw error;
+    }
+  },
+  getProductBySlug: async (slug: string): Promise<ProductDetail> => {
+    try {
+      // Gọi API: /products/{slug}
+      const response = await httpClient.get<ApiResponse<ProductDetail>>(
+        API_CONFIG.PRODUCTS.GET_DETAIL(slug)
+      );
+
+      if (response.code !== 200 || !response.data) {
+        throw new Error(response.message || 'Không tìm thấy sản phẩm');
+      }
+
+      return response.data;
+    } catch (error) {
+      console.error("Product Detail Error:", error);
+      throw error;
+    }
+  },
+
+ getProductsBySlugs: async (slugs: string[]): Promise<ProductDetail[]> => {
+    try {
+      if (!slugs || slugs.length === 0) return [];
+
+      const response = await httpClient.get<ApiResponse<ProductDetail[]>>(
+        API_CONFIG.PRODUCTS.GET_BATCH,
+        { slugs: slugs.join(',') } 
+      );
+
+      if (response.code !== 200) {
+        throw new Error(response.message || 'Lấy danh sách so sánh thất bại');
+      }
+
+      return response.data || [];
+    } catch (error) {
+      console.error("Batch Product Error:", error);
       throw error;
     }
   }

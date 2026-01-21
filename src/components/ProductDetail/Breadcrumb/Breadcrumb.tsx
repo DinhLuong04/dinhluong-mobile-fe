@@ -1,6 +1,8 @@
 import React from 'react';
-
-const Breadcrumb = () => {
+interface BreadcrumbProps{
+     productName?: string;
+}
+const Breadcrumb:React.FC<BreadcrumbProps> =({productName})=> {
     return (
         <ul className="breadcrumb">
             <li>Trang chủ</li>
@@ -9,7 +11,7 @@ const Breadcrumb = () => {
             <li>/</li>
             <li>Apple (iPhone)</li>
             <li>/</li>
-            <li>iPhone 17 Series</li>
+            <li>{productName}</li>
         </ul>
     );
 };

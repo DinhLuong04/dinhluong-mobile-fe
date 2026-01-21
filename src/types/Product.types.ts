@@ -52,3 +52,59 @@ export interface ApiResponse<T> {
   timestamp: string;
   data: T;
 }
+
+
+// ==========================================
+// --- CÁC TYPE MỚI (Dùng cho Detail) ---
+// ==========================================
+
+export interface HighlightSpec {
+  label: string;
+  value: string;
+  icon: string;
+}
+
+export interface ColorOption {
+  name: string;
+  hex: string;
+  img: string;
+}
+
+export interface VariantDetail {
+  sku: string;
+  rom: string;
+  colorName: string;
+  price: number;
+  stock: number;
+}
+
+export interface SpecItem {
+  label: string;
+  value: string;
+}
+
+export interface SpecGroup {
+  id: number | string;
+  title: string;
+  items: SpecItem[];
+}
+
+// Map đúng với JSON "data" của API Product Detail
+export interface ProductDetail {
+  id: number | string; // Có thể là Long hoặc String tùy backend trả về ID hay Slug ở field này
+  name: string;
+  slug: string;
+  price: number;
+  originalPrice: number;
+  discountNote?: string;
+  installmentText?: string;
+  description: string;
+  thumbnail :string;
+  productImages: string[];
+  highlightSpecs: HighlightSpec[];
+  storageOptions: string[];
+  colorOptions: ColorOption[];
+  variants: VariantDetail[];
+  specsData: SpecGroup[];
+  promotions: string[];
+}

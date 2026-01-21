@@ -8,6 +8,7 @@ export const API_CONFIG={
     },
     PRODUCTS :{
         GET_LIST: 'products', 
-        GET_DETAIL: (slug: string) => `products/${slug}`
+        GET_DETAIL: (slug: string) => `products/${slug}`,
+        GET_BATCH: 'products/batch'
     }
 } as const

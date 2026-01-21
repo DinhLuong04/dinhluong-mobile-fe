@@ -1,21 +1,36 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react'; // 1. Import useCallback
-import { specsData, specImages } from './specsData';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import "./ProductSpecsModal.css";
 
+// 1. Import Type
+import type { SpecGroup } from '../../../types/Product.types';
+
+// 2. Định nghĩa Props
 interface ProductSpecsModalProps {
     isOpen: boolean;
     onClose: () => void;
+    specsData: SpecGroup[];     // Dữ liệu thông số kỹ thuật
+    productImages?: string[];   // Dữ liệu ảnh sản phẩm (để hiển thị trang trí đầu modal)
 }
 
-const ProductSpecsModal: React.FC<ProductSpecsModalProps> = ({ isOpen, onClose }) => {
-    const [activeTab, setActiveTab] = useState(specsData[0].id);
+const ProductSpecsModal: React.FC<ProductSpecsModalProps> = ({ 
+    isOpen, 
+    onClose, 
+    specsData = [],
+    productImages = []
+}) => {
+    // 3. Khởi tạo activeTab an toàn (nếu chưa có data thì để rỗng)
+   
+    
     const bodyRef = useRef<HTMLDivElement>(null);
     const navRef = useRef<HTMLDivElement>(null);
     const isClickingRef = useRef(false);
 
-    // 2. KHAI BÁO HÀM NÀY TRƯỚC useEffect VÀ DÙNG useCallback
-    // Hàm cuộn thanh menu ngang để nút active luôn hiển thị
-    const scrollNavToActive = useCallback((id: string) => {
+   const [activeTab, setActiveTab] = useState<string | number>(
+        specsData.length > 0 ? specsData[0].id : ""
+    );
+
+    // Hàm cuộn thanh menu ngang
+    const scrollNavToActive = useCallback((id: string | number) => {
         if (!navRef.current) return;
         
         const activeButton = navRef.current.querySelector(`[data-id="${id}"]`) as HTMLElement;
@@ -25,7 +40,6 @@ const ProductSpecsModal: React.FC<ProductSpecsModalProps> = ({ isOpen, onClose }
             const itemLeft = activeButton.offsetLeft;
             const itemWidth = activeButton.offsetWidth;
 
-            // Tính toán vị trí để nút nằm giữa
             const scrollLeft = itemLeft - (navWidth / 2) + (itemWidth / 2);
             
             navRef.current.scrollTo({
@@ -33,13 +47,13 @@ const ProductSpecsModal: React.FC<ProductSpecsModalProps> = ({ isOpen, onClose }
                 behavior: 'smooth'
             });
         }
-    }, []); // Dependency array rỗng vì nó không phụ thuộc state nào thay đổi liên tục
+    }, []);
 
     // Hàm cuộn đến section khi click menu
-    const scrollToSection = (id: string) => {
+    const scrollToSection = (id: string | number) => {
         isClickingRef.current = true;
         setActiveTab(id);
-        scrollNavToActive(id); // Gọi hàm cuộn menu ngay khi click
+        scrollNavToActive(id);
 
         const element = document.getElementById(`spec-group-${id}`);
         const bodyElement = bodyRef.current;
@@ -58,7 +72,7 @@ const ProductSpecsModal: React.FC<ProductSpecsModalProps> = ({ isOpen, onClose }
         }
     };
 
-    // 3. useEffect GIỜ ĐÃ CÓ THỂ GỌI scrollNavToActive VÌ NÓ ĐƯỢC KHAI BÁO BÊN TRÊN
+    // Scroll Spy: Tự động active tab khi cuộn nội dung
     useEffect(() => {
         const handleScroll = () => {
             if (isClickingRef.current || !bodyRef.current) return;
@@ -76,7 +90,7 @@ const ProductSpecsModal: React.FC<ProductSpecsModalProps> = ({ isOpen, onClose }
                     if (bodyScrollTop >= elementTop - 100 && bodyScrollTop < elementBottom) {
                         if (activeTab !== group.id) {
                             setActiveTab(group.id);
-                            scrollNavToActive(group.id); // <--- Hết lỗi tại đây
+                            scrollNavToActive(group.id);
                         }
                         break;
                     }
@@ -94,7 +108,7 @@ const ProductSpecsModal: React.FC<ProductSpecsModalProps> = ({ isOpen, onClose }
                 bodyElement.removeEventListener('scroll', handleScroll);
             }
         };
-    }, [activeTab, isOpen, scrollNavToActive]); // Thêm scrollNavToActive vào dependency
+    }, [activeTab, isOpen, scrollNavToActive, specsData]); // Thêm specsData vào dependency
 
     if (!isOpen) return null;
 
@@ -104,7 +118,7 @@ const ProductSpecsModal: React.FC<ProductSpecsModalProps> = ({ isOpen, onClose }
 
             <div className={`specs-drawer ${isOpen ? 'open' : ''}`}>
                 <div className="specs-header">
-                    <h3 className="specs-title">Thông số nổi bật</h3>
+                    <h3 className="specs-title">Thông số kỹ thuật</h3>
                     <button className="specs-close-btn" onClick={onClose}>
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                             <line x1="18" y1="6" x2="6" y2="18"></line>
@@ -114,10 +128,14 @@ const ProductSpecsModal: React.FC<ProductSpecsModalProps> = ({ isOpen, onClose }
                 </div>
 
                 <div className="specs-body" ref={bodyRef}>
-                    <div className="specs-images">
-                        <img src={specImages[0]} alt="Info 1" className="specs-main-img" />
-                        <img src={specImages[1]} alt="Info 2" className="specs-main-img" />
-                    </div>
+                    {/* Hiển thị 2 ảnh đầu tiên nếu có */}
+                    {productImages.length > 0 && (
+                        <div className="specs-images">
+                            {productImages.slice(0, 2).map((img, idx) => (
+                                <img key={idx} src={img} alt={`Product spec ${idx}`} className="specs-main-img" />
+                            ))}
+                        </div>
+                    )}
 
                     <div className="specs-nav" ref={navRef}>
                         {specsData.map((group) => (
@@ -139,7 +157,10 @@ const ProductSpecsModal: React.FC<ProductSpecsModalProps> = ({ isOpen, onClose }
                                 {group.items.map((item, idx) => (
                                     <div key={idx} className="specs-row">
                                         <div className="specs-label">{item.label}</div>
-                                        <div className="specs-value">{item.value}</div>
+                                        {/* Thêm style pre-line để nhận ký tự \n xuống dòng */}
+                                        <div className="specs-value" style={{ whiteSpace: 'pre-line' }}>
+                                            {item.value}
+                                        </div>
                                     </div>
                                 ))}
                             </div>

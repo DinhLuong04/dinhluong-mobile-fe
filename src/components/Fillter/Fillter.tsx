@@ -54,7 +54,6 @@ const CONNECT_TAGS = ['NFC', 'Bluetooth', 'Hồng ngoại'];
 const BATTERY_TAGS = ['Tất cả', 'Dưới 3000 mAh', 'Pin từ 3000 - 4000 mAh', 'Pin từ 4000 - 5500 mAh', 'Pin trâu: trên 5500 mAh'];
 const NETWORK_TAGS = ['5G', '4G'];
 const RAM_TAGS = ['3 GB', '4 GB', '6 GB', '8 GB', '12 GB', '16 GB'];
-const MEMORYCARD_TAGS = ['Tất cả', 'MicroSD', 'Không'];
 const SCREEN_TAGS = ['Tất cả', 'Màn hình nhỏ', 'Từ 5 - 6.5 inch', 'Từ 6.5 - 6.8 inch', 'Trên 6.8 inch'];
 const SCREEN_RESOLUTION_TAGS = ['Retina (iPhone)', 'HD+', 'Full HD', 'Full HD+', '2K', '4K'];
 const REFRESH_RATE_TAGS = ['Trên 144 Hz', '120 Hz', '90 Hz', '60 Hz'];
@@ -156,7 +155,6 @@ const AdvanceFilter: React.FC<AdvanceFilterProps> = ({ isOpen, onClose }) => {
   const [selectedBattery, setSelectedBattery] = useState<string[]>(['Tất cả']);
   const [selectedNetwork, setSelectedNetwork] = useState<string[]>([]);
   const [selectedRAM, setSelectedRAM] = useState<string[]>([]);
-  const [selectedMemoryCard, setSelectedMemoryCard] = useState<string[]>(['Tất cả']);
   const [selectedScreen, setSelectedScreen] = useState<string[]>(['Tất cả']);
   const [selectedScreenRes, setSelectedScreenRes] = useState<string[]>([]);
   const [selectedRefreshRate, setSelectedRefreshRate] = useState<string[]>([]);
@@ -322,10 +320,6 @@ const AdvanceFilter: React.FC<AdvanceFilterProps> = ({ isOpen, onClose }) => {
             <TagFilterGroup items={RAM_TAGS} selectedItems={selectedRAM} onToggle={(item) => toggleSelection(item, selectedRAM, setSelectedRAM)} />
         </AccordionSection>
 
-        {/* 9. Thẻ nhớ */}
-        <AccordionSection title="Thẻ nhớ" isOpen={openSections.memoryCard} onToggle={() => toggleSection('memoryCard')}>
-            <CheckboxFilterGroup items={MEMORYCARD_TAGS} selectedItems={selectedMemoryCard} onToggle={(item) => toggleRadioLikeSelection(item, selectedMemoryCard, setSelectedMemoryCard)} />
-        </AccordionSection>
 
         {/* 10. Màn hình */}
         <AccordionSection title="Màn hình" isOpen={openSections.screen} onToggle={() => toggleSection('screen')}>

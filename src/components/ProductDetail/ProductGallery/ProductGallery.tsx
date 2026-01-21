@@ -1,20 +1,42 @@
 import React, { useState } from 'react';
-import { productImages} from '../../../pages/ProductDetail/data';
 import "./ProductGallery.css";
 import ProductSpecs from '../ProductSpecs/ProductSpecs';
-const ProductGallery = () => {
-    const [mainImage, setMainImage] = useState(productImages[0]);
+
+// 1. Import các Type cần thiết
+import type { HighlightSpec, SpecGroup } from '../../../types/Product.types';
+
+// 2. Định nghĩa Props
+interface ProductGalleryProps {
+    images?: string[];              // List ảnh slider
+    highlightSpecs?: HighlightSpec[]; // Thông số nổi bật (truyền xuống ProductSpecs)
+    specsData?: SpecGroup[];          // Thông số chi tiết (truyền xuống ProductSpecs -> Modal)
+}
+
+const ProductGallery: React.FC<ProductGalleryProps> = ({ 
+    images = [], 
+    highlightSpecs = [], 
+    specsData = [] 
+}) => {
+    // State lưu ảnh đang hiển thị to
+    const [mainImage, setMainImage] = useState<string>(images.length > 0 ? images[0] : "");
+
+   
+   
     return (
         <div className="pd-left-col">
             {/* Ảnh chính + Thumbnails */}
             <div className="pd-gallery-container">
                 <div className="pd-main-image">
-                    <img src={mainImage} alt="Sản phẩm chính" />
+                    {/* Hiển thị ảnh hoặc Placeholder nếu chưa có ảnh */}
+                    <img 
+                        src={mainImage || "https://placehold.co/600x600?text=Loading..."} 
+                        alt="Sản phẩm chính" 
+                    />
                 </div>
                 
                 {/* Thumbnails */}
                 <div className="pd-thumbnails">
-                    {productImages.map((img, index) => (
+                    {images.map((img, index) => (
                         <div 
                             key={index} 
                             className={`pd-thumb-item ${mainImage === img ? 'active' : ''}`}
@@ -25,8 +47,14 @@ const ProductGallery = () => {
                     ))}
                 </div>
             </div>
-       <div className="pd-specs-desktop">
-                <ProductSpecs />
+
+            {/* Thông số kỹ thuật (Desktop View) */}
+            <div className="pd-specs-desktop">
+                {/* 4. Truyền tiếp data xuống component con */}
+                <ProductSpecs 
+                    highlightSpecs={highlightSpecs} 
+                    specsData={specsData} 
+                />
             </div>
         </div>
     );

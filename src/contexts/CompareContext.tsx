@@ -1,6 +1,6 @@
 // src/contexts/CompareContext.ts
 import { createContext, useContext } from 'react';
-import type { Product } from '../components/Products/ProductCard/ProductCard'; // Đảm bảo đường dẫn đúng
+import type { Product } from '../types/Product.types';
 
 // 1. Định nghĩa Interface cho Context
 export interface CompareContextType {

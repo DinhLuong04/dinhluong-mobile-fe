@@ -6,6 +6,7 @@ import ProductHot from '../../components/Products/ProductHot/ProductHot';
 import Conclusion from '../../components/Conclusion/Conclusion';
 import ProductSection from "../../components/Products/ProductSection/ProductSection"
 import PolicySection from "../../components/PolicySection/PolicySection"
+import StickyCompareMain from '../../components/StickyCompareBar/StickyCompareMain';
 export default function HomePage() {
     return (
         <div className="homepage-container">
@@ -15,6 +16,7 @@ export default function HomePage() {
             <ProductSection/>
             <Conclusion />
             <PolicySection/>
+            <StickyCompareMain />
         </div>
     );
 }

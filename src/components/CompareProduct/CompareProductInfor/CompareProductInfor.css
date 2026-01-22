@@ -92,7 +92,7 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between; /* Đẩy nút Mua ngay xuống đáy nếu cần */
-  
+  min-height: 130px;
   /* [FIX QUAN TRỌNG 3]: flex: 1 giúp block này chiếm hết phần ngang còn lại */
   flex: 1; 
   min-width: 0; /* Fix lỗi text tràn trong Flexbox */
@@ -149,7 +149,7 @@
   padding: 8px 16px;
   font-size: 14px;
   font-weight: 600;
-  width: 100%;
+  width: 140px;
   cursor: pointer;
   transition: background-color 0.2s;
   margin-top: auto; /* Đẩy nút xuống dưới cùng nếu khoảng trống còn dư */
@@ -222,7 +222,6 @@
   border-right: 1px solid #e5e7eb;
   background-color: #fff;
   height: 100%; /* Quan trọng để cao bằng các ô bên cạnh */
-  min-height: 200px; /* Chiều cao tối thiểu */
   cursor: pointer;
   transition: background 0.2s;
 }
@@ -331,6 +330,14 @@
 .compare-section.is-stuck .compare-heading {
   display: none;
 }
+
+.compare-section.is-stuck .product-info {
+  /* [FIX QUAN TRỌNG 2]: Flex column để dàn nội dung dọc */
+  
+  min-height: 70px;
+
+}
+
 
 .compare-section.is-stuck .compare-list .product-item {
     padding: 5px;

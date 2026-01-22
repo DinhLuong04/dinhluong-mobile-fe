@@ -1,4 +1,3 @@
-// CompareProduct.tsx
 import React, { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { productService } from "../../service/productService";
@@ -13,25 +12,23 @@ import Breadcrumb from "../../components/CompareProduct/Breadcrumb";
 const CompareProduct = () => {
     const [searchParams] = useSearchParams();
     const [products, setProducts] = useState<ProductDetail[]>([]);
-    const [loading, setLoading] = useState(true);
+    
+    // 1. State quản lý việc chỉ xem điểm khác biệt
+    const [showDiff, setShowDiff] = useState(false); 
 
     useEffect(() => {
         const fetchData = async () => {
-            try {
-                // Lấy slugs từ URL (ví dụ: ?slugs=iphone-13,iphone-14)
-                const slugsParam = searchParams.get('slugs');
-                if (slugsParam) {
+            const slugsParam = searchParams.get('slugs');
+            if (slugsParam) {
+                try {
                     const slugs = slugsParam.split(',');
                     const data = await productService.getProductsBySlugs(slugs);
                     setProducts(data);
+                } catch (error) {
+                    console.error(error);
                 }
-            } catch (error) {
-                console.error("Lỗi tải dữ liệu so sánh:", error);
-            } finally {
-                setLoading(false);
             }
         };
-
         fetchData();
     }, [searchParams]);
 
@@ -39,19 +36,29 @@ const CompareProduct = () => {
         setProducts(prev => prev.filter(p => p.id !== id));
     };
 
-    if (loading) return <div>Đang tải so sánh...</div>;
-
     return (
         <div className="compare-product-container">
             <div className="bc"><Breadcrumb/></div>
             
-            {/* Truyền products vào các component con */}
-            <CompareProductInfor products={products} onRemove={handleRemoveProduct} />
+            {/* 2. Truyền state xuống CompareProductInfor để điều khiển checkbox */}
+            <CompareProductInfor 
+                products={products} 
+                onRemove={handleRemoveProduct}
+                showDiff={showDiff}
+                onShowDiffChange={setShowDiff}
+            />
             
-            <HighlightSpecs products={products} />
+            {/* 3. Truyền state xuống các bảng thông số để lọc dữ liệu */}
+            <HighlightSpecs 
+                products={products} 
+                showDiff={showDiff} 
+            />
             
             <div className="container all-specifics-wrapper">
-                <AllSpecifics products={products} />
+                <AllSpecifics 
+                    products={products} 
+                    showDiff={showDiff} 
+                />
             </div>
             
             <PolicySection />

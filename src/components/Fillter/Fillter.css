@@ -105,9 +105,7 @@
     transition: background 0.2s;
 }
 
-.accordion-header:hover {
-    background-color: #fafafa;
-}
+
 
 .accordion-title {
     font-weight: 600;

@@ -1,43 +1,51 @@
-// HighlightSpecs.tsx
 import React, { useMemo } from 'react';
 import type { ProductDetail } from '../../../types/Product.types';
 import './HighlightSpecs.css';
 
 interface Props {
   products: ProductDetail[];
+  showDiff: boolean; // Nhận prop mới
 }
 
-const HighlightSpecs: React.FC<Props> = ({ products }) => {
+const HighlightSpecs: React.FC<Props> = ({ products, showDiff }) => {
   
-  // Logic Transform Data:
-  // Gom tất cả các label thông số nổi bật lại thành 1 danh sách duy nhất (Unique)
   const specData = useMemo(() => {
-      // 1. Lấy tất cả label có thể có
       const allLabels = new Set<string>();
       products.forEach(p => {
           p.highlightSpecs?.forEach(spec => allLabels.add(spec.label));
       });
 
-      // 2. Với mỗi label, tìm giá trị tương ứng của từng sản phẩm
-      return Array.from(allLabels).map(label => {
+      let result = Array.from(allLabels).map(label => {
           const values = products.map(p => {
               const found = p.highlightSpecs?.find(s => s.label === label);
               return found ? found.value : "—";
           });
           return { label, values };
       });
-  }, [products]);
+
+      // --- LOGIC LỌC ---
+      if (showDiff) {
+          result = result.filter(item => {
+              // Lấy giá trị đầu tiên làm chuẩn
+              const firstVal = item.values[0];
+              // Giữ lại dòng nếu CÓ ÍT NHẤT 1 giá trị khác với giá trị đầu tiên
+              return item.values.some(val => val !== firstVal);
+          });
+      }
+
+      return result;
+  }, [products, showDiff]);
 
   if (products.length === 0) return null;
+  // Nếu bật lọc mà không có gì khác nhau thì cũng ẩn luôn section này cho gọn (tuỳ chọn)
+  if (showDiff && specData.length === 0) return null; 
 
   return (
-    <div className='container'>
+    <div className='container' id="highlight-specs"> {/* QUAN TRỌNG: Thêm ID để scroll tới */}
       <div className="highlight-section">
         <div className="highlight-header">
-           {/* SVG Icon Star */}
            <h3>Thông số nổi bật</h3>
         </div>
-
         <div className="highlight-body">
           {specData.map((spec, index) => (
             <div key={index} className="spec-group">
@@ -46,14 +54,10 @@ const HighlightSpecs: React.FC<Props> = ({ products }) => {
                 <div className="spec-dashed-line"></div>
               </div>
               <div className="spec-values-grid">
-                {/* Render giá trị cho các sản phẩm hiện có */}
                 {products.map((_, idx) => (
-                    <div key={idx} className="spec-value-item">
-                        {spec.values[idx]}
-                    </div>
+                    <div key={idx} className="spec-value-item">{spec.values[idx]}</div>
                 ))}
-                {/* Render ô trống cho đủ 3 cột nếu thiếu sản phẩm */}
-                {[...Array(3 - products.length)].map((_, idx) => (
+                {[...Array(Math.max(0, 3 - products.length))].map((_, idx) => (
                     <div key={`empty-${idx}`} className="spec-value-item"></div>
                 ))}
               </div>
@@ -64,5 +68,4 @@ const HighlightSpecs: React.FC<Props> = ({ products }) => {
     </div>
   );
 };
-
 export default HighlightSpecs;

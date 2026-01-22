@@ -5,7 +5,7 @@ import { AuthProvider } from "./provider/AuthProvider";
 
 // Import Provider và Component So sánh cũ
 import { CompareProvider } from "./provider/CompareProvider"; 
-import StickyCompareMain from "./components/StickyCompareBar/StickyCompareMain";
+
 import ScrollToTop from "./components/ScrollToTop";
 function App() {
   const routeElements = useRouteElements();
@@ -22,7 +22,7 @@ function App() {
         <div>{routeElements}</div>
 
         {/* Thanh so sánh đè lên mọi trang */}
-        <StickyCompareMain />
+       
         
       </CompareProvider>
 

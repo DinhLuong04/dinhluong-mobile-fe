@@ -5,7 +5,7 @@
 
 .accordion-item {
   background-color: #fff;
-  border-radius: 8px; /* Bo góc trên mobile */
+  border-radius: 15px; /* Bo góc trên mobile */
   margin-bottom: 8px; /* Khoảng cách giữa các khối */
   overflow: hidden;
 }
@@ -16,7 +16,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 12px 16px;
-  background-color: #f3f4f6; /* bg-bgGrayDefault: màu xám nhạt */
+  background-color: #fff; /* bg-bgGrayDefault: màu xám nhạt */
   cursor: pointer;
   transition: background-color 0.2s;
 }
@@ -26,7 +26,7 @@
   .accordion-item {
     margin-bottom: 24px;
     border: none;
-    border-radius: 0;
+    
   }
   
   .accordion-header {

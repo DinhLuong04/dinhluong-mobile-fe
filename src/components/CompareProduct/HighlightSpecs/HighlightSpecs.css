@@ -1,5 +1,6 @@
 /* --- Khung bao ngoài --- */
 .highlight-section {
+  margin-top: 20px;
   border: 1px solid #d70018; /* Viền đỏ */
   border-radius: 8px;
   background-color: #fff;

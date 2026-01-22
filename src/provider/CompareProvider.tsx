@@ -1,11 +1,11 @@
 // src/contexts/CompareProvider.tsx
 import React, { useState, useEffect, type ReactNode } from 'react';
-import type { Product } from '../components/Products/ProductCard/ProductCard'; // Đảm bảo đường dẫn đúng
+import type { Product } from '../types/Product.types'; // Đảm bảo đường dẫn đúng
 import { CompareContext } from '../contexts/CompareContext'; // Import Context từ file vừa tạo ở Bước 1
 
 export const CompareProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   
-  const [isVisible, setIsVisible] = useState(true);
+  const [isVisible, setIsVisible] = useState(false);
 
   // Lazy initialization: Chỉ chạy 1 lần khi mount để lấy dữ liệu từ localStorage
   const [compareList, setCompareList] = useState<Product[]>(() => {

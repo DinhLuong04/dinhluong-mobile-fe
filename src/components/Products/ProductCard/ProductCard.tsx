@@ -34,7 +34,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product ,onCompare }) => {
     
     // QUAN TRỌNG: Dùng luôn product.id vì nó đã là slug (VD: xiaomi-redmi-note-15)
     // Đường dẫn sẽ là: domain.com/xiaomi-redmi-note-15
-    navigate(`/${product.id}`, { state: { product } }); 
+    navigate(`Product/${product.id}`, { state: { product } }); 
   };
 
 

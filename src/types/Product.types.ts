@@ -108,3 +108,48 @@ export interface ProductDetail {
   specsData: SpecGroup[];
   promotions: string[];
 }
+
+
+// Định nghĩa item phụ (Sim, Bảo hành, Quà tặng...)
+export interface CartComboItem {
+  id: number | string;
+  name: string;
+  price: number;
+  originalPrice?: number;
+  image: string;
+  checked: boolean; // Để user tích chọn mua kèm hay không
+  type?: 'gift' | 'service' | 'sim'; // (Tùy chọn) Để phân loại icon
+}
+
+// Định nghĩa Item chính trong giỏ hàng
+export interface CartItem {
+  // --- Thông tin định danh ---
+  id: number | string;      // ID sản phẩm
+  sku: string;              // Quan trọng: Mã SKU để phân biệt phiên bản (VD: IP15-256-BLUE)
+  
+  // --- Thông tin hiển thị ---
+  name: string;
+  slug: string;             // Để link quay lại trang chi tiết
+  image: string;            // Ảnh đại diện (theo màu đã chọn)
+  
+  // --- Thông tin giá & Biến thể ---
+  price: number;
+  originalPrice?: number;
+  colorName: string;        // Màu khách đã chọn (VD: "Titan Sa Mạc")
+  rom?: string;             // Dung lượng (nếu cần hiển thị)
+  
+  // --- Trạng thái (UI State) ---
+  quantity: number;         // Số lượng khách mua
+  checked: boolean;         // Checkbox chọn thanh toán
+  
+  // --- Dữ liệu lồng nhau ---
+  combos?: CartComboItem[]; // Danh sách ưu đãi mua kèm
+}
+
+// Định nghĩa tổng quan cho đơn hàng (Dùng cho component OrderSummary)
+export interface CartSummary {
+  totalPrice: number;       // Tổng tiền hàng
+  totalDiscount: number;    // Tổng giảm giá
+  finalPrice: number;       // Khách cần trả
+  totalItems: number;       // Tổng số lượng sản phẩm
+}

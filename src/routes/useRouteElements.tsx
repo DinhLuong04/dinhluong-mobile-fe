@@ -6,6 +6,8 @@ import MainLayout from "../layouts/MainLayout/MainLayout";
 import HomePage from "../pages/HomePage/HomePage";
 import ProductDetail from "../pages/ProductDetail/ProductDetail";
 import CompareProduct from "../pages/CompareProduct/CompareProduct";
+
+import CartPage from "../pages/Cart/CartPage";
 export default function useRouteElements() {
     const routeElements = useRoutes([
         // --- CÁC ROUTE DÙNG HEADER CHÍNH ---
@@ -24,12 +26,16 @@ export default function useRouteElements() {
                     
                     // Cách 2: Đường dẫn động (Khuyên dùng)
                     // Ví dụ: domain.com/iphone-17-pro-max
-                    path: ':slug', 
+                    path: ':Product/:slug', 
                     element: <ProductDetail />
                 },
                 {
                     path:"compare",
                     element:<CompareProduct/>
+                },
+                {
+                    path:"Cart",
+                    element:<CartPage/>
                 }
             ]
         },

@@ -77,20 +77,20 @@
 }
 
 /* ... (Rest of product list and buttons CSS remains the same) ... */
-.compare-inner {
+.compare-bar .compare-inner {
   display: flex;
   align-items: center;
   gap: 20px;
 }
 
-.product-list {
+.compare-bar .product-list {
   flex: 1;
   display: flex;
   align-items: center;
   gap: 15px;
 }
 
-.product-list .product-item {
+.compare-bar .product-list .product-item {
   background-color: white;
   border-radius: 8px;
   padding: 8px;
@@ -103,14 +103,14 @@
   min-width: 0;
 }
 
-.product-img {
+.compare-bar .product-img {
   width: 40px;
   height: 40px;
   object-fit: contain;
   flex-shrink: 0;
 }
 
-.product-name {
+.compare-bar .product-name {
   font-size: 13px;
   font-weight: 500;
   color: #333;
@@ -121,9 +121,9 @@
   overflow: hidden;
 }
 
-.btn-remove {
+.compare-bar .btn-remove {
   position: absolute;
-  top: 4px;
+  top: 0px;
   right: 4px;
   background: none;
   border: none;
@@ -132,9 +132,9 @@
   font-size: 14px;
   padding: 0 4px;
 }
-.btn-remove:hover { color: #cb1c22; }
+.compare-bar .btn-remove:hover { color: #cb1c22; }
 
-.empty-slot {
+.compare-bar .empty-slot {
   border: 1px dashed rgba(255, 255, 255, 0.3);
   border-radius: 8px;
   display: flex;
@@ -147,16 +147,16 @@
   flex: 1;
   transition: background 0.2s;
 }
-.empty-slot:hover { background-color: rgba(255, 255, 255, 0.1); }
+.compare-bar .empty-slot:hover { background-color: rgba(255, 255, 255, 0.1); }
 
-.empty-text { font-size: 12px; margin-top: 4px; }
+.compare-bar .empty-text { font-size: 12px; margin-top: 4px; }
 
-.action-buttons {
+.compare-bar .action-buttons {
   display: flex;
   gap: 10px;
 }
 
-.btn {
+.compare-bar .btn {
   height: 40px;
   padding: 0 20px;
   border-radius: 4px;
@@ -178,5 +178,5 @@
   .product-list { margin-bottom: 10px; }
   .action-buttons { justify-content: space-between; }
   .btn { flex: 1; }
-  .product-list .product-item:nth-child(3), .empty-slot:nth-child(3) { display: none; }
+ 
 }

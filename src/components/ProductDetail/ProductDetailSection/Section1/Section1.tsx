@@ -16,7 +16,7 @@ import type { ProductDetail } from "../../../../types/Product.types";
 const Section1: React.FC = () => {
    
     const { slug } = useParams<{ slug: string }>();
-    
+    console.log(slug);
     const [showStickyBar, setShowStickyBar] = useState<boolean>(false);
     
     // 3. Định nghĩa kiểu cho State: Có thể là ProductDetail HOẶC null

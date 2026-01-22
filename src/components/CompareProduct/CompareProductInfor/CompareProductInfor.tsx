@@ -89,13 +89,13 @@ const CompareProductInfor: React.FC<Props> = ({ products, onRemove, showDiff, on
                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
                 </button>
                 <div className="product-thumb">
-                 <Link to={`/${product.slug}`}><img src={(product.productImages?.length > 0) ? product.productImages[0] : (product.thumbnail || "")} alt={product.name} /></Link> 
+                 <Link to={`/Product/${product.slug}`}><img src={(product.productImages?.length > 0) ? product.productImages[0] : (product.thumbnail || "")} alt={product.name} /></Link> 
                 </div>
                 <div className="product-info">
                    <div className="price-box"><span className="price-final">{formatCurrency(product.price)}</span></div>
                    <div className="price-box"><span className="price-original">{formatCurrency(product.originalPrice)}</span></div>
-                   <Link to={`/${product.slug}`}><div className="product-name">{product.name}</div></Link>
-                   <Link to={`/${product.slug}`}><button className="btn-buy">Mua ngay</button></Link>
+                   <Link to={`/Product/${product.slug}`}><div className="product-name">{product.name}</div></Link>
+                   <Link to={`/Product/${product.slug}`}><button className="btn-buy">Mua ngay</button></Link>
                 </div>
               </div>
             ))}

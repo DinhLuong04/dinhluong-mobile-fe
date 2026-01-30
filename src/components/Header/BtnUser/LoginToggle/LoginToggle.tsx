@@ -13,14 +13,14 @@ const LoginToggle: React.FC<LoginToggleProps> = ({ onClose }) => {
         <div className="login-toggle-container" onClick={(e) => e.stopPropagation()}>
             
             {/* Link Thông tin cá nhân */}
-            <a href="/profile" className="menu-item-link">
+            <a href="/Member" className="menu-item-link">
                 <div className="menu-item-left">
                     <img 
                         src="https://cdn2.cellphones.com.vn/x/media/wysiwyg/smember230625.png" 
                         alt="Smember"
                         className="menu-item-icon"
                     />
-                    <span className="menu-item-text">Thông tin cá nhân</span>
+                    <span className="menu-item-text">Truy cập member</span>
                 </div>
                 
                 <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 512 512" className="menu-item-arrow" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">

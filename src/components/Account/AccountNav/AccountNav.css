@@ -1,0 +1,98 @@
+/* Container bên ngoài */
+.account-nav {
+  width: 100%;
+  box-sizing: border-box;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  color: #333;
+}
+
+/* Card nền trắng */
+.account-nav__card {
+  background-color: #fff;
+  border-radius: 16px;
+  padding: 12px;
+  /* box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05); (Tùy chọn nếu muốn đổ bóng nhẹ) */
+}
+
+/* Layout danh sách items */
+.account-nav__list {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr); /* Mobile: Chia 4 cột */
+  gap: 16px 8px; /* Khoảng cách hàng/cột */
+}
+
+/* Layout từng item (Link) */
+.account-nav__item {
+  display: flex;
+  flex-direction: column; /* Mobile: Icon trên, chữ dưới */
+  align-items: center;
+  text-decoration: none;
+  color: inherit;
+  transition: opacity 0.2s;
+  cursor: pointer;
+}
+
+.account-nav__item:hover {
+  opacity: 0.8;
+}
+
+/* Hộp chứa Icon */
+.account-nav__icon-box {
+  width: 40px;
+  height: 40px;
+  background-color: #f9fafb; /* neutral-50 */
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 6px; /* Khoảng cách với chữ trên mobile */
+}
+
+.account-nav__icon-img {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+}
+
+/* Chữ (Label) */
+.account-nav__label {
+  font-size: 11px;
+  font-weight: 500;
+  text-align: center;
+  line-height: 1.2;
+}
+
+/* --- RESPONSIVE: TABLET & DESKTOP --- */
+@media (min-width: 768px) {
+  .account-nav__card {
+    padding: 24px 32px; /* Padding rộng hơn */
+  }
+
+  .account-nav__list {
+    display: flex; /* Chuyển sang Flexbox */
+    flex-wrap: wrap;
+    gap: 32px; /* Khoảng cách lớn giữa các items */
+    justify-content: flex-start;
+  }
+
+  .account-nav__item {
+    flex-direction: row; /* Desktop: Icon trái, chữ phải */
+    gap: 8px;
+  }
+
+  .account-nav__icon-box {
+    margin-bottom: 0;
+  }
+
+  .account-nav__label {
+    font-size: 16px; /* Chữ lớn hơn */
+    text-align: left;
+  }
+}
+
+/* Tinh chỉnh khoảng cách cho màn hình rất lớn (Desktop) nếu cần */
+@media (min-width: 1024px) {
+  .account-nav__list {
+    gap: 48px; 
+  }
+}

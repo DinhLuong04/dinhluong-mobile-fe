@@ -8,6 +8,13 @@ import ProductDetail from "../pages/ProductDetail/ProductDetail";
 import CompareProduct from "../pages/CompareProduct/CompareProduct";
 
 import CartPage from "../pages/Cart/CartPage";
+
+
+import Overview from "../components/Account/Overview/Overview";
+import OrderHistory from "../components/Account/OrderHistory/OrderHistory";
+import Profile from "../components/Account/Profile/Profile";
+import Member from "../pages/Account/Member";
+import VoucherCenter from "../components/Account/VoucherCenter/VoucherCenter";
 export default function useRouteElements() {
     const routeElements = useRoutes([
         // --- CÁC ROUTE DÙNG HEADER CHÍNH ---
@@ -36,6 +43,33 @@ export default function useRouteElements() {
                 {
                     path:"Cart",
                     element:<CartPage/>
+                },
+               {
+                    path: "member", // Đường dẫn gốc: /member
+                    element: <Member />, // Load khung sườn Sidebar trước
+                    children: [
+                        {
+                            index: true, // Khi vào đúng link /member
+                            element: <Overview /> // -> Load nội dung Dashboard vào chỗ <Outlet/> của AccountLayout
+                        },
+                        // Sau này bạn thêm các trang con khác vào đây dễ dàng:
+                        {
+                            path: "order", // Link: /member/order
+                            element: <OrderHistory/>
+                        },
+                        {
+                            path: "promotion", // Link: /member/promotion
+                            element: <div>Trang ưu đãi</div> 
+                        },
+                        {
+                            path:"profile",
+                            element:<Profile/>
+                        },
+                        {
+                            path:"voucher",
+                            element:<VoucherCenter/>
+                        }
+                    ]
                 }
             ]
         },

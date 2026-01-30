@@ -1,0 +1,244 @@
+/* Container chính */
+.account-header {
+  width: 100%;
+  box-sizing: border-box;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  color: #333;
+}
+
+.account-header__card {
+  background-color: #fff;
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+  border: 1px solid #eee;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Responsive: Desktop layout */
+@media (min-width: 768px) {
+  .account-header__card {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: 24px;
+  }
+}
+
+/* --- PHẦN 1: USER INFO (BÊN TRÁI) --- */
+.user-info {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.user-info__avatar-box {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ffe5e5 0%, #fff0e0 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.user-info__avatar-img {
+  width: 44px;
+  height: 44px;
+  object-fit: contain;
+}
+
+.user-info__details {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.user-info__name {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.user-info__phone {
+  font-size: 14px;
+  color: #707070;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.user-info__rank-badge {
+  display: inline-block;
+  background-color: #e5e7eb;
+  color: #000;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 99px;
+  width: fit-content;
+}
+
+.user-info__date {
+  background: linear-gradient(90deg, #F7F7F8 0%, #FFF 100%);
+  font-size: 12px;
+  color: #555;
+  padding: 4px 8px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 4px;
+}
+
+/* --- PHẦN 2: STATS (Ở GIỮA) --- */
+.stats-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 600px;
+}
+
+.stats-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.stat-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+}
+
+.stat-item__bar {
+  width: 3px;
+  height: 40px;
+  background-color: #d70018; /* Màu đỏ CellphoneS */
+  border-radius: 4px;
+  display: none; /* Ẩn trên mobile */
+}
+
+@media (min-width: 768px) {
+  .stat-item__bar { display: block; }
+}
+
+.stat-item__icon-box {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ffe5e5 0%, #fff0e0 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.stat-item__icon-img {
+  width: 26px;
+  height: 26px;
+}
+
+.stat-item__content {
+  display: flex;
+  flex-direction: column;
+}
+
+.stat-item__value {
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.stat-item__label {
+  font-size: 13px;
+  color: #707070;
+}
+
+.stat-item__next-rank {
+  font-size: 12px;
+  background: #f9f9f9;
+  padding: 4px;
+  border-radius: 4px;
+  margin-top: 4px;
+  display: none;
+}
+@media (min-width: 768px) {
+  .stat-item__next-rank { display: block; }
+}
+
+.stats-note {
+  font-size: 12px;
+  color: #555;
+  background-color: #f7f7f8;
+  padding: 8px;
+  border-radius: 6px;
+  display: none;
+  align-items: center;
+  gap: 6px;
+}
+@media (min-width: 768px) {
+  .stats-note { display: flex; }
+}
+
+/* --- PHẦN 3: CHANNEL (BÊN PHẢI) --- */
+.channel-section {
+  display: none; /* Ẩn trên mobile */
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+@media (min-width: 768px) {
+  .channel-section { display: flex; }
+}
+
+.channel-label {
+  font-size: 14px;
+}
+
+.channel-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #f9fafb;
+  border: 1px solid #e5e7eb;
+  padding: 6px 10px;
+  border-radius: 8px;
+}
+
+.channel-logo {
+  width: 40px;
+  height: 40px;
+  background-color: #d70018;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  font-weight: bold;
+  font-size: 20px;
+}
+
+.channel-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.channel-name {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.channel-link {
+  font-size: 12px;
+  color: #d70018;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}

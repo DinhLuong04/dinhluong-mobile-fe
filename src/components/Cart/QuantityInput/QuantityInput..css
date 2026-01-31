@@ -1,0 +1,44 @@
+/* QuantityInput.css */
+
+.quantity-input-wrapper {
+  display: flex;
+  align-items: center;
+  border: 1px solid #d1d5db; /* border-gray-300 */
+  border-radius: 0.25rem;    /* rounded */
+  overflow: hidden;          /* Để nút không bị tràn ra ngoài bo góc */
+  width: fit-content;        /* Chỉ rộng bằng nội dung */
+  background-color: #fff;
+}
+
+.qty-btn {
+  padding: 0.25rem 0.5rem;   /* px-2 py-1 */
+  color: #6b7280;            /* text-gray-500 */
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+}
+
+.qty-btn:hover:not(:disabled) {
+  background-color: #f3f4f6; /* hover:bg-gray-100 */
+}
+
+.qty-btn:disabled {
+  opacity: 0.5;              /* disabled:opacity-50 */
+  cursor: not-allowed;
+}
+
+.qty-input {
+  width: 2rem;               /* w-8 */
+  text-align: center;        /* text-center */
+  font-size: 0.875rem;       /* text-sm */
+  font-weight: 500;          /* font-medium */
+  border: none;
+  outline: none;             /* outline-none */
+  color: #111827;
+  background: transparent;
+}

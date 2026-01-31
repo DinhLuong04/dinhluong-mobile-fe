@@ -5,15 +5,15 @@ import { AuthProvider } from "./provider/AuthProvider";
 
 // Import Provider và Component So sánh cũ
 import { CompareProvider } from "./provider/CompareProvider"; 
-
+import { GoogleOAuthProvider } from '@react-oauth/google';
 import ScrollToTop from "./components/ScrollToTop";
+const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID
 function App() {
   const routeElements = useRouteElements();
-
+ 
   return (
-    
-    // 2. Bọc AuthProvider ở vòng ngoài cùng (để toàn bộ app đều biết user là ai)
-    <AuthProvider>
+    <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
+      <AuthProvider>
       
       {/* 3. Sau đó đến CompareProvider */}
       <CompareProvider>
@@ -27,7 +27,11 @@ function App() {
       </CompareProvider>
 
     </AuthProvider>
+    </GoogleOAuthProvider>
   );
+    
+    
+    
 }
 
 export default App;

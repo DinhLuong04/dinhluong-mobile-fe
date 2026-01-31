@@ -1,0 +1,128 @@
+/* CartAlert.css */
+
+/* Overlay phủ mờ toàn màn hình */
+.alert-overlay {
+  position: fixed;
+  inset: 0; /* top:0; right:0; bottom:0; left:0; */
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.5); /* bg-black/50 */
+  animation: fadeIn 0.2s ease-out;
+}
+
+/* Container của Popup */
+.alert-popup {
+  position: relative;
+  z-index: 10;
+  width: 90%;
+  max-width: 400px;
+  background-color: #fff;
+  border-radius: 0.75rem; /* rounded-xl */
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); /* shadow-xl */
+  overflow: hidden;
+  animation: scaleIn 0.2s ease-out;
+}
+
+/* Header (Nút đóng) */
+.alert-header {
+  display: flex;
+  justify-content: flex-end;
+  padding: 0.75rem; /* p-3 */
+}
+
+.btn-close {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #6b7280; /* text-gray-500 */
+  transition: color 0.2s;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-close:hover {
+  color: #111827; /* hover:text-gray-900 */
+}
+
+/* Main Content (Title & Message) */
+.alert-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0 2rem 1rem 2rem; /* px-8 pb-4 */
+  text-align: center;
+}
+
+.alert-title {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.125rem; /* text-lg */
+  font-weight: 600;    /* font-semibold */
+  color: #111827;      /* text-gray-900 */
+}
+
+.alert-message {
+  margin: 0 0 1.5rem 0;
+  font-size: 0.875rem; /* text-sm */
+  color: #4b5563;      /* text-gray-600 */
+}
+
+/* Footer (Buttons) */
+.alert-footer {
+  padding: 1rem;
+  padding-top: 0;
+  display: flex;
+  gap: 0.75rem; /* gap-3 */
+}
+
+.btn-cancel {
+  width: 50%;
+  border-radius: 0.25rem; /* rounded */
+  border: 1px solid #d1d5db; /* border-gray-300 */
+  background-color: #fff;
+  padding: 0.75rem 0;
+  font-size: 0.875rem; /* text-sm */
+  font-weight: 500;
+  color: #374151; /* text-gray-700 */
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.btn-cancel:hover {
+  background-color: #f9fafb; /* hover:bg-gray-50 */
+}
+
+.btn-confirm-alert {
+  border-radius: 0.25rem;
+  background-color: #dc2626; /* bg-red-600 */
+  padding: 0.75rem 0;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.btn-confirm-alert:hover {
+  background-color: #b91c1c; /* hover:bg-red-700 */
+}
+
+/* Helper class cho width button */
+.w-full { width: 100%; }
+.w-half { width: 50%; }
+
+/* Animation Keyframes */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes scaleIn {
+  from { transform: scale(0.95); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}

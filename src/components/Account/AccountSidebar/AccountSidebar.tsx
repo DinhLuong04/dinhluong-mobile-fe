@@ -1,8 +1,28 @@
-import React from 'react';
-import { NavLink } from 'react-router-dom';
+import React, {useState} from 'react'
+import { NavLink, useNavigate } from 'react-router-dom';;
+
+import { useAuth } from '../../../contexts/AuthContext'; 
+import { ConfirmModal } from '../../Common/ConfirmModal/ConfirmModal';
 import "./AccountSidebar.css";
 
 const AccountSidebar = () => {
+
+    const { logout } = useAuth();
+    const navigate = useNavigate();
+    // 3. State quản lý hiển thị Modal
+    const [showLogoutModal, setShowLogoutModal] = useState(false);
+
+    // Hàm 1: Khi bấm nút "Đăng xuất" trên menu -> Chỉ mở Modal
+    const handleLogoutClick = () => {
+        setShowLogoutModal(true);
+    };
+
+    // Hàm 2: Khi bấm "Đồng ý" trong Modal -> Thực hiện đăng xuất
+    const handleConfirmLogout = () => {
+        logout();       // Gọi hàm logout từ AuthProvider
+        navigate('/');  // Chuyển hướng về trang chủ
+        setShowLogoutModal(false); // Đóng modal
+    };
     // KHẮC PHỤC: Thêm type annotation (path: React.ReactNode)
     const renderIcon = (path: React.ReactNode) => (
         <svg
@@ -21,6 +41,16 @@ const AccountSidebar = () => {
 
     return (
         <div className="account-sidebar">
+            <ConfirmModal 
+                isOpen={showLogoutModal}
+                title="Đăng xuất"
+                message="Bạn có chắc chắn muốn đăng xuất khỏi tài khoản không?"
+                type="confirm"          // Loại confirm có 2 nút
+                confirmText="Đăng xuất" // (Tùy chọn) Chữ nút xác nhận
+                cancelText="Hủy bỏ"     // (Tùy chọn) Chữ nút hủy
+                onConfirm={handleConfirmLogout}
+                onClose={() => setShowLogoutModal(false)}
+            />
             <div className="sidebar-menu">
                 {/* === NHÓM 1: Quản lý đơn hàng === */}
                 <NavLink to="/member" end className={({ isActive }) => isActive ? "sidebar-item active" : "sidebar-item"}>
@@ -68,7 +98,7 @@ const AccountSidebar = () => {
 
                 <div className="sidebar-divider"></div>
 
-                <button className="sidebar-item" onClick={() => alert("Đăng xuất thành công!")}>
+                <button onClick={handleLogoutClick} className="sidebar-item">
                     {renderIcon(<><path d="M14 8v-2a2 2 0 0 0 -2 -2h-7a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h7a2 2 0 0 0 2 -2v-2"></path><path d="M9 12h12l-3 -3"></path><path d="M18 15l3 -3"></path></>)}
                     <span>Đăng xuất</span>
                 </button>

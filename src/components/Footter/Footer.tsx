@@ -33,9 +33,9 @@ export default function Footer() {
                     <div className="footer-col">
                         <p className="footer-col-title">KẾT NỐI VỚI DINHLUONG MOBILE</p>
                         <div className="social-list">
-                            <a href="#" className="social-icon"><FacebookIcon /></a>
-                            <a href="#" className="social-icon"><ZaloIcon /></a>
-                            <a href="#" className="social-icon"><YoutubeIcon /></a>
+                            <a href="#" className="footer-social-icon"><FacebookIcon /></a>
+                            <a href="#" className="footer-social-icon"><ZaloIcon /></a>
+                            <a href="#" className="footer-social-icon"><YoutubeIcon /></a>
                         </div>
                         
                         <p className="footer-col-title" style={{ marginTop: '20px' }}>TỔNG ĐÀI MIỄN PHÍ</p>

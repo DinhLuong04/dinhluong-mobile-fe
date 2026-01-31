@@ -15,6 +15,7 @@ import OrderHistory from "../components/Account/OrderHistory/OrderHistory";
 import Profile from "../components/Account/Profile/Profile";
 import Member from "../pages/Account/Member";
 import VoucherCenter from "../components/Account/VoucherCenter/VoucherCenter";
+import Checkout from "../pages/Checkout/Checkout";
 export default function useRouteElements() {
     const routeElements = useRoutes([
         // --- CÁC ROUTE DÙNG HEADER CHÍNH ---
@@ -44,6 +45,11 @@ export default function useRouteElements() {
                     path:"Cart",
                     element:<CartPage/>
                 },
+                {
+                    path:"Checkout",
+                    element:<Checkout/>
+                },
+
                {
                     path: "member", // Đường dẫn gốc: /member
                     element: <Member />, // Load khung sườn Sidebar trước

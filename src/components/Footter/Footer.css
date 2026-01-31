@@ -105,13 +105,13 @@
     margin-bottom: 20px;
 }
 
-.social-icon {
+.footer-social-icon {
     display: block;
     width: 32px;
     height: 32px;
     transition: transform 0.2s;
 }
-.social-icon:hover {
+.footer-social-icon:hover {
     transform: scale(1.1);
 }
 

@@ -21,7 +21,6 @@ export interface ApiResponse<T> {
 }
 export interface User {
     name: string;
-    email: string;
     token?: string;
 }
 

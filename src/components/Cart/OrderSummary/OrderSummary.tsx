@@ -1,68 +1,77 @@
 import React from "react";
+import "./OrderSummary.css"; // Import file CSS
 
 interface Props {
   totalPrice: number;
   totalDiscount: number;
   finalPrice: number;
+  onCheckout:() => void
 }
 
-export const OrderSummary: React.FC<Props> = ({ totalPrice, totalDiscount, finalPrice }) => {
+export const OrderSummary: React.FC<Props> = ({ totalPrice, totalDiscount, finalPrice,onCheckout }) => {
   return (
-    <div className="sticky top-4 h-fit space-y-4">
+    <div className="order-summary-wrapper">
+      
       {/* Box Quà tặng */}
-      <div className="flex items-center justify-between rounded bg-white p-3 shadow-sm">
-        <div className="flex items-center gap-2">
+      <div className="summary-row">
+        <div className="summary-row-left">
            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
-           <span className="text-sm">Quà tặng</span>
+           <span className="summary-text-sm">Quà tặng</span>
         </div>
-        <span className="cursor-pointer text-sm font-medium text-blue-600">Xem quà (7)</span>
+        <span className="link-action">Xem quà (7)</span>
       </div>
 
       {/* Box Ưu đãi */}
-      <div className="flex items-center justify-between rounded bg-white p-3 shadow-sm">
-        <div className="flex items-center gap-2">
+      <div className="summary-row">
+        <div className="summary-row-left">
            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/></svg>
-           <span className="text-sm">Chọn hoặc nhập ưu đãi</span>
+           <span className="summary-text-sm">Chọn hoặc nhập ưu đãi</span>
         </div>
-        <span className="text-gray-400">›</span>
+        <span className="arrow-icon">›</span>
       </div>
 
       {/* Box Đăng nhập điểm */}
-      <div className="flex items-center gap-2 rounded border border-yellow-200 bg-yellow-50 p-3">
-        <span className="text-yellow-600">●</span>
-        <span className="text-sm text-gray-700">Đăng nhập để sử dụng điểm thưởng</span>
+      <div className="login-points-box">
+        <span className="icon-dot">●</span>
+        <span className="text-points-login">Đăng nhập để sử dụng điểm thưởng</span>
       </div>
 
       {/* Box Thông tin thanh toán */}
-      <div className="rounded-xl bg-white p-4 shadow-sm">
-        <h3 className="mb-3 text-base font-semibold">Thông tin đơn hàng</h3>
-        <div className="space-y-2 text-sm">
-          <div className="flex justify-between text-gray-600">
+      <div className="payment-info-box">
+        <h3 className="info-title">Thông tin đơn hàng</h3>
+        
+        <div className="price-list">
+          <div className="price-row">
             <span>Tổng tiền</span>
-            <span className="font-medium text-gray-900">{totalPrice.toLocaleString("vi-VN")}đ</span>
+            <span className="price-val">{totalPrice.toLocaleString("vi-VN")}đ</span>
           </div>
-          <div className="flex justify-between text-gray-600">
+          <div className="price-row">
             <span>Tổng khuyến mãi</span>
-            <span className="font-medium text-red-500">-{totalDiscount.toLocaleString("vi-VN")}đ</span>
+            <span className="discount-val">-{totalDiscount.toLocaleString("vi-VN")}đ</span>
           </div>
-          <div className="border-b border-dashed border-gray-200 py-2"></div>
-          <div className="flex justify-between text-base font-medium">
+          
+          <div className="dashed-divider"></div>
+          
+          <div className="final-price-row">
             <span>Cần thanh toán</span>
-            <span className="font-bold text-red-600">{finalPrice.toLocaleString("vi-VN")}đ</span>
+            <span className="final-val">{finalPrice.toLocaleString("vi-VN")}đ</span>
           </div>
-          <div className="flex justify-between text-xs text-yellow-600">
+          
+          <div className="bonus-points-row">
              <span>Điểm thưởng</span>
              <span>+26,064</span>
           </div>
         </div>
 
-        <button className="mt-4 w-full rounded bg-red-600 py-3 text-sm font-bold text-white hover:bg-red-700">
+        <button onClick={onCheckout} className="btn-confirm">
           XÁC NHẬN ĐƠN
         </button>
         
         {/* SVG Decorative Wave Footer */}
-        <div className="mt-2 w-full overflow-hidden text-gray-200">
-            <svg viewBox="0 0 403 28" fill="none" className="w-full"><path fillRule="evenodd" clipRule="evenodd" d="M0 0H403V18.8171C403 21.7846 403 23.2683 402.487 24.4282C401.883 25.7925 400.792 26.8829 399.428 27.4867C398.268 28 396.785 28 393.817 28C391.534 28 390.392 28 389.652 27.808C388.208 27.4337..." fill="currentColor"/></svg>
+        <div className="footer-wave">
+            <svg viewBox="0 0 403 28" fill="none" className="svg-wave">
+                <path fillRule="evenodd" clipRule="evenodd" d="M0 0H403V18.8171C403 21.7846 403 23.2683 402.487 24.4282C401.883 25.7925 400.792 26.8829 399.428 27.4867C398.268 28 396.785 28 393.817 28C391.534 28 390.392 28 389.652 27.808C388.208 27.4337 386.685 27.1463 384.817 27.1463C382.95 27.1463 381.426 27.4337 379.982 27.808C379.243 28 378.1 28 375.817 28C373.534 28 372.392 28 371.652 27.808C370.208 27.4337 368.685 27.1463 366.817 27.1463C364.95 27.1463 363.426 27.4337 361.982 27.808C361.243 28 360.1 28 357.817 28C355.534 28 354.392 28 353.652 27.808C352.208 27.4337 350.685 27.1463 348.817 27.1463C346.95 27.1463 345.426 27.4337 343.982 27.808C343.243 28 342.1 28 339.817 28C337.534 28 336.392 28 335.652 27.808C334.208 27.4337 332.685 27.1463 330.817 27.1463C328.95 27.1463 327.426 27.4337 325.982 27.808C325.243 28 324.1 28 321.817 28C319.534 28 318.392 28 317.652 27.808C316.208 27.4337 314.685 27.1463 312.817 27.1463C310.95 27.1463 309.426 27.4337 307.982 27.808C307.243 28 306.1 28 303.817 28C301.534 28 300.392 28 299.652 27.808C298.208 27.4337 296.685 27.1463 294.817 27.1463C292.95 27.1463 291.426 27.4337 289.982 27.808C289.243 28 288.1 28 285.817 28C283.534 28 282.392 28 281.652 27.808C280.208 27.4337 278.685 27.1463 276.817 27.1463C274.95 27.1463 273.426 27.4337 271.982 27.808C271.243 28 270.1 28 267.817 28C265.534 28 264.392 28 263.652 27.808C262.208 27.4337 260.685 27.1463 258.817 27.1463C256.95 27.1463 255.426 27.4337 253.982 27.808C253.243 28 252.1 28 249.817 28C247.534 28 246.392 28 245.652 27.808C244.208 27.4337 242.685 27.1463 240.817 27.1463C238.95 27.1463 237.426 27.4337 235.982 27.808C235.243 28 234.1 28 231.817 28C229.534 28 228.392 28 227.652 27.808C226.208 27.4337 224.685 27.1463 222.817 27.1463C220.95 27.1463 219.426 27.4337 217.982 27.808C217.243 28 216.1 28 213.817 28C211.534 28 210.392 28 209.652 27.808C208.208 27.4337 206.685 27.1463 204.817 27.1463C202.95 27.1463 201.426 27.4337 199.982 27.808C199.243 28 198.1 28 195.817 28C193.534 28 192.392 28 191.652 27.808C190.208 27.4337 188.685 27.1463 186.817 27.1463C184.95 27.1463 183.426 27.4337 181.982 27.808C181.243 28 180.1 28 177.817 28C175.534 28 174.392 28 173.652 27.808C172.208 27.4337 170.685 27.1463 168.817 27.1463C166.95 27.1463 165.426 27.4337 163.982 27.808C163.243 28 162.1 28 159.817 28C157.534 28 156.392 28 155.652 27.808C154.208 27.4337 152.685 27.1463 150.817 27.1463C148.95 27.1463 147.426 27.4337 145.982 27.808C145.243 28 144.1 28 141.817 28C139.534 28 138.392 28 137.652 27.808C136.208 27.4337 134.685 27.1463 132.817 27.1463C130.95 27.1463 129.426 27.4337 127.982 27.808C127.243 28 126.1 28 123.817 28C121.534 28 120.392 28 119.652 27.808C118.208 27.4337 116.685 27.1463 114.817 27.1463C112.95 27.1463 111.426 27.4337 109.982 27.808C109.243 28 108.1 28 105.817 28C103.534 28 102.392 28 101.652 27.808C100.208 27.4337 98.685 27.1463 96.817 27.1463C94.95 27.1463 93.426 27.4337 91.982 27.808C91.243 28 90.1 28 87.817 28C85.534 28 84.392 28 83.652 27.808C82.208 27.4337 80.685 27.1463 78.817 27.1463C76.95 27.1463 75.426 27.4337 73.982 27.808C73.243 28 72.1 28 69.817 28C67.534 28 66.392 28 65.652 27.808C64.208 27.4337 62.685 27.1463 60.817 27.1463C58.95 27.1463 57.426 27.4337 55.982 27.808C55.243 28 54.1 28 51.817 28C49.534 28 48.392 28 47.652 27.808C46.208 27.4337 44.685 27.1463 42.817 27.1463C40.95 27.1463 39.426 27.4337 37.982 27.808C37.243 28 36.1 28 33.817 28C31.534 28 30.392 28 29.652 27.808C28.208 27.4337 26.685 27.1463 24.817 27.1463C22.95 27.1463 21.426 27.4337 19.982 27.808C19.243 28 18.1 28 15.817 28C13.534 28 12.392 28 11.652 27.808C10.208 27.4337 8.685 27.1463 6.817 27.1463C4.95 27.1463 3.426 27.4337 1.982 27.808C1.272 28 0 27.808 0 25.817V0Z" fill="currentColor"></path>
+            </svg>
         </div>
       </div>
     </div>

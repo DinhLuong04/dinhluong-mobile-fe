@@ -1,0 +1,198 @@
+/* OrderItem.css */
+
+/* --- Container chính --- */
+.order-order-card {
+  background-color: #fff;
+  border-radius: 8px;
+  padding: 16px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  color: #333;
+  /* Box shadow nhẹ cho giống thẻ */
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1); 
+}
+
+.order-order-header-title {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+
+/* --- Product Row --- */
+.order-product-row {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.order-product-img-box {
+  width: 72px;
+  height: 72px;
+  flex-shrink: 0;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.order-product-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.order-product-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+.order-product-name-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.order-product-name {
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.4;
+  color: #111827;
+}
+
+.order-product-variant-badge {
+  display: inline-block;
+  background-color: #f3f4f6;
+  color: #4b5563;
+  font-size: 12px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  margin-top: 4px;
+}
+
+/* Cột giá và số lượng bên phải */
+.order-product-meta-right {
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.order-product-qty {
+  font-size: 13px;
+  color: #6b7280;
+  margin-bottom: 4px; /* Đẩy giá xuống 1 chút */
+}
+
+.order-price-current {
+  font-size: 15px;
+  font-weight: 700;
+  color: #dc2626; /* Màu đỏ */
+  display: block;
+}
+
+.order-price-original {
+  font-size: 13px;
+  color: #9ca3af;
+  text-decoration: line-through;
+  display: block;
+}
+
+/* --- Combo Box (Vùng xám) --- */
+.order-combo-container {
+  background-color: #f9fafb; /* Màu nền xám nhạt */
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 16px; /* Khoảng cách với sản phẩm tiếp theo */
+}
+
+.order-combo-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #111827;
+}
+
+/* Danh sách item trong combo */
+.order-combo-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.order-combo-item {
+  display: flex;
+  gap: 12px;
+}
+
+.order-combo-item-img-box {
+  width: 48px;
+  height: 48px;
+  border: 1px solid #e5e7eb;
+  background-color: #fff;
+  border-radius: 4px;
+  padding: 2px;
+  flex-shrink: 0;
+}
+
+.order-combo-item-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.order-combo-item-name {
+  font-size: 13px;
+  color: #374151;
+  margin-bottom: 2px;
+  line-height: 1.3;
+}
+
+.order-combo-price-row {
+  font-size: 13px;
+}
+
+.order-cp-curr { font-weight: 600; margin-right: 6px; color: #111827;}
+.order-cp-old { color: #9ca3af; text-decoration: line-through; font-size: 12px;}
+
+/* Dòng tổng tiền combo */
+.order-combo-total-row {
+  margin-top: 12px;
+  padding-top: 8px;
+  /* border-top: 1px dashed #e5e7eb; (Tùy chọn) */
+  font-size: 14px;
+}
+
+.order-ct-curr { color: #dc2626; font-weight: 700; margin-right: 6px; }
+.order-ct-old { color: #9ca3af; text-decoration: line-through; font-size: 13px; }
+
+/* --- Divider --- */
+.order-divider {
+  height: 1px;
+  background-color: #e5e7eb;
+  border: none;
+  margin: 16px 0;
+}
+
+/* --- Gift Tag --- */
+.order-gift-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background-color: #fefce8; /* Vàng nhạt */
+  border: 1px solid #fef08a; /* Viền vàng */
+  padding: 6px 12px;
+  border-radius: 99px; /* Bo tròn kiểu pill */
+  color: #b45309; /* Chữ vàng đậm */
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  margin-top: 4px;
+}

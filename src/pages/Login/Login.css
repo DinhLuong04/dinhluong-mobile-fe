@@ -1,4 +1,4 @@
-/* Auth.css - Phiên bản đồng bộ màu Đỏ Header */
+/* Login.css - Phiên bản hỗ trợ Social SVG & Màu Đỏ FPT */
 @import url('https://fonts.googleapis.com/css?family=Lato:300,400,700&display=swap');
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -22,10 +22,10 @@ body { font-family: "Lato", Arial, sans-serif; background-color: #f8f9fd; color:
   box-shadow: 0px 10px 34px -15px rgba(0, 0, 0, 0.24);
 }
 
-/* --- SỬA PHẦN NÀY: Dùng màu Header --- */
+/* --- BANNER BÊN PHẢI (MÀU ĐỎ) --- */
 .auth-banner-side {
   width: 50%;
-  /* Gradient đỏ giống Header của bạn */
+  /* Gradient đỏ giống Header */
   background: linear-gradient(135deg, #cb1c22 0%, #d9503f 100%);
   color: #fff;
   display: flex;
@@ -55,42 +55,94 @@ body { font-family: "Lato", Arial, sans-serif; background-color: #f8f9fd; color:
   cursor: pointer;
 }
 
-/* Hover nút chuyển trang: chữ đỏ */
 .btn-switch-page:hover {
   background: #fff;
   color: #cb1c22; 
 }
 
-/* --- PHẦN FORM --- */
-.auth-form-side { width: 50%; padding: 50px 40px; background: #fff; }
-.auth-form-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
-.auth-title { font-weight: 300; font-size: 24px; text-transform: uppercase; letter-spacing: 1px; color: #000; }
-
-.social-group { display: flex; gap: 10px; }
-.social-icon {
-  width: 30px; height: 30px; border: 1px solid #e1e1e1; border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  color: #999; text-decoration: none; font-size: 14px; transition: 0.3s;
-}
-/* Hover icon social: nền đỏ */
-.social-icon:hover {
-  background: #cb1c22;
-  color: #fff;
-  border-color: #cb1c22;
+/* --- PHẦN FORM ĐĂNG NHẬP --- */
+.auth-form-side { 
+  width: 50%; 
+  padding: 50px 40px; 
+  background: #fff; 
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
+/* Header chứa Title và các nút Social */
+.auth-form-header { 
+  text-align: center; /* Căn giữa toàn bộ header */
+  margin-bottom: 30px; 
+}
+
+.auth-title { 
+  font-weight: 700; 
+  font-size: 24px; 
+  text-transform: uppercase; 
+  letter-spacing: 1px; 
+  color: #000; 
+  margin-bottom: 20px;
+}
+
+/* --- LOGO SOCIAL (MỚI) --- */
+.social-group { 
+  display: flex; 
+  justify-content: center; /* Căn giữa 2 nút */
+  gap: 15px; 
+  margin-bottom: 10px;
+}
+
+.social-btn {
+  width: 45px;
+  height: 45px;
+  border: 1px solid #e1e1e1;
+  border-radius: 50%; /* Bo tròn hoàn toàn */
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.social-btn:hover {
+  transform: translateY(-3px); /* Nhảy lên nhẹ khi hover */
+  box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+}
+
+/* Hover riêng cho Facebook (Viền xanh) */
+.social-btn.facebook-btn:hover {
+  border-color: #1877F2;
+  background-color: #f0f6ff;
+}
+
+/* Hover riêng cho Google (Viền đỏ/cam) */
+.social-btn.google-btn:hover {
+  border-color: #EA4335;
+  background-color: #fff5f5;
+}
+
+/* --- INPUT FIELDS --- */
 .input-group { margin-bottom: 20px; }
 .input-label { font-size: 12px; text-transform: uppercase; font-weight: 700; color: #000; letter-spacing: 1px; display: block; margin-bottom: 8px; }
+
 .input-field {
   width: 100%; height: 48px; background: #f2f2f2; border: none; border-radius: 25px;
   padding: 0 20px; font-size: 15px; color: #333; outline: none; transition: 0.3s;
 }
+
 .input-field:focus { background: #e6e6e6; }
 
-/* --- SỬA PHẦN NÀY: Nút Submit màu đỏ --- */
+/* Trạng thái lỗi */
+.input-field.error { border: 1px solid #d9503f; background-color: #fff0f0; }
+.field-error-msg { color: #d9503f; font-size: 12px; margin-top: 5px; margin-left: 10px; text-align: left; }
+
+/* --- NÚT SUBMIT (MÀU ĐỎ) --- */
 .btn-submit {
   width: 100%;
-  background: #cb1c22; /* Màu đỏ FPT */
+  background: #cb1c22;
   color: #fff;
   border: none;
   border-radius: 30px;
@@ -102,47 +154,52 @@ body { font-family: "Lato", Arial, sans-serif; background-color: #f8f9fd; color:
   margin-top: 10px;
   margin-bottom: 20px;
   transition: 0.3s;
-  /* Bóng đổ nhẹ màu đỏ */
   box-shadow: 0 4px 10px rgba(203, 28, 34, 0.3);
 }
 
 .btn-submit:hover {
-  background: #a6171c; /* Màu đỏ tối hơn khi hover */
+  background: #a6171c; /* Đỏ đậm hơn */
+  box-shadow: 0 6px 15px rgba(203, 28, 34, 0.4);
 }
 
+.btn-submit:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* --- FOOTER FORM --- */
 .form-footer { display: flex; justify-content: space-between; align-items: center; font-size: 14px; }
-.link-forgot { color: #808080; text-decoration: none; }
-.link-forgot:hover { color: #cb1c22; }
+.link-forgot { color: #808080; text-decoration: none; transition: 0.2s; }
+.link-forgot:hover { color: #cb1c22; text-decoration: underline; }
 
-/* Checkbox màu đỏ */
-.checkbox-container { display: flex; align-items: center; cursor: pointer; color: #cb1c22; user-select: none; }
+/* Checkbox Style */
+.checkbox-container { display: flex; align-items: center; cursor: pointer; color: #666; user-select: none; }
+.checkbox-container:hover { color: #cb1c22; }
 .checkbox-container input { display: none; }
+
 .checkmark {
-  width: 16px; height: 16px; border: 1px solid #cb1c22; border-radius: 3px; margin-right: 8px;
-  display: flex; align-items: center; justify-content: center; transition: 0.2s;
+  width: 18px; height: 18px; border: 1px solid #ddd; border-radius: 4px; margin-right: 8px;
+  display: flex; align-items: center; justify-content: center; transition: 0.2s; background: #fff;
 }
-.checkbox-container input:checked + .checkmark { background: #cb1c22; }
+
+.checkbox-container input:checked + .checkmark { 
+  background: #cb1c22; 
+  border-color: #cb1c22; 
+}
+
 .checkmark::after {
-  content: ''; width: 4px; height: 8px; border: solid white;
-  border-width: 0 2px 2px 0; transform: rotate(45deg); display: none;
+  content: ''; width: 5px; height: 9px; border: solid white;
+  border-width: 0 2px 2px 0; transform: rotate(45deg); display: none; margin-bottom: 2px;
 }
 .checkbox-container input:checked + .checkmark::after { display: block; }
 
+/* --- RESPONSIVE --- */
 @media (max-width: 768px) {
-  .auth-card { flex-direction: column; }
+  .auth-card { flex-direction: column; height: auto; }
   .auth-banner-side, .auth-form-side { width: 100%; }
-  .auth-banner-side { order: -1; padding: 30px 20px; }
-  .auth-form-side { padding: 30px 20px; }
-}
-
-.field-error-msg {
-  color: #d9503f; /* Màu đỏ */
-  font-size: 12px;
-  margin-top: 5px;
-  margin-left: 10px;
-  text-align: left;
-}
-
-.input-field.error {
-  border: 1px solid #d9503f; /* Viền đỏ cho input khi lỗi */
+  
+  /* Đưa Banner xuống dưới khi ở mobile (tùy chọn, hoặc để order: -1 để lên trên) */
+  .auth-banner-side { order: -1; padding: 30px 20px; } 
+  .auth-form-side { padding: 40px 20px; }
 }

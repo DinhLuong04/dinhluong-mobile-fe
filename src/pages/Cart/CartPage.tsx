@@ -3,8 +3,9 @@ import type { CartItem as CartItemType } from "../../types/Product.types";
 import { OrderSummary } from "../../components/Cart/OrderSummary/OrderSummary";
 import { CartItem } from "../../components/Cart/CartItem/CartItem";
 import { CartAlert } from "../../components/Cart/CartAlert/CartAlert";
+import "./CartPage.css"; // Import file CSS
 
-// --- DỮ LIỆU MẪU ---
+// --- DỮ LIỆU MẪU (GIỮ NGUYÊN) ---
 const INITIAL_PRODUCTS: CartItemType[] = [
   {
     id: 1,
@@ -64,7 +65,10 @@ const CartPage = () => {
   const [alertState, setAlertState] = useState<{
     isOpen: boolean;
     message: string;
+    title?: string; 
+    type?: "alert" | "confirm";
     onConfirm: () => void;
+
   }>({
     isOpen: false,
     message: "",
@@ -84,7 +88,6 @@ const CartPage = () => {
     setProducts(prev => prev.map(p => ({ ...p, checked: isChecked })));
   };
 
-  // Logic Toggle Combo (Đã sửa lỗi Cannot find name)
   const toggleCombo = (productId: number | string, comboId: number | string) => {
     setProducts(prev => prev.map(p => {
         if (p.id !== productId || !p.combos) return p;
@@ -95,7 +98,6 @@ const CartPage = () => {
     }));
   };
 
-  // Logic Xóa 1 sản phẩm (Gọi Popup)
   const removeProduct = (id: number | string) => {
     setAlertState({
         isOpen: true,
@@ -106,7 +108,6 @@ const CartPage = () => {
     });
   };
 
-  // Logic Xóa nhiều sản phẩm (Gọi Popup) - (Đã xóa phiên bản trùng lặp bị lỗi)
   const handleRemoveSelected = () => {
     const selectedItems = products.filter(p => p.checked);
 
@@ -150,12 +151,48 @@ const CartPage = () => {
 
   const isAllChecked = products.length > 0 && products.every(p => p.checked);
   const selectedCount = products.filter(p => p.checked).length;
+  const isRemoveDisabled = selectedCount === 0;
+
+  // --- HÀM XỬ LÝ KHI BẤM NÚT XÁC NHẬN ĐƠN ---
+  const handleCheckout = () => {
+    // 1. Tìm sản phẩm nào đang vi phạm luật
+    const invalidProduct = products.find(p => {
+        // Điều kiện 1: Sản phẩm đó đang được chọn mua (checked = true)
+        if (!p.checked) return false;
+
+        // Điều kiện 2: Số lượng mua từ 2 trở lên
+        if (p.quantity < 2) return false;
+
+        // Điều kiện 3: Có tích chọn ít nhất 1 combo bên trong nó không?
+        // (Lưu ý: p.combos có thể undefined nên cần optional chaining ?.)
+        const hasSelectedCombo = p.combos?.some(combo => combo.checked);
+
+        // NẾU: Số lượng >= 2 VÀ Có tích chọn combo => VI PHẠM (return true)
+        return hasSelectedCombo;
+    });
+
+    // 2. Nếu tìm thấy sản phẩm vi phạm -> Báo lỗi Popup
+    if (invalidProduct) {
+        setAlertState({
+            isOpen: true,
+            title: "Quy định mua hàng",
+            message: `Sản phẩm "${invalidProduct.name}" đang được chọn kèm Combo giá sốc nên chỉ được mua với số lượng là 1. Vui lòng bỏ chọn Combo hoặc giảm số lượng về 1 để tiếp tục.`,
+            type: "alert",
+            onConfirm: () => {}
+        });
+        return; // Dừng lại, không cho đi tiếp
+    }
+
+    // 3. Nếu không có lỗi gì -> Chuyển sang trang thanh toán
+    // window.location.href = "/checkout"; hoặc navigate("/checkout");
+    alert("Đơn hàng hợp lệ! Đang chuyển sang thanh toán...");
+  };
 
   return (
-    <div className="min-h-screen bg-gray-100 py-4 font-sans">
-      <div className="container mx-auto max-w-6xl px-4">
+    <div className="cart-page-wrapper">
+      <div className="cart-container">
         
-        {/* --- ĐÃ THÊM POPUP VÀO ĐÂY --- */}
+        {/* POPUP ALERT */}
         <CartAlert 
             isOpen={alertState.isOpen}
             message={alertState.message}
@@ -163,19 +200,19 @@ const CartPage = () => {
             onClose={() => setAlertState(prev => ({ ...prev, isOpen: false }))}
         />
 
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+        <div className="cart-grid">
           
-          <div className="lg:col-span-2">
-            {/* Header */}
-            <div className="mb-4 flex items-center justify-between rounded-xl bg-white p-3 shadow-sm">
-              <div className="flex items-center gap-3">
+          <div className="cart-main">
+            {/* Header: Chọn tất cả & Xóa */}
+            <div className="cart-header">
+              <div className="header-left">
                 <input 
                     type="checkbox" 
-                    className="h-5 w-5 cursor-pointer accent-red-600" 
+                    className="checkbox-custom" 
                     checked={isAllChecked} 
                     onChange={(e) => toggleAll(e.target.checked)} 
                 />
-                <span className="font-medium">
+                <span className="header-text">
                     {isAllChecked 
                         ? `Chọn tất cả (${products.length})` 
                         : `Đã chọn (${selectedCount}/${products.length})`
@@ -184,16 +221,17 @@ const CartPage = () => {
               </div>
               
               <button 
-                className={`text-gray-400 hover:text-red-500 transition-colors ${products.filter(p => p.checked).length === 0 ? 'opacity-50 cursor-not-allowed' : ''}`}
+                className={`btn-remove-selected ${isRemoveDisabled ? 'disabled' : ''}`}
                 onClick={handleRemoveSelected}
                 title="Xóa các sản phẩm đã chọn"
+                disabled={isRemoveDisabled}
               >
-                <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor"><path d="M8.5 4H11.5C11.5 3.17157 10.8284 2.5 10 2.5C9.17157 2.5 8.5 3.17157 8.5 4ZM7.5 4C7.5 2.61929 8.61929 1.5 10 1.5C11.3807 1.5 12.5 2.61929 12.5 4H17.5C17.7761 4 18 4.22386 18 4.5C18 4.77614 17.7761 5 17.5 5H16.4456L15.2521 15.3439C15.0774 16.8576 13.7957 18 12.2719 18H7.72813C6.20431 18 4.92256 16.8576 4.7479 15.3439L3.55437 5H2.5C2.22386 5 2 4.77614 2 4.5C2 4.22386 2.22386 4 2.5 4H7.5ZM5.74131 15.2292C5.85775 16.2384 6.71225 17 7.72813 17H12.2719C13.2878 17 14.1422 16.2384 14.2587 15.2292L15.439 5H4.56101L5.74131 15.2292ZM8.5 7.5C8.77614 7.5 9 7.72386 9 8V14C9 14.2761 8.77614 14.5 8.5 14.5C8.22386 14.5 8 14.2761 8 14V8C8 7.72386 8.22386 7.5 8.5 7.5ZM12 8C12 7.72386 11.7761 7.5 11.5 7.5C11.2239 7.5 11 7.72386 11 8V14C11 14.2761 11.2239 14.5 11.5 14.5C11.7761 14.5 12 14.2761 12 14V8Z" fill="inherit"></path></svg>
+                <svg viewBox="0 0 20 20" fill="currentColor"><path d="M8.5 4H11.5C11.5 3.17157 10.8284 2.5 10 2.5C9.17157 2.5 8.5 3.17157 8.5 4ZM7.5 4C7.5 2.61929 8.61929 1.5 10 1.5C11.3807 1.5 12.5 2.61929 12.5 4H17.5C17.7761 4 18 4.22386 18 4.5C18 4.77614 17.7761 5 17.5 5H16.4456L15.2521 15.3439C15.0774 16.8576 13.7957 18 12.2719 18H7.72813C6.20431 18 4.92256 16.8576 4.7479 15.3439L3.55437 5H2.5C2.22386 5 2 4.77614 2 4.5C2 4.22386 2.22386 4 2.5 4H7.5ZM5.74131 15.2292C5.85775 16.2384 6.71225 17 7.72813 17H12.2719C13.2878 17 14.1422 16.2384 14.2587 15.2292L15.439 5H4.56101L5.74131 15.2292ZM8.5 7.5C8.77614 7.5 9 7.72386 9 8V14C9 14.2761 8.77614 14.5 8.5 14.5C8.22386 14.5 8 14.2761 8 14V8C8 7.72386 8.22386 7.5 8.5 7.5ZM12 8C12 7.72386 11.7761 7.5 11.5 7.5C11.2239 7.5 11 7.72386 11 8V14C11 14.2761 11.2239 14.5 11.5 14.5C11.7761 14.5 12 14.2761 12 14V8Z" fill="inherit"></path></svg>
               </button>
             </div>
 
-            {/* List Items */}
-            <div className="space-y-4">
+            {/* Danh sách sản phẩm */}
+            <div className="cart-list">
               {products.length > 0 ? products.map((product) => (
                 <CartItem
                   key={product.id}
@@ -204,18 +242,20 @@ const CartPage = () => {
                   onToggleCombo={toggleCombo}
                 />
               )) : (
-                  <div className="text-center py-10 bg-white rounded-xl">
-                      <p className="text-gray-500">Giỏ hàng trống</p>
+                  <div className="cart-empty">
+                      <p>Giỏ hàng trống</p>
                   </div>
               )}
             </div>
           </div>
 
-          <div className="lg:col-span-1">
+          {/* Cột phải: Tổng tiền */}
+          <div className="cart-sidebar">
              <OrderSummary 
                 totalPrice={totalPrice + comboPrice} 
                 totalDiscount={totalDiscount}
                 finalPrice={finalPrice}
+               onCheckout={handleCheckout}
              />
           </div>
         </div>

@@ -1,0 +1,43 @@
+/* Checkout.css */
+
+/* Container layout chính */
+.check-out-main {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding-top: 20px;
+  padding-bottom: 40px;
+}
+
+/* Cột bên trái (Chứa sản phẩm và các form nhập liệu) */
+.checkout-left {
+  display: flex;
+  flex-direction: column;
+  gap: 16px; /* Khoảng cách giữa các khối form */
+  width: 100%;
+}
+
+/* Cột bên phải (Chứa tổng tiền) */
+.checkout-right {
+  width: 100%;
+}
+
+/* --- Responsive Desktop (Màn hình lớn) --- */
+@media (min-width: 1024px) {
+  .check-out-main {
+    flex-direction: row; /* Chuyển sang hàng ngang */
+    align-items: flex-start; /* Căn hàng đầu */
+  }
+
+  .checkout-left {
+    flex: 1; /* Chiếm phần còn lại */
+    min-width: 0; /* Tránh lỗi overflow flex */
+  }
+
+  .checkout-right {
+    width: 400px; /* Cố định chiều rộng cột phải */
+    flex-shrink: 0; /* Không bị co lại */
+    position: sticky; /* Dính khi cuộn trang */
+    top: 20px; /* Cách mép trên 20px */
+  }
+}

@@ -4,7 +4,10 @@ export const API_CONFIG={
 
     AUTH :{
         LOGIN:'auth/login',
-        REGISTER:'auth/register'
+        REGISTER:'auth/register',
+        LOGIN_GOOGLE:'auth/google-login',
+        LOGIN_FACEBOOK:'auth/facebook-login'
+        
     },
     PRODUCTS :{
         GET_LIST: 'products', 

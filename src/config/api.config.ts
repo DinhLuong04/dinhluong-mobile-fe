@@ -6,7 +6,9 @@ export const API_CONFIG={
         LOGIN:'auth/login',
         REGISTER:'auth/register',
         LOGIN_GOOGLE:'auth/google-login',
-        LOGIN_FACEBOOK:'auth/facebook-login'
+        LOGIN_FACEBOOK:'auth/facebook-login',
+        FORGOT_PASSWORD:'auth/forgot-password',
+        RESET_PASSWORD:'auth/reset-password'
         
     },
     PRODUCTS :{

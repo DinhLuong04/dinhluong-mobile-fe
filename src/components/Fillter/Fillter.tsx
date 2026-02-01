@@ -1,7 +1,7 @@
-import React, { useState ,useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import Slider from 'rc-slider';
-import 'rc-slider/assets/index.css'; // Import CSS mặc định của rc-slider
-import './Fillter.css';
+import 'rc-slider/assets/index.css'; 
+import './Fillter.css'; // Make sure this path is correct
 
 // --- Icons ---
 const ChevronDownIcon = () => (
@@ -16,7 +16,7 @@ const CheckIcon = () => (
     </svg>
 );
 
-// --- Data Constants ---
+// --- Data Constants (Same as before) ---
 const BRANDS = [
   { id: 1, name: "iPhone", image: "https://cdn2.fptshop.com.vn/unsafe/256x0/filters:format(webp):quality(75)/small/logo_iphone_ngang_eac93ff477.png" },
   { id: 2, name: "Samsung", image: "https://cdn2.fptshop.com.vn/unsafe/256x0/filters:format(webp):quality(75)/small/logo_samsung_ngang_1624d75bd8.png"},
@@ -60,37 +60,35 @@ const REFRESH_RATE_TAGS = ['Trên 144 Hz', '120 Hz', '90 Hz', '60 Hz'];
 const CAMERA_TAGS = ['Tất cả', 'Quay phim Slow Motion', 'AI Camera', 'Hiệu ứng làm đẹp', 'Zoom quang học', 'Chống rung OIS', 'Chụp macro', 'Chụp góc rộng', 'Chụp xóa phông'];
 const SPECIAL_FEATURES_TAGS = ['Tất cả', 'Sạc không dây', 'Sạc ngược cho thiết bị khác'];
 
-// --- Sub-Components ---
+// --- Sub-Components (With Renamed Classes) ---
 
-// Accordion Wrapper
 const AccordionSection: React.FC<{
   title: string;
   isOpen: boolean;
   onToggle: () => void;
   children: React.ReactNode;
 }> = ({ title, isOpen, onToggle, children }) => (
-  <div className={`accordion-item ${isOpen ? 'open' : ''}`}>
-    <div className="accordion-header" onClick={onToggle}>
-      <span className="accordion-title">{title}</span>
-      <div className="accordion-icon"><ChevronDownIcon /></div>
+  <div className={`adv-filter__accordion-item ${isOpen ? 'open' : ''}`}>
+    <div className="adv-filter__accordion-header" onClick={onToggle}>
+      <span className="adv-filter__accordion-title">{title}</span>
+      <div className="adv-filter__accordion-icon"><ChevronDownIcon /></div>
     </div>
-    <div className="accordion-content">
+    <div className="adv-filter__accordion-content">
       {children}
     </div>
   </div>
 );
 
-// Render Tag List Group
 const TagFilterGroup: React.FC<{
   items: string[];
   selectedItems: string[];
   onToggle: (item: string) => void;
 }> = ({ items, selectedItems, onToggle }) => (
-  <div className="tag-list">
+  <div className="adv-filter__tag-list">
     {items.map(item => (
       <button 
         key={item}
-        className={`filter-tag ${selectedItems.includes(item) ? 'active' : ''}`}
+        className={`adv-filter__tag ${selectedItems.includes(item) ? 'active' : ''}`}
         onClick={() => onToggle(item)}
       >
         {item}
@@ -100,15 +98,14 @@ const TagFilterGroup: React.FC<{
   </div>
 );
 
-// Render Checkbox List Group
 const CheckboxFilterGroup: React.FC<{
     items: string[];
     selectedItems: string[];
     onToggle: (item: string) => void;
 }> = ({ items, selectedItems, onToggle }) => (
-    <div className="checkbox-list">
+    <div className="adv-filter__checkbox-list">
         {items.map(item => (
-            <label key={item} className="checkbox-item">
+            <label key={item} className="adv-filter__checkbox-item">
                 <input 
                     type="checkbox" 
                     checked={selectedItems.includes(item)}
@@ -127,7 +124,6 @@ interface AdvanceFilterProps {
 
 // --- Main Component ---
 const AdvanceFilter: React.FC<AdvanceFilterProps> = ({ isOpen, onClose }) => {
-  // State for Accordions
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({
     brand: true,
     price: true,
@@ -145,10 +141,9 @@ const AdvanceFilter: React.FC<AdvanceFilterProps> = ({ isOpen, onClose }) => {
     special: false
   });
 
-  // State for Selections
   const [selectedBrands, setSelectedBrands] = useState<number[]>([]);
   const [selectedPriceRanges, setSelectedPriceRanges] = useState<string[]>(['all']);
-  const [priceRangeValue, setPriceRangeValue] = useState<[number, number]>([0, 100]); // Mock value for slider (0-100%)
+  const [priceRangeValue, setPriceRangeValue] = useState<[number, number]>([0, 100]);
   const [selectedOS, setSelectedOS] = useState<string[]>([]);
   const [selectedROM, setSelectedROM] = useState<string[]>([]);
   const [selectedConnect, setSelectedConnect] = useState<string[]>([]);
@@ -163,7 +158,6 @@ const AdvanceFilter: React.FC<AdvanceFilterProps> = ({ isOpen, onClose }) => {
 
   const [isBrandExpanded, setIsBrandExpanded] = useState(false);
 
-  // Helper Functions
   const toggleSection = (key: string) => {
     setOpenSections(prev => ({ ...prev, [key]: !prev[key] }));
   };
@@ -176,7 +170,6 @@ const AdvanceFilter: React.FC<AdvanceFilterProps> = ({ isOpen, onClose }) => {
     }
   };
 
-  // Hàm xử lý riêng cho checkbox nhóm "Tất cả" (nếu chọn "Tất cả" thì bỏ chọn các cái khác và ngược lại)
   const toggleRadioLikeSelection = (item: string, list: string[], setter: React.Dispatch<React.SetStateAction<string[]>>) => {
       if (item === 'Tất cả') {
           setter(['Tất cả']);
@@ -192,174 +185,163 @@ const AdvanceFilter: React.FC<AdvanceFilterProps> = ({ isOpen, onClose }) => {
       }
   };
 
-  // --- THÊM ĐOẠN NÀY ĐỂ KHÓA CUỘN TRANG MAIN ---
   useEffect(() => {
     if (isOpen) {
-      // Khi mở filter -> Khóa cuộn body
       document.body.style.overflow = 'hidden';
-      
-      // (Mẹo nhỏ) Thêm padding-right để tránh giao diện bị giật nếu thanh cuộn PC biến mất
-      // document.body.style.paddingRight = '15px'; 
     } else {
-      // Khi đóng filter -> Mở lại cuộn
       document.body.style.overflow = 'unset';
-      // document.body.style.paddingRight = '0px';
     }
-
-    // Cleanup khi component bị hủy (hoặc chuyển trang)
     return () => {
       document.body.style.overflow = 'unset';
-      // document.body.style.paddingRight = '0px';
     };
   }, [isOpen]);
 
   return (
-    
-      <div className={`advance-filter-container ${isOpen ? 'open' : ''}`}>
-      {/* Header */}
-      {/* Header */}
-      <div className="filter-header">
-        <span className="flex items-center gap-2">
-            {/* Icon filter... */}
-            Bộ lọc tìm kiếm
-        </span>
-        {/* Gắn sự kiện onClose vào nút X */}
-        <span className="cursor-pointer" style={{fontSize: '20px'}} onClick={onClose}>✕</span>
-      </div>
+    <>
+      {/* Overlay to click outside and close */}
+      <div 
+        className={`adv-filter__overlay ${isOpen ? 'open' : ''}`} 
+        onClick={onClose}
+      ></div>
 
-      <div className="filter-body">
-        
-        {/* 1. Hãng sản xuất */}
-        <AccordionSection title="Hãng sản xuất" isOpen={openSections.brand} onToggle={() => toggleSection('brand')}>
-          <div className="brand-grid">
-            {(isBrandExpanded ? BRANDS : BRANDS.slice(0, 8)).map(brand => (
-              <div 
-                key={brand.id} 
-                className={`brand-item ${selectedBrands.includes(brand.id) ? 'active' : ''}`}
-                onClick={() => toggleSelection(brand.id, selectedBrands, setSelectedBrands)}
-              >
-                <img src={brand.image} alt={brand.name} />
-                <div className="check-corner"><CheckIcon /></div>
+      <div className={`adv-filter__container ${isOpen ? 'open' : ''}`}>
+        <div className="adv-filter__header">
+          <span className="flex items-center gap-2">
+              Bộ lọc tìm kiếm
+          </span>
+          <span className="adv-filter__close-btn" onClick={onClose}>✕</span>
+        </div>
+
+        <div className="adv-filter__body">
+          
+          {/* 1. Brand */}
+          <AccordionSection title="Hãng sản xuất" isOpen={openSections.brand} onToggle={() => toggleSection('brand')}>
+            <div className="adv-filter__brand-grid">
+              {(isBrandExpanded ? BRANDS : BRANDS.slice(0, 8)).map(brand => (
+                <div 
+                  key={brand.id} 
+                  className={`adv-filter__brand-item ${selectedBrands.includes(brand.id) ? 'active' : ''}`}
+                  onClick={() => toggleSelection(brand.id, selectedBrands, setSelectedBrands)}
+                >
+                  <img src={brand.image} alt={brand.name} />
+                  <div className="adv-filter__check-corner"><CheckIcon /></div>
+                </div>
+              ))}
+            </div>
+            <button className="adv-filter__btn-toggle-text" onClick={() => setIsBrandExpanded(!isBrandExpanded)}>
+              {isBrandExpanded ? 'Thu gọn' : `Xem thêm ${BRANDS.length - 8} hãng`}
+            </button>
+          </AccordionSection>
+
+          {/* 2. Price */}
+          <AccordionSection title="Mức giá" isOpen={openSections.price} onToggle={() => toggleSection('price')}>
+              <div className="adv-filter__checkbox-list">
+                  {PRICE_RANGES.map(price => (
+                      <label key={price.id} className="adv-filter__checkbox-item">
+                          <input 
+                              type="checkbox" 
+                              checked={selectedPriceRanges.includes(price.id)}
+                              onChange={() => toggleRadioLikeSelection(price.id, selectedPriceRanges, setSelectedPriceRanges)}
+                          />
+                          <span>{price.label}</span>
+                      </label>
+                  ))}
               </div>
-            ))}
-          </div>
-          <button className="btn-text-toggle" onClick={() => setIsBrandExpanded(!isBrandExpanded)}>
-            {isBrandExpanded ? 'Thu gọn' : `Xem thêm ${BRANDS.length - 8} hãng`}
+              
+              <p className="mt-3 text-sm font-medium" style={{marginBottom: '8px', marginTop: '12px'}}>Hoặc nhập khoảng giá:</p>
+              <div className="adv-filter__price-range">
+                  <div className="adv-filter__price-wrapper">
+                      <input type="text" defaultValue="0" />
+                      <span className="adv-filter__price-unit">.đ</span>
+                  </div>
+                  <span>~</span>
+                  <div className="adv-filter__price-wrapper">
+                      <input type="text" defaultValue="63.990" />
+                      <span className="adv-filter__price-unit">.000đ</span>
+                  </div>
+              </div>
+              <div className="adv-filter__slider-wrapper" style={{ padding: '0 8px' }}>
+                  <Slider 
+                      range 
+                      min={0} 
+                      max={100} 
+                      defaultValue={[0, 100]} 
+                      value={priceRangeValue}
+                      onChange={(val) => setPriceRangeValue(val as [number, number])}
+                      trackStyle={{ backgroundColor: '#555', height: 4 }}
+                      handleStyle={{ borderColor: '#555', backgroundColor: '#fff', opacity: 1, boxShadow: 'none' }}
+                      railStyle={{ backgroundColor: '#ddd', height: 4 }}
+                  />
+              </div>
+          </AccordionSection>
+
+          {/* 3. OS */}
+          <AccordionSection title="Hệ điều hành" isOpen={openSections.os} onToggle={() => toggleSection('os')}>
+              <TagFilterGroup items={OS_TAGS} selectedItems={selectedOS} onToggle={(item) => toggleSelection(item, selectedOS, setSelectedOS)} />
+          </AccordionSection>
+
+          {/* 4. ROM */}
+          <AccordionSection title="Dung lượng ROM" isOpen={openSections.rom} onToggle={() => toggleSection('rom')}>
+              <TagFilterGroup items={ROM_TAGS} selectedItems={selectedROM} onToggle={(item) => toggleSelection(item, selectedROM, setSelectedROM)} />
+          </AccordionSection>
+
+          {/* 5. Connect */}
+          <AccordionSection title="Kết nối" isOpen={openSections.connect} onToggle={() => toggleSection('connect')}>
+              <TagFilterGroup items={CONNECT_TAGS} selectedItems={selectedConnect} onToggle={(item) => toggleSelection(item, selectedConnect, setSelectedConnect)} />
+          </AccordionSection>
+
+          {/* 6. Battery */}
+          <AccordionSection title="Hiệu năng và Pin" isOpen={openSections.battery} onToggle={() => toggleSection('battery')}>
+              <CheckboxFilterGroup items={BATTERY_TAGS} selectedItems={selectedBattery} onToggle={(item) => toggleRadioLikeSelection(item, selectedBattery, setSelectedBattery)} />
+          </AccordionSection>
+
+          {/* 7. Network */}
+          <AccordionSection title="Hỗ trợ mạng" isOpen={openSections.network} onToggle={() => toggleSection('network')}>
+              <TagFilterGroup items={NETWORK_TAGS} selectedItems={selectedNetwork} onToggle={(item) => toggleSelection(item, selectedNetwork, setSelectedNetwork)} />
+          </AccordionSection>
+
+          {/* 8. RAM */}
+          <AccordionSection title="RAM" isOpen={openSections.ram} onToggle={() => toggleSection('ram')}>
+              <TagFilterGroup items={RAM_TAGS} selectedItems={selectedRAM} onToggle={(item) => toggleSelection(item, selectedRAM, setSelectedRAM)} />
+          </AccordionSection>
+
+          {/* 10. Screen */}
+          <AccordionSection title="Màn hình" isOpen={openSections.screen} onToggle={() => toggleSection('screen')}>
+              <CheckboxFilterGroup items={SCREEN_TAGS} selectedItems={selectedScreen} onToggle={(item) => toggleRadioLikeSelection(item, selectedScreen, setSelectedScreen)} />
+          </AccordionSection>
+
+          {/* 11. Screen Res */}
+          <AccordionSection title="Chuẩn màn hình" isOpen={openSections.screenRes} onToggle={() => toggleSection('screenRes')}>
+              <TagFilterGroup items={SCREEN_RESOLUTION_TAGS} selectedItems={selectedScreenRes} onToggle={(item) => toggleSelection(item, selectedScreenRes, setSelectedScreenRes)} />
+          </AccordionSection>
+
+          {/* 12. Refresh Rate */}
+          <AccordionSection title="Tần số quét" isOpen={openSections.refreshRate} onToggle={() => toggleSection('refreshRate')}>
+              <TagFilterGroup items={REFRESH_RATE_TAGS} selectedItems={selectedRefreshRate} onToggle={(item) => toggleSelection(item, selectedRefreshRate, setSelectedRefreshRate)} />
+          </AccordionSection>
+
+          {/* 13. Camera */}
+          <AccordionSection title="Camera" isOpen={openSections.camera} onToggle={() => toggleSection('camera')}>
+              <CheckboxFilterGroup items={CAMERA_TAGS} selectedItems={selectedCamera} onToggle={(item) => toggleRadioLikeSelection(item, selectedCamera, setSelectedCamera)} />
+          </AccordionSection>
+
+          {/* 14. Special Features */}
+          <AccordionSection title="Tính năng đặc biệt" isOpen={openSections.special} onToggle={() => toggleSection('special')}>
+              <CheckboxFilterGroup items={SPECIAL_FEATURES_TAGS} selectedItems={selectedSpecial} onToggle={(item) => toggleRadioLikeSelection(item, selectedSpecial, setSelectedSpecial)} />
+          </AccordionSection>
+
+        </div>
+
+        <div className="adv-filter__footer">
+          <button className="adv-filter__btn-reset" onClick={() => window.location.reload()}>
+              Thiết lập lại
           </button>
-        </AccordionSection>
-
-        {/* 2. Mức giá */}
-        <AccordionSection title="Mức giá" isOpen={openSections.price} onToggle={() => toggleSection('price')}>
-            <div className="checkbox-list">
-                {PRICE_RANGES.map(price => (
-                    <label key={price.id} className="checkbox-item">
-                        <input 
-                            type="checkbox" 
-                            checked={selectedPriceRanges.includes(price.id)}
-                            onChange={() => toggleRadioLikeSelection(price.id, selectedPriceRanges, setSelectedPriceRanges)}
-                        />
-                        <span>{price.label}</span>
-                    </label>
-                ))}
-            </div>
-            
-            <p className="mt-3 text-sm font-medium" style={{marginBottom: '8px'}}>Hoặc nhập khoảng giá phù hợp với bạn:</p>
-            <div className="price-input-range">
-                <div className="price-input-wrapper">
-                    <input type="text" defaultValue="0" />
-                    <span className="price-unit">.đ</span>
-                </div>
-                <span>~</span>
-                <div className="price-input-wrapper">
-                    <input type="text" defaultValue="63.990" />
-                    <span className="price-unit">.000đ</span>
-                </div>
-            </div>
-            <div style={{ padding: '0 8px' }}>
-                <Slider 
-                    range 
-                    min={0} 
-                    max={100} 
-                    defaultValue={[0, 100]} 
-                    value={priceRangeValue}
-                    onChange={(val) => setPriceRangeValue(val as [number, number])}
-                    trackStyle={{ backgroundColor: '#555', height: 4 }}
-                    handleStyle={{ borderColor: '#555', backgroundColor: '#fff', opacity: 1, boxShadow: 'none' }}
-                    railStyle={{ backgroundColor: '#ddd', height: 4 }}
-                />
-            </div>
-        </AccordionSection>
-
-        {/* 3. Hệ điều hành */}
-        <AccordionSection title="Hệ điều hành" isOpen={openSections.os} onToggle={() => toggleSection('os')}>
-            <TagFilterGroup items={OS_TAGS} selectedItems={selectedOS} onToggle={(item) => toggleSelection(item, selectedOS, setSelectedOS)} />
-        </AccordionSection>
-
-        {/* 4. Dung lượng ROM */}
-        <AccordionSection title="Dung lượng ROM" isOpen={openSections.rom} onToggle={() => toggleSection('rom')}>
-            <TagFilterGroup items={ROM_TAGS} selectedItems={selectedROM} onToggle={(item) => toggleSelection(item, selectedROM, setSelectedROM)} />
-        </AccordionSection>
-
-        {/* 5. Kết nối */}
-        <AccordionSection title="Kết nối" isOpen={openSections.connect} onToggle={() => toggleSection('connect')}>
-            <TagFilterGroup items={CONNECT_TAGS} selectedItems={selectedConnect} onToggle={(item) => toggleSelection(item, selectedConnect, setSelectedConnect)} />
-        </AccordionSection>
-
-        {/* 6. Hiệu năng và Pin */}
-        <AccordionSection title="Hiệu năng và Pin" isOpen={openSections.battery} onToggle={() => toggleSection('battery')}>
-            <CheckboxFilterGroup items={BATTERY_TAGS} selectedItems={selectedBattery} onToggle={(item) => toggleRadioLikeSelection(item, selectedBattery, setSelectedBattery)} />
-        </AccordionSection>
-
-        {/* 7. Hỗ trợ mạng */}
-        <AccordionSection title="Hỗ trợ mạng" isOpen={openSections.network} onToggle={() => toggleSection('network')}>
-            <TagFilterGroup items={NETWORK_TAGS} selectedItems={selectedNetwork} onToggle={(item) => toggleSelection(item, selectedNetwork, setSelectedNetwork)} />
-        </AccordionSection>
-
-        {/* 8. RAM */}
-        <AccordionSection title="RAM" isOpen={openSections.ram} onToggle={() => toggleSection('ram')}>
-            <TagFilterGroup items={RAM_TAGS} selectedItems={selectedRAM} onToggle={(item) => toggleSelection(item, selectedRAM, setSelectedRAM)} />
-        </AccordionSection>
-
-
-        {/* 10. Màn hình */}
-        <AccordionSection title="Màn hình" isOpen={openSections.screen} onToggle={() => toggleSection('screen')}>
-            <CheckboxFilterGroup items={SCREEN_TAGS} selectedItems={selectedScreen} onToggle={(item) => toggleRadioLikeSelection(item, selectedScreen, setSelectedScreen)} />
-        </AccordionSection>
-
-        {/* 11. Chuẩn màn hình */}
-        <AccordionSection title="Chuẩn màn hình" isOpen={openSections.screenRes} onToggle={() => toggleSection('screenRes')}>
-            <TagFilterGroup items={SCREEN_RESOLUTION_TAGS} selectedItems={selectedScreenRes} onToggle={(item) => toggleSelection(item, selectedScreenRes, setSelectedScreenRes)} />
-        </AccordionSection>
-
-        {/* 12. Tần số quét */}
-        <AccordionSection title="Tần số quét" isOpen={openSections.refreshRate} onToggle={() => toggleSection('refreshRate')}>
-            <TagFilterGroup items={REFRESH_RATE_TAGS} selectedItems={selectedRefreshRate} onToggle={(item) => toggleSelection(item, selectedRefreshRate, setSelectedRefreshRate)} />
-        </AccordionSection>
-
-        {/* 13. Camera */}
-        <AccordionSection title="Camera" isOpen={openSections.camera} onToggle={() => toggleSection('camera')}>
-            <CheckboxFilterGroup items={CAMERA_TAGS} selectedItems={selectedCamera} onToggle={(item) => toggleRadioLikeSelection(item, selectedCamera, setSelectedCamera)} />
-        </AccordionSection>
-
-        {/* 14. Tính năng đặc biệt */}
-        <AccordionSection title="Tính năng đặc biệt" isOpen={openSections.special} onToggle={() => toggleSection('special')}>
-            <CheckboxFilterGroup items={SPECIAL_FEATURES_TAGS} selectedItems={selectedSpecial} onToggle={(item) => toggleRadioLikeSelection(item, selectedSpecial, setSelectedSpecial)} />
-        </AccordionSection>
-
+          <button className="adv-filter__btn-apply" onClick={onClose}>
+              Áp dụng
+          </button>
+        </div>
       </div>
-
-      {/* Footer Actions */}
-      <div className="filter-footer">
-        <button className="btn-reset" onClick={() => window.location.reload()}>
-            Thiết lập lại
-        </button>
-        {/* Nút Áp dụng cũng nên đóng Filter */}
-        <button className="btn-apply" onClick={onClose}>
-            Áp dụng
-        </button>
-      </div>
-    </div>
-   
+    </>
   );
 };
 

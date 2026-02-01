@@ -16,6 +16,7 @@ import Profile from "../components/Account/Profile/Profile";
 import Member from "../pages/Account/Member";
 import VoucherCenter from "../components/Account/VoucherCenter/VoucherCenter";
 import Checkout from "../pages/Checkout/Checkout";
+import ForgotPasswordPage from "../pages/ForgotPasswordPage/ForgotPasswordPage";
 export default function useRouteElements() {
     const routeElements = useRoutes([
         // --- CÁC ROUTE DÙNG HEADER CHÍNH ---
@@ -88,6 +89,10 @@ export default function useRouteElements() {
         {
             path: '/register',
             element: <Register />
+        },
+        {
+            path:'/forgot-password',
+            element:<ForgotPasswordPage/>
         }
     ]);
 

@@ -9,8 +9,24 @@
     --bg-gray: #f3f4f6;
 }
 
-/* --- 1. KHUNG CHÍNH (STICKY) --- */
-.advance-filter-container {
+/* --- OVERLAY (Background Dim) --- */
+.adv-filter__overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 998; /* Just below the container */
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease;
+}
+
+.adv-filter__overlay.open {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* --- 1. MAIN CONTAINER (STICKY / FIXED) --- */
+.adv-filter__container {
     background: var(--bg-white);
     border: 1px solid var(--border-color);
     border-radius: 8px;
@@ -18,25 +34,23 @@
     max-width: 100%;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     
-    /* Layout Flex để chia Header - Body - Footer */
+    /* Layout Flex for Header - Body - Footer */
     display: flex;
     flex: 1;
     flex-direction: column;
 
-    /* LOGIC STICKY: Dính chặt khi cuộn */
-    position: -webkit-sticky; /* Safari */
+    /* Desktop Sticky Logic */
+    position: -webkit-sticky;
     position: sticky;
-    top: 16px; /* Cách mép trên màn hình 16px (bạn có thể tăng nếu có Header dính) */
-    
-    /* LOGIC FULL HEIGHT: Chiều cao bằng 100% màn hình trừ đi khoảng cách trên dưới */
+    top: 16px;
     height: calc(100vh - 32px); 
     z-index: 10;
-    overflow: hidden; /* Bo góc mượt mà */
+    overflow: hidden;
 }
 
-/* --- 2. HEADER (CỐ ĐỊNH) --- */
-.filter-header {
-    flex-shrink: 0; /* Không bị co lại */
+/* --- 2. HEADER --- */
+.adv-filter__header {
+    flex-shrink: 0;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -47,55 +61,54 @@
     background: var(--bg-white);
 }
 
-/* --- 3. BODY (CUỘN NỘI DUNG) --- */
-.filter-body {
-    flex-grow: 1; /* Chiếm toàn bộ khoảng trống còn lại */
-    overflow-y: auto; /* Tạo thanh cuộn dọc riêng cho khu vực này */
+.adv-filter__close-btn {
+    cursor: pointer;
+    font-size: 20px;
+    line-height: 1;
+}
+
+/* --- 3. BODY (SCROLLABLE) --- */
+.adv-filter__body {
+    flex-grow: 1;
+    overflow-y: auto;
     overflow-x: hidden;
     padding-bottom: 10px;
-    
-    /* Tối ưu trải nghiệm cuộn */
-    overscroll-behavior: contain; /* Ngăn việc cuộn lan ra trang chính */
-    
-    /* Tùy chỉnh thanh cuộn (Chrome/Safari/Edge) */
+    overscroll-behavior: contain;
     scrollbar-width: thin;
     scrollbar-color: #d1d5db transparent;
 }
 
 /* Webkit Scrollbar styling */
-.filter-body::-webkit-scrollbar {
+.adv-filter__body::-webkit-scrollbar {
     width: 6px;
 }
-.filter-body::-webkit-scrollbar-track {
+.adv-filter__body::-webkit-scrollbar-track {
     background: transparent;
 }
-.filter-body::-webkit-scrollbar-thumb {
+.adv-filter__body::-webkit-scrollbar-thumb {
     background-color: #d1d5db;
     border-radius: 20px;
 }
-.filter-body::-webkit-scrollbar-thumb:hover {
+.adv-filter__body::-webkit-scrollbar-thumb:hover {
     background-color: #9ca3af;
 }
 
-/* --- 4. FOOTER (CỐ ĐỊNH DƯỚI CÙNG) --- */
-.filter-footer {
-    flex-shrink: 0; /* Không bị co lại */
+/* --- 4. FOOTER --- */
+.adv-filter__footer {
+    flex-shrink: 0;
     display: flex;
     gap: 12px;
     padding: 16px;
     border-top: 1px solid var(--border-color);
     background: var(--bg-white);
-    /* Nằm trong Flex column nên tự động ở đáy, không cần position sticky */
 }
 
-/* --- CÁC STYLE CON (ACCORDION, TAGS...) GIỮ NGUYÊN --- */
-
-/* Accordion */
-.accordion-item {
+/* --- ACCORDION SECTIONS --- */
+.adv-filter__accordion-item {
     border-bottom: 1px solid var(--border-color);
 }
 
-.accordion-header {
+.adv-filter__accordion-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -103,44 +116,53 @@
     cursor: pointer;
     background: var(--bg-white);
     transition: background 0.2s;
+    user-select: none;
 }
 
-
-
-.accordion-title {
+.adv-filter__accordion-title {
     font-weight: 600;
     font-size: 14px;
     color: var(--text-primary);
 }
 
-.accordion-icon {
+.adv-filter__accordion-icon {
     width: 16px;
     height: 16px;
     transition: transform 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-.accordion-item.open .accordion-icon {
+/* State: Open Accordion */
+.adv-filter__accordion-item.open .adv-filter__accordion-icon {
     transform: rotate(180deg);
 }
 
-.accordion-content {
+.adv-filter__accordion-content {
     display: none;
     padding: 0 16px 16px 16px;
+    animation: advFilterSlideDown 0.3s ease;
 }
 
-.accordion-item.open .accordion-content {
+.adv-filter__accordion-item.open .adv-filter__accordion-content {
     display: block;
 }
 
-/* Brand Grid */
-.brand-grid {
+@keyframes advFilterSlideDown {
+    from { opacity: 0; transform: translateY(-5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* --- BRAND GRID --- */
+.adv-filter__brand-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 8px;
     margin-top: 12px;
 }
 
-.brand-item {
+.adv-filter__brand-item {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -151,19 +173,21 @@
     background: var(--bg-white);
     position: relative;
     height: 36px;
+    overflow: hidden;
 }
 
-.brand-item img {
+.adv-filter__brand-item img {
     max-height: 18px;
     max-width: 100%;
     object-fit: contain;
 }
 
-.brand-item.active {
+.adv-filter__brand-item.active {
     border-color: var(--fpt-red);
 }
 
-.check-corner {
+/* Brand Check Corner */
+.adv-filter__check-corner {
     position: absolute;
     top: 0;
     right: 0;
@@ -173,8 +197,8 @@
     clip-path: polygon(0 0, 100% 0, 100% 100%);
     display: none;
 }
-.brand-item.active .check-corner { display: block; }
-.check-corner svg {
+.adv-filter__brand-item.active .adv-filter__check-corner { display: block; }
+.adv-filter__check-corner svg {
     position: absolute;
     top: 1px;
     right: 1px;
@@ -183,17 +207,16 @@
     fill: white;
 }
 
-/* Tags (Chip buttons) */
-.tag-list {
+/* --- TAGS (CHIP BUTTONS) --- */
+.adv-filter__tag-list {
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
     margin-top: 12px;
 }
 
-/* --- Style cơ bản của Tag --- */
-.filter-tag {
-    position: relative; /* Để căn vị trí cho góc tam giác */
+.adv-filter__tag {
+    position: relative;
     padding: 6px 12px;
     border: 1px solid var(--border-color);
     border-radius: 4px;
@@ -201,63 +224,58 @@
     font-size: 13px;
     cursor: pointer;
     transition: all 0.2s;
-    overflow: hidden; /* Quan trọng: để tam giác không bị lòi ra ngoài bo góc */
-    min-width: 60px; /* Đảm bảo nút không quá nhỏ */
+    overflow: hidden;
+    min-width: 60px;
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
-/* --- Style khi Active (Được chọn) --- */
-.filter-tag.active {
-    border: 1px solid var(--fpt-red); /* Viền đỏ */
-    background-color: #fff; /* Nền trắng (giống ảnh mẫu) */
-    color: var(--text-primary); /* Chữ giữ màu đen */
-    font-weight: 600; /* Chữ đậm lên một chút */
-    padding-right: 12px; /* Reset padding, không cần chừa chỗ như code cũ */
+.adv-filter__tag.active {
+    border: 1px solid var(--fpt-red);
+    background-color: #fff;
+    color: var(--text-primary);
+    font-weight: 600;
+    padding-right: 12px;
 }
 
-/* 1. Tạo hình tam giác đỏ ở góc trên bên phải */
-.filter-tag.active::after {
+/* Tag Active Corner */
+.adv-filter__tag.active::after {
     content: '';
     position: absolute;
     top: 0;
     right: 0;
-    width: 22px; /* Kích thước cạnh của tam giác */
+    width: 22px;
     height: 22px;
     background-color: var(--fpt-red);
-    /* Cắt hình vuông thành tam giác vuông cân ở góc trên phải */
     clip-path: polygon(0 0, 100% 0, 100% 100%); 
     z-index: 1;
 }
 
-/* 2. Định vị icon Check nằm đè lên tam giác đỏ */
-.filter-tag.active svg {
+.adv-filter__tag.active svg {
     position: absolute;
-    top: 3px;   /* Căn chỉnh vị trí so với mép trên */
-    right: 2px; /* Căn chỉnh vị trí so với mép phải */
-    width: 8px; /* Kích thước icon nhỏ lại cho vừa tam giác */
+    top: 3px;
+    right: 2px;
+    width: 8px;
     height: 8px;
-    z-index: 2; /* Nằm trên lớp tam giác đỏ */
-    transform: none; /* Bỏ transform center cũ nếu có */
+    z-index: 2;
 }
 
-/* Đổi màu icon thành trắng */
-.filter-tag.active svg path {
+.adv-filter__tag.active svg path {
     fill: white;
     stroke: white;
-    stroke-width: 1.5; /* Làm nét icon dày hơn 1 chút cho rõ */
+    stroke-width: 1.5;
 }
 
-/* Checkbox List */
-.checkbox-list {
+/* --- CHECKBOX LIST --- */
+.adv-filter__checkbox-list {
     display: flex;
     flex-direction: column;
     gap: 10px;
     margin-top: 12px;
 }
 
-.checkbox-item {
+.adv-filter__checkbox-item {
     display: flex;
     align-items: center;
     gap: 8px;
@@ -266,15 +284,15 @@
     user-select: none;
 }
 
-.checkbox-item input[type="checkbox"] {
+.adv-filter__checkbox-item input[type="checkbox"] {
     accent-color: var(--fpt-red);
     width: 18px;
     height: 18px;
     cursor: pointer;
 }
 
-/* Price Filter Range */
-.price-input-range {
+/* --- PRICE RANGE --- */
+.adv-filter__price-range {
     display: flex;
     align-items: center;
     gap: 8px;
@@ -282,12 +300,12 @@
     margin-bottom: 20px;
 }
 
-.price-input-wrapper {
+.adv-filter__price-wrapper {
     position: relative;
     flex: 1;
 }
 
-.price-input-wrapper input {
+.adv-filter__price-wrapper input {
     width: 100%;
     padding: 8px 30px 8px 8px;
     border: 1px solid var(--border-color);
@@ -297,11 +315,11 @@
     outline: none;
 }
 
-.price-input-wrapper input:focus {
+.adv-filter__price-wrapper input:focus {
     border-color: var(--text-secondary);
 }
 
-.price-unit {
+.adv-filter__price-unit {
     position: absolute;
     right: 8px;
     top: 50%;
@@ -310,8 +328,8 @@
     color: var(--text-secondary);
 }
 
-/* Slider CSS override (Nếu dùng rc-slider) */
-.rc-slider-handle {
+/* --- SLIDER OVERRIDES (Scoped) --- */
+.adv-filter__slider-wrapper .rc-slider-handle {
     border-color: #374151 !important;
     background-color: #fff !important;
     opacity: 1 !important;
@@ -320,15 +338,15 @@
     height: 18px !important;
     margin-top: -7px !important;
 }
-.rc-slider-track {
+.adv-filter__slider-wrapper .rc-slider-track {
     background-color: #374151 !important;
 }
-.rc-slider-rail {
+.adv-filter__slider-wrapper .rc-slider-rail {
     background-color: #e5e7eb !important;
 }
 
-/* Buttons */
-.btn-reset, .btn-apply {
+/* --- BUTTONS --- */
+.adv-filter__btn-reset, .adv-filter__btn-apply {
     flex: 1;
     padding: 10px;
     border-radius: 4px;
@@ -337,27 +355,28 @@
     cursor: pointer;
     text-align: center;
     transition: all 0.2s;
+    border: none;
 }
 
-.btn-reset {
+.adv-filter__btn-reset {
     background: var(--bg-white);
     border: 1px solid var(--fpt-red);
     color: var(--fpt-red);
 }
-.btn-reset:hover {
+.adv-filter__btn-reset:hover {
     background: #fdf2f2;
 }
 
-.btn-apply {
+.adv-filter__btn-apply {
     background: var(--fpt-red);
     border: 1px solid var(--fpt-red);
     color: white;
 }
-.btn-apply:hover {
+.adv-filter__btn-apply:hover {
     background: #b91c1c;
 }
 
-.btn-text-toggle {
+.adv-filter__btn-toggle-text {
     margin-top: 12px;
     background: none;
     border: none;
@@ -368,88 +387,43 @@
     font-weight: 500;
 }
 
-/* --- STYLES CHO MOBILE / TABLET --- */
+/* --- RESPONSIVE / MOBILE STYLES --- */
 @media (max-width: 1024px) {
-    /* Mặc định ẩn filter trên mobile */
-    .advance-filter-container {
-        display: block !important; /* Ghi đè display: none cũ nếu có */
-        position: fixed;
-        bottom: -100%; /* Giấu xuống dưới đáy màn hình */
-        left: 0;
-        width: 100%;
-        height: 85vh; /* Chiếm 85% chiều cao màn hình */
-        z-index: 1000; /* Nằm trên tất cả */
-        border-radius: 16px 16px 0 0; /* Bo tròn 2 góc trên */
-        box-shadow: 0 -4px 20px rgba(0,0,0,0.2);
-        transition: bottom 0.3s ease-in-out; /* Hiệu ứng trượt */
-        
-        /* Reset các thuộc tính của PC */
-        top: auto;
-        position: fixed;
-        max-width: 100%;
-        border: none;
-    }
-
-    /* Class .open được thêm vào khi bấm nút Lọc */
-    .advance-filter-container.open {
-        bottom: 0; /* Trượt lên vị trí 0 */
-    }
-}
-
-/* Overlay (Lớp nền đen mờ) */
-.filter-overlay {
-    position: fixed;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background: rgba(0,0,0,0.5);
-    z-index: 999; /* Nằm dưới Filter nhưng trên content */
-    display: block;
-}
-
-/* AdvanceFilter.css */
-
-@media (max-width: 1024px) {
-    /* 1. Container chính: Đã set height 85vh (tốt) */
-    .advance-filter-container {
+    .adv-filter__container {
         display: flex !important;
         flex-direction: column;
         position: fixed;
         bottom: 0;
         left: 0;
         width: 100%;
-        height: 85vh; /* 85% màn hình */
+        height: 85vh;
         background: #fff;
         z-index: 1000;
         border-radius: 16px 16px 0 0;
+        border: none;
+        box-shadow: 0 -4px 20px rgba(0,0,0,0.2);
+        
+        /* Animation Logic */
         transform: translateY(100%);
         transition: transform 0.3s ease-in-out;
+        
+        /* Reset Desktop props */
+        top: auto;
+        max-width: 100%;
     }
 
-    .advance-filter-container.open {
+    .adv-filter__container.open {
         transform: translateY(0);
     }
 
-    /* 2. Header & Footer: Cố định */
-    .filter-header, .filter-footer {
-        flex-shrink: 0; 
-        background: #fff; /* Đảm bảo nền trắng */
-        z-index: 10; /* Nổi lên trên nội dung khi cuộn */
-    }
-
-    /* 3. BODY: PHẦN CUỘN (QUAN TRỌNG NHẤT) */
-    .filter-body {
-        /* Bắt buộc phải có để chiếm không gian còn lại */
-        flex: 1; 
-        
-        /* Set chiều cao cụ thể để overflow hoạt động */
-        height: 100%; 
-        min-height: 0; /* Fix lỗi flexbox trên một số trình duyệt cũ */
-        
-        /* Kích hoạt cuộn */
-        overflow-y: auto !important; 
+    .adv-filter__body {
+        /* Mobile Scroll */
+        flex: 1;
+        height: 100%;
+        min-height: 0;
+        overflow-y: auto !important;
         -webkit-overflow-scrolling: touch;
-        
-        /* Padding để nội dung không dính sát lề */
-        padding-bottom: 20px; 
+        padding-bottom: 20px;
         padding-top: 10px;
     }
 }

@@ -1,0 +1,176 @@
+.contact-floating-wrapper {
+    position: fixed;
+    bottom: 110px; /* Cao hơn nút Chatbot */
+    right: 35px;
+    z-index: 9998;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 12px;
+    overflow: visible;
+}
+
+/* Nút Gọi chính */
+.contact-main-btn {
+    position: relative;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    border: none;
+    background: #0088ff;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.contact-main-btn:hover {
+    transform: scale(1.1);
+}
+
+.contact-main-btn.active {
+    background: #374151;
+    transform: rotate(45deg);
+}
+.contact-tooltip {
+    position: absolute;
+    right: 100%; /* Đẩy sang bên trái của nút */
+    top: 50%;
+    transform: translateY(-50%);
+    
+    background-color: white;
+    color: #333;
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 700;
+    white-space: nowrap; /* Không xuống dòng */
+    margin-right: 15px; /* Cách nút ra một chút */
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    border: 1px solid #eee;
+    
+    /* Hiệu ứng hiện ra */
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    
+    /* Mũi tên nhỏ trỏ vào nút (Optional) */
+}
+
+/* Tạo mũi tên nhỏ bên phải tooltip */
+.contact-tooltip::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    right: -6px; /* Đẩy ra mép phải */
+    transform: translateY(-50%);
+    border-width: 6px 0 6px 6px;
+    border-style: solid;
+    border-color: transparent transparent transparent white;
+}
+
+/* --- LOGIC HIỂN THỊ --- */
+
+/* Cách 1: Hover vào nút mới hiện chữ (Dành cho Desktop) */
+.contact-main-btn:hover .contact-tooltip {
+    opacity: 1;
+    visibility: visible;
+    margin-right: 10px; 
+}
+/* Menu danh sách */
+.contact-options {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    align-items: flex-end;
+    opacity: 0;
+    transform: translateY(20px) scale(0.9);
+    pointer-events: none;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.contact-options.show {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    pointer-events: all;
+}
+
+.contact-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+/* Label chữ bên cạnh */
+.contact-item .label {
+    background: white;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #374151;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    opacity: 0;
+    transform: translateX(10px);
+    transition: all 0.2s;
+    white-space: nowrap;
+}
+
+.contact-item:hover .label {
+    opacity: 1;
+    transform: translateX(0);
+    color: #cb1c22;
+}
+
+/* Icon tròn */
+.contact-item .icon-circle {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    font-size: 22px;
+    background: white;
+    transition: transform 0.2s;
+}
+
+.contact-item:hover .icon-circle {
+    transform: scale(1.1);
+}
+
+/* ================= RESPONSIVE MOBILE ================= */
+@media (max-width: 768px) {
+    .contact-floating-wrapper {
+        bottom: 90px;
+        right: 25px;
+    }
+
+    .contact-item .label {
+        /* Trên mobile có thể luôn hiện hoặc ẩn hẳn tùy thích */
+        /* Ở đây mình để luôn hiện nhưng nhỏ hơn chút */
+        opacity: 1; 
+        transform: translateX(0);
+        font-size: 12px;
+        padding: 6px 12px;
+    }
+    
+    .contact-item .icon-circle {
+        width: 40px;
+        height: 40px;
+        font-size: 18px;
+    }
+
+    .contact-main-btn {
+        width: 45px;
+        height: 45px;
+        font-size: 20px;
+    }
+}

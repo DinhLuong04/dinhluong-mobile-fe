@@ -1,9 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import Slider from 'rc-slider';
 import 'rc-slider/assets/index.css'; 
-import './Fillter.css'; // Make sure this path is correct
+import './Fillter.css'; 
 
-// --- Icons ---
+// 1. IMPORT TYPE (Đảm bảo đường dẫn đúng)
+import type { ProductFilterParams } from "../../types/Product.types"
+const extractNumber = (str: string): number | undefined => {
+      const match = str.match(/\d+(\.\d+)?/); // Tìm số nguyên hoặc số thập phân
+      return match ? parseFloat(match[0]) : undefined;
+  };
+// --- Icons (Giữ nguyên) ---
 const ChevronDownIcon = () => (
   <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path d="M3.2 5.7C3.5 5.4 4 5.4 4.3 5.7L8 9.2L11.7 5.7C12 5.4 12.5 5.4 12.8 5.7C13.1 6 13.1 6.5 12.8 6.8L8.5 10.8C8.2 11.1 7.8 11.1 7.5 10.8L3.2 6.8C2.9 6.5 2.9 6 3.2 5.7Z" fill="#090D14"/>
@@ -16,7 +22,7 @@ const CheckIcon = () => (
     </svg>
 );
 
-// --- Data Constants (Same as before) ---
+// --- Data Constants (Giữ nguyên) ---
 const BRANDS = [
   { id: 1, name: "iPhone", image: "https://cdn2.fptshop.com.vn/unsafe/256x0/filters:format(webp):quality(75)/small/logo_iphone_ngang_eac93ff477.png" },
   { id: 2, name: "Samsung", image: "https://cdn2.fptshop.com.vn/unsafe/256x0/filters:format(webp):quality(75)/small/logo_samsung_ngang_1624d75bd8.png"},
@@ -49,19 +55,15 @@ const PRICE_RANGES = [
 ];
 
 const OS_TAGS = ['iOS', 'Android'];
-const ROM_TAGS = ['≤128 GB', '256 GB', '512 GB', '1 TB'];
-const CONNECT_TAGS = ['NFC', 'Bluetooth', 'Hồng ngoại'];
+const ROM_TAGS = ['128 GB', '256 GB', '512 GB', '1 TB'];
 const BATTERY_TAGS = ['Tất cả', 'Dưới 3000 mAh', 'Pin từ 3000 - 4000 mAh', 'Pin từ 4000 - 5500 mAh', 'Pin trâu: trên 5500 mAh'];
 const NETWORK_TAGS = ['5G', '4G'];
 const RAM_TAGS = ['3 GB', '4 GB', '6 GB', '8 GB', '12 GB', '16 GB'];
 const SCREEN_TAGS = ['Tất cả', 'Màn hình nhỏ', 'Từ 5 - 6.5 inch', 'Từ 6.5 - 6.8 inch', 'Trên 6.8 inch'];
-const SCREEN_RESOLUTION_TAGS = ['Retina (iPhone)', 'HD+', 'Full HD', 'Full HD+', '2K', '4K'];
 const REFRESH_RATE_TAGS = ['Trên 144 Hz', '120 Hz', '90 Hz', '60 Hz'];
-const CAMERA_TAGS = ['Tất cả', 'Quay phim Slow Motion', 'AI Camera', 'Hiệu ứng làm đẹp', 'Zoom quang học', 'Chống rung OIS', 'Chụp macro', 'Chụp góc rộng', 'Chụp xóa phông'];
-const SPECIAL_FEATURES_TAGS = ['Tất cả', 'Sạc không dây', 'Sạc ngược cho thiết bị khác'];
 
-// --- Sub-Components (With Renamed Classes) ---
 
+// --- Sub-Components (Giữ nguyên) ---
 const AccordionSection: React.FC<{
   title: string;
   isOpen: boolean;
@@ -117,28 +119,26 @@ const CheckboxFilterGroup: React.FC<{
     </div>
 );
 
+// 2. CẬP NHẬT PROPS INTERFACE
 interface AdvanceFilterProps {
   isOpen?: boolean;
   onClose?: () => void;
+  // Callback để truyền dữ liệu lên cha (ProductSection)
+  onApply: (filters: ProductFilterParams) => void; 
 }
 
 // --- Main Component ---
-const AdvanceFilter: React.FC<AdvanceFilterProps> = ({ isOpen, onClose }) => {
+const AdvanceFilter: React.FC<AdvanceFilterProps> = ({ isOpen, onClose, onApply }) => {
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({
     brand: true,
     price: true,
     os: false,
     rom: false,
-    connect: false,
     battery: false,
     network: false,
     ram: false,
-    memoryCard: false,
     screen: false,
-    screenRes: false,
     refreshRate: false,
-    camera: false,
-    special: false
   });
 
   const [selectedBrands, setSelectedBrands] = useState<number[]>([]);
@@ -146,16 +146,11 @@ const AdvanceFilter: React.FC<AdvanceFilterProps> = ({ isOpen, onClose }) => {
   const [priceRangeValue, setPriceRangeValue] = useState<[number, number]>([0, 100]);
   const [selectedOS, setSelectedOS] = useState<string[]>([]);
   const [selectedROM, setSelectedROM] = useState<string[]>([]);
-  const [selectedConnect, setSelectedConnect] = useState<string[]>([]);
   const [selectedBattery, setSelectedBattery] = useState<string[]>(['Tất cả']);
   const [selectedNetwork, setSelectedNetwork] = useState<string[]>([]);
   const [selectedRAM, setSelectedRAM] = useState<string[]>([]);
   const [selectedScreen, setSelectedScreen] = useState<string[]>(['Tất cả']);
-  const [selectedScreenRes, setSelectedScreenRes] = useState<string[]>([]);
   const [selectedRefreshRate, setSelectedRefreshRate] = useState<string[]>([]);
-  const [selectedCamera, setSelectedCamera] = useState<string[]>(['Tất cả']);
-  const [selectedSpecial, setSelectedSpecial] = useState<string[]>(['Tất cả']);
-
   const [isBrandExpanded, setIsBrandExpanded] = useState(false);
 
   const toggleSection = (key: string) => {
@@ -196,9 +191,109 @@ const AdvanceFilter: React.FC<AdvanceFilterProps> = ({ isOpen, onClose }) => {
     };
   }, [isOpen]);
 
+  // 3. HÀM XỬ LÝ NÚT "ÁP DỤNG"
+  const handleApplyClick = () => {
+    const filters: ProductFilterParams = {};
+
+    // A. Brands (Chuyển ID -> Tên để gửi backend)
+    if (selectedBrands.length > 0) {
+        // Tìm tên hãng dựa vào ID đã chọn
+        filters.brands = BRANDS
+            .filter(b => selectedBrands.includes(b.id))
+            .map(b => b.name);
+    }
+
+    // B. OS
+    if (selectedOS.length > 0) filters.os = selectedOS;
+
+    // C. ROM
+    if (selectedROM.length > 0) filters.roms = selectedROM;
+
+    // D. RAM
+    if (selectedRAM.length > 0) filters.rams = selectedRAM;
+
+    // E. Network
+    if (selectedNetwork.length > 0) filters.networks = selectedNetwork;
+
+    // F. Price (Logic ưu tiên Checkbox, nếu không chọn checkbox thì lấy Slider)
+    let minP: number | undefined;
+    let maxP: number | undefined;
+
+    if (selectedPriceRanges.length > 0 && !selectedPriceRanges.includes('all')) {
+        // Lấy checkbox đầu tiên (đơn giản hóa)
+        const rangeId = selectedPriceRanges[0];
+        if (rangeId === 'under-2m') maxP = 2000000;
+        else if (rangeId === '2m-4m') { minP = 2000000; maxP = 4000000; }
+        else if (rangeId === '4m-7m') { minP = 4000000; maxP = 7000000; }
+        else if (rangeId === '7m-13m') { minP = 7000000; maxP = 13000000; }
+        else if (rangeId === '13m-20m') { minP = 13000000; maxP = 20000000; }
+        else if (rangeId === 'over-20m') minP = 20000000;
+    } else {
+        // Lấy giá trị từ Slider (đơn vị triệu)
+        if (priceRangeValue[0] > 0) minP = priceRangeValue[0] * 1000000;
+        if (priceRangeValue[1] < 100) maxP = priceRangeValue[1] * 1000000;
+    }
+
+    if (minP !== undefined) filters.minPrice = minP;
+    if (maxP !== undefined) filters.maxPrice = maxP;
+
+    // G. Battery (Sửa logic để bắt "Dưới 3000")
+    if (selectedBattery.length > 0 && !selectedBattery.includes('Tất cả')) {
+        const txt = selectedBattery[0];
+        if (txt.includes('Dưới 3000')) {
+            filters.maxBattery = 3000; // Tìm pin <= 3000
+        } else if (txt.includes('3000 - 4000')) {
+            filters.minBattery = 3000;
+            filters.maxBattery = 4000;
+        } else if (txt.includes('4000 - 5500')) {
+            filters.minBattery = 4000;
+            filters.maxBattery = 5500;
+        } else if (txt.includes('trên 5500')) {
+            filters.minBattery = 5500;
+        }
+    }
+
+    // H. Screen Size (Sửa logic để bắt "Màn hình nhỏ")
+    if (selectedScreen.length > 0 && !selectedScreen.includes('Tất cả')) {
+        const txt = selectedScreen[0];
+        if (txt.includes('Màn hình nhỏ')) {
+            filters.maxScreenSize = 5.0; // Giả sử nhỏ là <= 5 inch
+        } else if (txt.includes('5 - 6.5')) {
+            filters.minScreenSize = 5.0;
+            filters.maxScreenSize = 6.5;
+        } else if (txt.includes('6.5 - 6.8')) {
+            filters.minScreenSize = 6.5;
+            filters.maxScreenSize = 6.8;
+        } else if (txt.includes('Trên 6.8')) {
+            filters.minScreenSize = 6.8;
+        }
+    }
+
+    // I. Refresh Rate (Sửa lỗi "Trên 144")
+    if (selectedRefreshRate.length > 0) {
+        const txt = selectedRefreshRate[0];
+        const rate = extractNumber(txt); // Dùng hàm regex ở trên để lấy số chuẩn xác
+
+        if (rate !== undefined) {
+            if (txt.includes('Trên')) {
+                filters.minRefreshRate = rate; // >= 144
+            } else {
+                // Với các lựa chọn cụ thể như "120 Hz", "90 Hz"
+                // Bạn muốn tìm chính xác hay tìm >= ? 
+                // Thường là tìm chính xác hoặc >=. Ở đây để >= cho linh hoạt
+                filters.minRefreshRate = rate; 
+                // Nếu muốn tìm chính xác tuyệt đối thì uncomment dòng dưới:
+                // filters.maxRefreshRate = rate; 
+            }
+        }
+    }
+
+    // Gửi dữ liệu ra ngoài & Đóng popup
+    onApply(filters);
+  };
+
   return (
     <>
-      {/* Overlay to click outside and close */}
       <div 
         className={`adv-filter__overlay ${isOpen ? 'open' : ''}`} 
         onClick={onClose}
@@ -213,8 +308,9 @@ const AdvanceFilter: React.FC<AdvanceFilterProps> = ({ isOpen, onClose }) => {
         </div>
 
         <div className="adv-filter__body">
+          {/* ... (Phần render AccordionSection giữ nguyên không đổi) ... */}
           
-          {/* 1. Brand */}
+          {/* Ví dụ Brand Section */}
           <AccordionSection title="Hãng sản xuất" isOpen={openSections.brand} onToggle={() => toggleSection('brand')}>
             <div className="adv-filter__brand-grid">
               {(isBrandExpanded ? BRANDS : BRANDS.slice(0, 8)).map(brand => (
@@ -233,7 +329,7 @@ const AdvanceFilter: React.FC<AdvanceFilterProps> = ({ isOpen, onClose }) => {
             </button>
           </AccordionSection>
 
-          {/* 2. Price */}
+          {/* ... (Các section Price, OS, ROM, RAM... giữ nguyên code cũ) ... */}
           <AccordionSection title="Mức giá" isOpen={openSections.price} onToggle={() => toggleSection('price')}>
               <div className="adv-filter__checkbox-list">
                   {PRICE_RANGES.map(price => (
@@ -247,17 +343,16 @@ const AdvanceFilter: React.FC<AdvanceFilterProps> = ({ isOpen, onClose }) => {
                       </label>
                   ))}
               </div>
-              
               <p className="mt-3 text-sm font-medium" style={{marginBottom: '8px', marginTop: '12px'}}>Hoặc nhập khoảng giá:</p>
               <div className="adv-filter__price-range">
                   <div className="adv-filter__price-wrapper">
-                      <input type="text" defaultValue="0" />
-                      <span className="adv-filter__price-unit">.đ</span>
+                      <input type="text" value={priceRangeValue[0]} readOnly />
+                      <span className="adv-filter__price-unit">.tr</span>
                   </div>
                   <span>~</span>
                   <div className="adv-filter__price-wrapper">
-                      <input type="text" defaultValue="63.990" />
-                      <span className="adv-filter__price-unit">.000đ</span>
+                      <input type="text" value={priceRangeValue[1]} readOnly />
+                      <span className="adv-filter__price-unit">.tr</span>
                   </div>
               </div>
               <div className="adv-filter__slider-wrapper" style={{ padding: '0 8px' }}>
@@ -275,59 +370,32 @@ const AdvanceFilter: React.FC<AdvanceFilterProps> = ({ isOpen, onClose }) => {
               </div>
           </AccordionSection>
 
-          {/* 3. OS */}
           <AccordionSection title="Hệ điều hành" isOpen={openSections.os} onToggle={() => toggleSection('os')}>
               <TagFilterGroup items={OS_TAGS} selectedItems={selectedOS} onToggle={(item) => toggleSelection(item, selectedOS, setSelectedOS)} />
           </AccordionSection>
 
-          {/* 4. ROM */}
           <AccordionSection title="Dung lượng ROM" isOpen={openSections.rom} onToggle={() => toggleSection('rom')}>
               <TagFilterGroup items={ROM_TAGS} selectedItems={selectedROM} onToggle={(item) => toggleSelection(item, selectedROM, setSelectedROM)} />
           </AccordionSection>
 
-          {/* 5. Connect */}
-          <AccordionSection title="Kết nối" isOpen={openSections.connect} onToggle={() => toggleSection('connect')}>
-              <TagFilterGroup items={CONNECT_TAGS} selectedItems={selectedConnect} onToggle={(item) => toggleSelection(item, selectedConnect, setSelectedConnect)} />
-          </AccordionSection>
-
-          {/* 6. Battery */}
           <AccordionSection title="Hiệu năng và Pin" isOpen={openSections.battery} onToggle={() => toggleSection('battery')}>
               <CheckboxFilterGroup items={BATTERY_TAGS} selectedItems={selectedBattery} onToggle={(item) => toggleRadioLikeSelection(item, selectedBattery, setSelectedBattery)} />
           </AccordionSection>
 
-          {/* 7. Network */}
           <AccordionSection title="Hỗ trợ mạng" isOpen={openSections.network} onToggle={() => toggleSection('network')}>
               <TagFilterGroup items={NETWORK_TAGS} selectedItems={selectedNetwork} onToggle={(item) => toggleSelection(item, selectedNetwork, setSelectedNetwork)} />
           </AccordionSection>
 
-          {/* 8. RAM */}
           <AccordionSection title="RAM" isOpen={openSections.ram} onToggle={() => toggleSection('ram')}>
               <TagFilterGroup items={RAM_TAGS} selectedItems={selectedRAM} onToggle={(item) => toggleSelection(item, selectedRAM, setSelectedRAM)} />
           </AccordionSection>
 
-          {/* 10. Screen */}
           <AccordionSection title="Màn hình" isOpen={openSections.screen} onToggle={() => toggleSection('screen')}>
               <CheckboxFilterGroup items={SCREEN_TAGS} selectedItems={selectedScreen} onToggle={(item) => toggleRadioLikeSelection(item, selectedScreen, setSelectedScreen)} />
           </AccordionSection>
 
-          {/* 11. Screen Res */}
-          <AccordionSection title="Chuẩn màn hình" isOpen={openSections.screenRes} onToggle={() => toggleSection('screenRes')}>
-              <TagFilterGroup items={SCREEN_RESOLUTION_TAGS} selectedItems={selectedScreenRes} onToggle={(item) => toggleSelection(item, selectedScreenRes, setSelectedScreenRes)} />
-          </AccordionSection>
-
-          {/* 12. Refresh Rate */}
           <AccordionSection title="Tần số quét" isOpen={openSections.refreshRate} onToggle={() => toggleSection('refreshRate')}>
               <TagFilterGroup items={REFRESH_RATE_TAGS} selectedItems={selectedRefreshRate} onToggle={(item) => toggleSelection(item, selectedRefreshRate, setSelectedRefreshRate)} />
-          </AccordionSection>
-
-          {/* 13. Camera */}
-          <AccordionSection title="Camera" isOpen={openSections.camera} onToggle={() => toggleSection('camera')}>
-              <CheckboxFilterGroup items={CAMERA_TAGS} selectedItems={selectedCamera} onToggle={(item) => toggleRadioLikeSelection(item, selectedCamera, setSelectedCamera)} />
-          </AccordionSection>
-
-          {/* 14. Special Features */}
-          <AccordionSection title="Tính năng đặc biệt" isOpen={openSections.special} onToggle={() => toggleSection('special')}>
-              <CheckboxFilterGroup items={SPECIAL_FEATURES_TAGS} selectedItems={selectedSpecial} onToggle={(item) => toggleRadioLikeSelection(item, selectedSpecial, setSelectedSpecial)} />
           </AccordionSection>
 
         </div>
@@ -336,7 +404,9 @@ const AdvanceFilter: React.FC<AdvanceFilterProps> = ({ isOpen, onClose }) => {
           <button className="adv-filter__btn-reset" onClick={() => window.location.reload()}>
               Thiết lập lại
           </button>
-          <button className="adv-filter__btn-apply" onClick={onClose}>
+          
+          {/* 4. SỬA NÚT ÁP DỤNG ĐỂ GỌI HÀM XỬ LÝ */}
+          <button className="adv-filter__btn-apply" onClick={handleApplyClick}>
               Áp dụng
           </button>
         </div>

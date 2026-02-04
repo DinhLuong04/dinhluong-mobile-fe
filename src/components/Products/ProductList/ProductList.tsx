@@ -5,10 +5,11 @@ import ProductCard from '../ProductCard/ProductCard';
 import MobileFilterBar from "../../Fillter/FilterBar/FilterBar";
 import { productService } from '../../../service/productService';
 
-// --- SỬA LỖI Ở ĐÂY: Bỏ "as ApiProduct" đi ---
-import type { Product } from '../../../types/Product.types'; 
+// 1. IMPORT TYPE
+import type { Product } from '../../../types/Product.types';
+import type { ProductFilterParams } from '../../../types/Product.types';
 
-// --- Icons & Constants (Giữ nguyên) ---
+// --- Icons ---
 const NFCIcon = () => (<svg width="14" height="14" viewBox="0 0 14 14" fill="#1250DC" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" clipRule="evenodd" d="M13.8297 3.08681C13.9391 3.1962 14.0005 3.34455 14.0005 3.49922C14.0005 3.6539 13.9391 3.80225 13.8297 3.91164L8.28806 9.45331C8.17867 9.56267 8.03032 9.6241 7.87564 9.6241C7.72096 9.6241 7.57262 9.56267 7.46323 9.45331L4.95898 6.94906L0.996394 10.9116C0.886376 11.0179 0.739025 11.0767 0.586077 11.0754C0.433129 11.074 0.286822 11.0127 0.178667 10.9045C0.0705122 10.7964 0.00916363 10.6501 0.00783455 10.4971C0.00650547 10.3442 0.0653022 10.1968 0.171561 10.0868L4.54656 5.71181C4.65595 5.60245 4.8043 5.54102 4.95898 5.54102C5.11366 5.54102 5.262 5.60245 5.37139 5.71181L7.87564 8.21606L13.0049 3.08681C13.1143 2.97745 13.2626 2.91602 13.4173 2.91602C13.572 2.91602 13.7203 2.97745 13.8297 3.08681Z" fill="inherit"></path><path fillRule="evenodd" clipRule="evenodd" d="M9.33594 3.49935C9.33594 3.34464 9.3974 3.19627 9.50679 3.08687C9.61619 2.97747 9.76456 2.91602 9.91927 2.91602H13.4193C13.574 2.91602 13.7224 2.97747 13.8317 3.08687C13.9411 3.19627 14.0026 3.34464 14.0026 3.49935V6.99935C14.0026 7.15406 13.9411 7.30243 13.8317 7.41183C13.7224 7.52122 13.574 7.58268 13.4193 7.58268C13.2646 7.58268 13.1162 7.52122 13.0068 7.41183C12.8974 7.30243 12.8359 7.15406 12.8359 6.99935V4.08268H9.91927C9.76456 4.08268 9.61619 4.02122 9.50679 3.91183C9.3974 3.80243 9.33594 3.65406 9.33594 3.49935Z" fill="inherit"></path></svg>);
 const CheckArrowIcon = () => (<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3.20041 5.73966C3.48226 5.43613 3.95681 5.41856 4.26034 5.70041L8 9.22652L11.7397 5.70041C12.0432 5.41856 12.5177 5.43613 12.7996 5.73966C13.0815 6.0432 13.0639 6.51775 12.7603 6.7996L8.51034 10.7996C8.22258 11.0668 7.77743 11.0668 7.48967 10.7996L3.23966 6.7996C2.93613 6.51775 2.91856 6.0432 3.20041 5.73966Z" fill="#090D14"></path></svg>);
 
@@ -25,11 +26,13 @@ const SORT_OPTIONS = [
   { id: 'installment', label: 'Trả góp 0%' },
 ];
 
+// 2. CẬP NHẬT INTERFACE ĐỂ NHẬN FILTERS
 interface ProductListProps {
   onOpenFilter?: () => void;
+  filters?: ProductFilterParams; // <-- Dòng này sửa lỗi type assignable
 }
 
-const ProductList: React.FC<ProductListProps> = ({ onOpenFilter }) => {
+const ProductList: React.FC<ProductListProps> = ({ onOpenFilter, filters }) => {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [totalElements, setTotalElements] = useState<number>(0);
@@ -61,15 +64,14 @@ const ProductList: React.FC<ProductListProps> = ({ onOpenFilter }) => {
     try {
       const sortParam = getSortParam(activeSort);
       
+      // 3. TRUYỀN FILTERS VÀO API
       const response = await productService.getProducts({
         page: pageIndex,
         size: size,
         sort: [sortParam],
+        ...filters, // <-- Spread dữ liệu lọc vào đây (brand, price, ram...)
       });
 
-      // --- SỬA LỖI Ở ĐÂY: Dùng type Product cho item ---
-      // response.content đã là Product[] vì Service định nghĩa thế
-      // Mapping này giúp convert null (backend) -> undefined (frontend) lúc runtime
       const cleanData: Product[] = response.content.map((item: Product) => ({
         ...item,
         discountNote: item.discountNote ?? undefined,
@@ -94,10 +96,14 @@ const ProductList: React.FC<ProductListProps> = ({ onOpenFilter }) => {
     }
   };
 
+  // 4. TRIGGER FETCH KHI ACTIVE SORT HOẶC FILTERS THAY ĐỔI
   useEffect(() => {
+    // Reset lại trang về 0 khi có thay đổi bộ lọc
+    setPage(0);
+    // Có thể setProducts([]) nếu muốn xoá list cũ trước khi load mới (tùy UX)
     fetchProducts(0, false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeSort]);
+  }, [activeSort, filters]); // <-- Thêm filters vào dependency array
 
   const handleLoadMore = () => {
     const nextPage = page + 1;
@@ -112,7 +118,6 @@ const ProductList: React.FC<ProductListProps> = ({ onOpenFilter }) => {
 
   return (
     <div className="product-list-container">
-      {/* ... (Phần UI giữ nguyên) ... */}
       <div className="trend-wrapper">
         <span className="trend-label">Xu hướng:</span>
         {TRENDS.map((trend, index) => (

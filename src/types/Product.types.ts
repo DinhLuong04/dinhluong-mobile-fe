@@ -18,14 +18,15 @@ export interface VariantDto {
 
 // 2. Main Product Response (Map từ ProductCardResponse)
 export interface Product {
-  id: string;              // Backend: id (là slug)
+  id: number;
+  slug:string; // Backend: id (là slug)
   name: string;
-  image: string;           // Backend: image
-  price: number;           // Backend: BigDecimal -> number
+  image: string; // Backend: image
+  price: number; // Backend: BigDecimal -> number
   originalPrice: number;
-  discountNote?: string;   // Backend có thể null -> thêm dấu ?
+  discountNote?: string; // Backend có thể null -> thêm dấu ?
   installmentText?: string;
-  
+
   // Lists
   specs: SpecDto[];
   colors: ColorDto[];
@@ -41,7 +42,7 @@ export interface PageResponse<T> {
   totalElements: number;
   size: number;
   number: number; // Current page index
-  last: boolean;  // True nếu là trang cuối
+  last: boolean; // True nếu là trang cuối
 }
 
 // 4. API Wrapper (Map từ class ApiResponse)
@@ -52,7 +53,6 @@ export interface ApiResponse<T> {
   timestamp: string;
   data: T;
 }
-
 
 // ==========================================
 // --- CÁC TYPE MỚI (Dùng cho Detail) ---
@@ -99,7 +99,7 @@ export interface ProductDetail {
   discountNote?: string;
   installmentText?: string;
   description: string;
-  thumbnail :string;
+  thumbnail: string;
   productImages: string[];
   highlightSpecs: HighlightSpec[];
   storageOptions: string[];
@@ -109,7 +109,6 @@ export interface ProductDetail {
   promotions: string[];
 }
 
-
 // Định nghĩa item phụ (Sim, Bảo hành, Quà tặng...)
 export interface CartComboItem {
   id: number | string;
@@ -118,38 +117,54 @@ export interface CartComboItem {
   originalPrice?: number;
   image: string;
   checked: boolean; // Để user tích chọn mua kèm hay không
-  type?: 'gift' | 'service' | 'sim'; // (Tùy chọn) Để phân loại icon
+  type?: "gift" | "service" | "sim"; // (Tùy chọn) Để phân loại icon
 }
 
 // Định nghĩa Item chính trong giỏ hàng
 export interface CartItem {
   // --- Thông tin định danh ---
-  id: number | string;      // ID sản phẩm
-  sku: string;              // Quan trọng: Mã SKU để phân biệt phiên bản (VD: IP15-256-BLUE)
-  
+  id: number | string; // ID sản phẩm
+  sku: string; // Quan trọng: Mã SKU để phân biệt phiên bản (VD: IP15-256-BLUE)
+
   // --- Thông tin hiển thị ---
   name: string;
-  slug: string;             // Để link quay lại trang chi tiết
-  image: string;            // Ảnh đại diện (theo màu đã chọn)
-  
+  slug: string; // Để link quay lại trang chi tiết
+  image: string; // Ảnh đại diện (theo màu đã chọn)
+
   // --- Thông tin giá & Biến thể ---
   price: number;
   originalPrice?: number;
-  colorName: string;        // Màu khách đã chọn (VD: "Titan Sa Mạc")
-  rom?: string;             // Dung lượng (nếu cần hiển thị)
-  
+  colorName: string; // Màu khách đã chọn (VD: "Titan Sa Mạc")
+  rom?: string; // Dung lượng (nếu cần hiển thị)
+
   // --- Trạng thái (UI State) ---
-  quantity: number;         // Số lượng khách mua
-  checked: boolean;         // Checkbox chọn thanh toán
-  
+  quantity: number; // Số lượng khách mua
+  checked: boolean; // Checkbox chọn thanh toán
+
   // --- Dữ liệu lồng nhau ---
   combos?: CartComboItem[]; // Danh sách ưu đãi mua kèm
 }
 
 // Định nghĩa tổng quan cho đơn hàng (Dùng cho component OrderSummary)
 export interface CartSummary {
-  totalPrice: number;       // Tổng tiền hàng
-  totalDiscount: number;    // Tổng giảm giá
-  finalPrice: number;       // Khách cần trả
-  totalItems: number;       // Tổng số lượng sản phẩm
+  totalPrice: number; // Tổng tiền hàng
+  totalDiscount: number; // Tổng giảm giá
+  finalPrice: number; // Khách cần trả
+  totalItems: number; // Tổng số lượng sản phẩm
+}
+
+export interface ProductFilterParams {
+  brands?: string[];
+  os?: string[];
+  roms?: string[];
+  rams?: string[];
+  networks?: string[];
+  minPrice?: number;
+  maxPrice?: number;
+  minBattery?: number;
+  maxBattery?: number; // <-- Mới
+  minScreenSize?: number;
+  maxScreenSize?: number; // <-- Mới
+  minRefreshRate?: number;
+  maxRefreshRate?: number;
 }

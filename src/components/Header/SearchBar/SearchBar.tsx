@@ -1,16 +1,51 @@
 // src/components/Header/Search/SearchBar.tsx
 import React, { useState, useRef, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+//import { useNavigate } from 'react-router-dom'; // Dùng hook này để chuyển trang
 import './SearchBar.css';
-import SearchContent from '../SearchContent/SearchContent';       // The component from step 1 (Default view)
-import SearchSuggestions from '../SearchSuggestions/SearchSuggestions'; // The NEW component (Typing view)
+import SearchContent from '../SearchContent/SearchContent';
+import SearchSuggestions from '../SearchSuggestions/SearchSuggestions';
+import useDebounce from '../../../hooks/useDebounce'; // Import hook
+import { productService } from '../../../service/productService';
+import type { Product } from '../../../types/Product.types';
 
 const SearchBar: React.FC = () => {
     const [isSearchOpen, setIsSearchOpen] = useState(false);
-    const [searchQuery, setSearchQuery] = useState(''); // State to track input
-    const searchRef = useRef<HTMLDivElement>(null);
+    const [searchQuery, setSearchQuery] = useState('');
+    
+    // State cho dữ liệu gợi ý
+    const [suggestedProducts, setSuggestedProducts] = useState<Product[]>([]);
+    const [isLoading, setIsLoading] = useState(false);
 
-    // Close dropdown when clicking outside
+    // 1. Áp dụng Debounce (Delay 500ms sau khi ngừng gõ)
+    const debouncedQuery = useDebounce(searchQuery, 500);
+
+    const searchRef = useRef<HTMLDivElement>(null);
+    //const navigate = useNavigate();
+
+    // 2. Gọi API khi debouncedQuery thay đổi
+    useEffect(() => {
+        if (!debouncedQuery.trim()) {
+            setSuggestedProducts([]);
+            return;
+        }
+
+        const fetchSuggestions = async () => {
+            setIsLoading(true);
+            try {
+                // Gọi service lấy sản phẩm
+                const products = await productService.getSuggestions(debouncedQuery);
+                setSuggestedProducts(products);
+            } catch (error) {
+                console.error(error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchSuggestions();
+    }, [debouncedQuery]);
+
+    // Đóng dropdown khi click ra ngoài
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
             if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
@@ -23,12 +58,40 @@ const SearchBar: React.FC = () => {
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearchQuery(e.target.value);
-        if (!isSearchOpen) setIsSearchOpen(true); // Open dropdown if typing starts
+        if (!isSearchOpen) setIsSearchOpen(true);
+    };
+
+    // 3. Xử lý khi Submit (Enter hoặc click icon search)
+    const handleSearchSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!searchQuery.trim()) return;
+
+        // A. Lưu vào lịch sử
+        const currentHistory = JSON.parse(localStorage.getItem('search_history') || '[]');
+        if (!currentHistory.includes(searchQuery)) {
+            const newHistory = [searchQuery, ...currentHistory].slice(0, 5); // Lưu tối đa 5 item
+            localStorage.setItem('search_history', JSON.stringify(newHistory));
+        }
+
+        // B. Đóng dropdown
+        setIsSearchOpen(false);
+
+        // C. Chuyển hướng (Vì chưa có trang search nên tạm thời log ra hoặc alert)
+        // navigate(`/search?keyword=${searchQuery}`); // <-- Khi nào có trang search thì mở dòng này
+        console.log("Navigating to search page with query:", searchQuery);
+        alert(`Chức năng tìm kiếm trang kết quả đang phát triển. Từ khóa: ${searchQuery}`);
+    };
+
+    // Hàm khi click vào từ khóa lịch sử/trending
+    const handleKeywordSelect = (keyword: string) => {
+        setSearchQuery(keyword);
+        setIsSearchOpen(true);
+        // Tùy chọn: Có thể submit luôn hoặc chỉ điền vào ô input
     };
 
     return (
         <div id='search' className='inner-search' ref={searchRef}>
-            <form className='search-form'>
+            <form className='search-form' onSubmit={handleSearchSubmit}>
                 <input 
                     type='text'
                     className='search-input'
@@ -45,26 +108,19 @@ const SearchBar: React.FC = () => {
                 </button>
             </form>
 
-            {/* Default Hot Keys (Visible ONLY when dropdown is CLOSED) */}
-            {!isSearchOpen && (
-                <div className='hot-keys'>
-                    <ul className='hot-keys-list'>
-                        <li><Link to="/">iPhone 17</Link></li>
-                        <li><Link to="/">Samsung S25</Link></li>
-                        {/* ... */}
-                    </ul>
-                </div>
-            )}
-
             {/* Dropdown Logic */}
             {isSearchOpen && (
                 <>
-                    {/* Case 1: Has input text -> Show Suggestions (Keywords + Products) */}
                     {searchQuery.length > 0 ? (
-                        <SearchSuggestions query={searchQuery} />
+                        // Component hiển thị kết quả API
+                        <SearchSuggestions 
+                            query={searchQuery} 
+                            products={suggestedProducts}
+                            isLoading={isLoading}
+                        />
                     ) : (
-                    /* Case 2: No input text -> Show Default Content (History + Trends) */
-                        <SearchContent />
+                        // Component hiển thị lịch sử & xu hướng
+                        <SearchContent onKeywordClick={handleKeywordSelect} />
                     )}
                 </>
             )}

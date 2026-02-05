@@ -4,8 +4,10 @@ import { useCompare } from '../../../contexts/CompareContext';
 import ProductCard from '../ProductCard/ProductCard';
 import MobileFilterBar from "../../Fillter/FilterBar/FilterBar";
 import { productService } from '../../../service/productService';
+// 1. IMPORT EMPTY SEARCH (Kiểm tra lại đường dẫn nếu báo đỏ)
+import EmptySearch from '../../EmptySearch/EmptySearch'; 
 
-// 1. IMPORT TYPE
+// 2. IMPORT TYPE
 import type { Product } from '../../../types/Product.types';
 import type { ProductFilterParams } from '../../../types/Product.types';
 
@@ -26,13 +28,14 @@ const SORT_OPTIONS = [
   { id: 'installment', label: 'Trả góp 0%' },
 ];
 
-// 2. CẬP NHẬT INTERFACE ĐỂ NHẬN FILTERS
+// 3. CẬP NHẬT INTERFACE PROPS
 interface ProductListProps {
   onOpenFilter?: () => void;
-  filters?: ProductFilterParams; // <-- Dòng này sửa lỗi type assignable
+  filters?: ProductFilterParams;
+  onDataFetched?: (total: number) => void; // Callback báo số lượng về cha
 }
 
-const ProductList: React.FC<ProductListProps> = ({ onOpenFilter, filters }) => {
+const ProductList: React.FC<ProductListProps> = ({ onOpenFilter, filters, onDataFetched }) => {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [totalElements, setTotalElements] = useState<number>(0);
@@ -44,18 +47,12 @@ const ProductList: React.FC<ProductListProps> = ({ onOpenFilter, filters }) => {
 
   const { addToCompare } = useCompare();
 
-  // --- Hàm map từ ID Sort sang Param Backend ---
   const getSortParam = (sortId: string): string => {
     switch (sortId) {
-      case 'price_asc':
-        return 'displayPrice,asc';
-      case 'price_desc':
-        return 'displayPrice,desc';
-      case 'installment':
-        return 'createdAt,desc'; 
-      case 'featured':
-      default:
-        return 'createdAt,desc';
+      case 'price_asc': return 'displayPrice,asc';
+      case 'price_desc': return 'displayPrice,desc';
+      case 'installment': return 'createdAt,desc'; 
+      case 'featured': default: return 'createdAt,desc';
     }
   };
 
@@ -64,12 +61,11 @@ const ProductList: React.FC<ProductListProps> = ({ onOpenFilter, filters }) => {
     try {
       const sortParam = getSortParam(activeSort);
       
-      // 3. TRUYỀN FILTERS VÀO API
       const response = await productService.getProducts({
         page: pageIndex,
         size: size,
         sort: [sortParam],
-        ...filters, // <-- Spread dữ liệu lọc vào đây (brand, price, ram...)
+        ...filters,
       });
 
       const cleanData: Product[] = response.content.map((item: Product) => ({
@@ -89,6 +85,11 @@ const ProductList: React.FC<ProductListProps> = ({ onOpenFilter, filters }) => {
       setTotalElements(response.totalElements);
       setPage(pageIndex);
 
+      // --- QUAN TRỌNG: BÁO CÁO VỀ SEARCH PAGE ---
+      if (onDataFetched) {
+          onDataFetched(response.totalElements);
+      }
+
     } catch (error) {
       console.error("Lỗi:", error);
     } finally {
@@ -96,14 +97,11 @@ const ProductList: React.FC<ProductListProps> = ({ onOpenFilter, filters }) => {
     }
   };
 
-  // 4. TRIGGER FETCH KHI ACTIVE SORT HOẶC FILTERS THAY ĐỔI
   useEffect(() => {
-    // Reset lại trang về 0 khi có thay đổi bộ lọc
     setPage(0);
-    // Có thể setProducts([]) nếu muốn xoá list cũ trước khi load mới (tùy UX)
     fetchProducts(0, false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeSort, filters]); // <-- Thêm filters vào dependency array
+  }, [activeSort, filters]);
 
   const handleLoadMore = () => {
     const nextPage = page + 1;
@@ -146,9 +144,8 @@ const ProductList: React.FC<ProductListProps> = ({ onOpenFilter, filters }) => {
         </div>
       </div>
 
-      {products.length === 0 && !loading ? (
-        <div className="text-center py-10 text-gray-500">Không tìm thấy sản phẩm nào</div>
-      ) : (
+    
+    
         <div className="product-grid">
           {products.map((product) => (
             <ProductCard 
@@ -158,11 +155,11 @@ const ProductList: React.FC<ProductListProps> = ({ onOpenFilter, filters }) => {
             />
           ))}
         </div>
-      )}
+      
 
       {loading && <div className="text-center py-4">Đang tải...</div>}
 
-      {!loading && remainingProducts > 0 && (
+      {!loading && remainingProducts > 0 && products.length > 0 && (
         <div className="load-more-container">
           <button className="btn-load-more" onClick={handleLoadMore}>
             Xem thêm {remainingProducts} kết quả

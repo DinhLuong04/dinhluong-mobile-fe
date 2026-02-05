@@ -146,6 +146,7 @@
   grid-template-columns: repeat(4, 1fr);
   gap: 12px;
   padding: 0;
+  width: 100%;
 }
 
 /* =========================================
@@ -251,9 +252,5 @@
     background: #fef2f2;
   }
 
-  /* 3. Trend Wrapper (Xu hướng) */
-  .trend-wrapper {
-    margin: 0 10px 16px 10px; /* Thêm margin 2 bên */
-    padding: 10px;
-  }
+ 
 }

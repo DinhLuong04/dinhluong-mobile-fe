@@ -1,5 +1,5 @@
 // src/components/ProductSection/ProductSection.tsx
-import React, { useState } from "react";
+import React, { useState ,useCallback} from "react";
 import ProductList from "../ProductList/ProductList";
 import AdvanceFilter from "../../Fillter/Fillter"; 
 import "./ProductSection.css";
@@ -16,15 +16,10 @@ const ProductSection = () => {
     const [currentFilters, setCurrentFilters] = useState<ProductFilterParams>({});
 
     // 3. Hàm xử lý khi người dùng bấm "Áp dụng" trong AdvanceFilter
-    const handleApplyFilter = (newFilters: ProductFilterParams) => {
-        console.log("Dữ liệu lọc nhận được từ Popup:", newFilters);
-        
-        // Cập nhật state -> ProductList sẽ tự động re-render và gọi API mới
+   const handleApplyFilter = useCallback((newFilters: ProductFilterParams) => {
+        console.log("Applied Filters:", newFilters);
         setCurrentFilters(newFilters);
-        
-        // Đóng popup
-        setIsFilterOpen(false);
-    };
+    }, []);
 
     return (
         <div className="product-section">

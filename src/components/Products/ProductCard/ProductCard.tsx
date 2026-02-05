@@ -30,11 +30,8 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onCompare }) => {
 
     // Xử lý chuyển trang
     const handleGoToDetail = (e: React.MouseEvent) => {
-        e.stopPropagation(); // Chặn sự kiện nổi bọt
-
-        // QUAN TRỌNG: Dùng luôn product.id vì nó đã là slug (VD: xiaomi-redmi-note-15)
-        // Đường dẫn sẽ là: domain.com/xiaomi-redmi-note-15
-        navigate(`Product/${product.slug}`, { state: { product } });
+        e.stopPropagation(); 
+        navigate(`/Product/${product.slug}`, { state: { product } });
     };
 
 

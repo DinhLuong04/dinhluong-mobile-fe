@@ -1,0 +1,107 @@
+
+
+
+/* Cái thẻ Card trắng */
+.empty-search-card {
+    background-color: #fff;
+    border-radius: 16px; /* Bo góc tròn */
+    padding: 24px;
+    display: flex;
+    align-items: center; /* Căn giữa theo chiều dọc */
+    justify-content: space-between; /* Đẩy 2 bên ra xa nhau */
+    gap: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05); /* Bóng mờ nhẹ */
+    border: 1px solid #e5e7eb;
+}
+
+/* --- PHẦN TEXT (BÊN TRÁI) --- */
+.empty-search-content {
+    flex: 1; /* Chiếm hết khoảng trống còn lại */
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.empty-title {
+    font-size: 18px;
+    font-weight: 500;
+    color: #090d14; /* Màu đen chính */
+    margin: 0;
+}
+
+.empty-title span {
+    color: #6b7280; /* Màu xám cho keyword */
+    font-style: italic;
+}
+
+/* Danh sách gợi ý */
+.empty-suggestions {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.suggestion-item {
+    display: flex;
+    align-items: flex-start; /* Căn hàng bắt đầu từ trên */
+    gap: 10px;
+}
+
+/* Dấu chấm tròn (Bullet point) */
+.suggestion-item .dot-icon {
+    width: 6px;
+    height: 6px;
+    background-color: #9ca3af; /* Màu chấm xám */
+    border-radius: 50%;
+    margin-top: 8px; /* Căn chỉnh cho khớp dòng text */
+    flex-shrink: 0; /* Không cho bị bóp méo */
+}
+
+.suggestion-item .text {
+    font-size: 14px;
+    color: #6b7280;
+    line-height: 1.5;
+}
+
+.highlight-text {
+    color: #cb1c22; /* Màu đỏ FPT */
+    font-weight: 600;
+}
+
+/* --- PHẦN ẢNH (BÊN PHẢI) --- */
+.empty-search-image {
+    flex-shrink: 0; /* Không cho ảnh bị co lại */
+}
+
+.empty-search-image img {
+    width: 300px;
+    height: 168px;
+    object-fit: contain;
+    display: block;
+}
+
+/* --- RESPONSIVE (MOBILE / TABLET) --- */
+@media (max-width: 768px) {
+    .empty-search-card {
+        flex-direction: column-reverse; /* Đảo ngược: Ảnh lên trên, Chữ xuống dưới */
+        align-items: center;
+        text-align: center; /* Căn giữa chữ trên mobile */
+        padding: 20px 16px;
+    }
+
+    .empty-search-image img {
+        width: 200px;
+        height: auto;
+        margin-bottom: 16px;
+    }
+
+    /* Trên mobile căn giữa cho đẹp */
+    .suggestion-item {
+        justify-content: center; 
+        text-align: left; /* Text vẫn căn trái cho dễ đọc */
+    }
+    
+    .empty-title {
+        font-size: 16px;
+    }
+}

@@ -45,7 +45,7 @@ const SearchSuggestions: React.FC<SearchSuggestionsProps> = ({ query, products, 
                         {products.map(product => (
                             <li key={product.id} className="product-suggestions-item">
                                 {/* Link tới trang chi tiết (do chưa có trang search) */}
-                                <Link to={`/products/${product.id}`} className="product-suggestions-link">
+                                <Link to={`/products/${product.slug}`} className="product-suggestions-link">
                                     <div className="product-suggestions-image">
                                         <img src={product.image} alt={product.name} />
                                     </div>

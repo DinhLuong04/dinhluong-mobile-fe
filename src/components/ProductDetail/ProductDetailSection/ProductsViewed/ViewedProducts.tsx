@@ -1,7 +1,8 @@
 import React from 'react';
-import ProductCard, {type Product } from '../../../Products/ProductCard/ProductCard'; // Đường dẫn tới file ProductCard của bạn
+import ProductCard from '../../../Products/ProductCard/ProductCard'; // Đường dẫn tới file ProductCard của bạn
 import { viewedProducts } from './viewedProductsData';
 import './ViewedProducts.css';
+import type { Product } from '../../../../types/Product.types';
 
 const ViewedProducts = () => {
     

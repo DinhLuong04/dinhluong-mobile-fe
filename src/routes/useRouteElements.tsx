@@ -17,6 +17,7 @@ import Member from "../pages/Account/Member";
 import VoucherCenter from "../components/Account/VoucherCenter/VoucherCenter";
 import Checkout from "../pages/Checkout/Checkout";
 import ForgotPasswordPage from "../pages/ForgotPasswordPage/ForgotPasswordPage";
+import SearchPage from "../pages/SearchPage/SearchPage";
 export default function useRouteElements() {
     const routeElements = useRoutes([
         // --- CÁC ROUTE DÙNG HEADER CHÍNH ---
@@ -28,13 +29,11 @@ export default function useRouteElements() {
                     index: true, 
                     element: <HomePage />
                 },
-                // 2. Thêm Route chi tiết sản phẩm vào đây
                 {
-                    // Cách 1: Đường dẫn cố định để test
-                    // path: 'product-detail', 
-                    
-                    // Cách 2: Đường dẫn động (Khuyên dùng)
-                    // Ví dụ: domain.com/iphone-17-pro-max
+                    path: 'search',
+                    element:<SearchPage/>
+                },
+                {
                     path: ':Product/:slug', 
                     element: <ProductDetail />
                 },

@@ -1,6 +1,6 @@
 // src/components/Header/Search/SearchBar.tsx
 import React, { useState, useRef, useEffect } from 'react';
-//import { useNavigate } from 'react-router-dom'; // Dùng hook này để chuyển trang
+import { useNavigate } from 'react-router-dom'; 
 import './SearchBar.css';
 import SearchContent from '../SearchContent/SearchContent';
 import SearchSuggestions from '../SearchSuggestions/SearchSuggestions';
@@ -20,7 +20,7 @@ const SearchBar: React.FC = () => {
     const debouncedQuery = useDebounce(searchQuery, 500);
 
     const searchRef = useRef<HTMLDivElement>(null);
-    //const navigate = useNavigate();
+    const navigate = useNavigate();
 
     // 2. Gọi API khi debouncedQuery thay đổi
     useEffect(() => {
@@ -77,9 +77,7 @@ const SearchBar: React.FC = () => {
         setIsSearchOpen(false);
 
         // C. Chuyển hướng (Vì chưa có trang search nên tạm thời log ra hoặc alert)
-        // navigate(`/search?keyword=${searchQuery}`); // <-- Khi nào có trang search thì mở dòng này
-        console.log("Navigating to search page with query:", searchQuery);
-        alert(`Chức năng tìm kiếm trang kết quả đang phát triển. Từ khóa: ${searchQuery}`);
+        navigate(`/search?keyword=${searchQuery}`); // <-- Khi nào có trang search thì mở dòng này
     };
 
     // Hàm khi click vào từ khóa lịch sử/trending

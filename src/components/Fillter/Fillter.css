@@ -65,6 +65,7 @@
     cursor: pointer;
     font-size: 20px;
     line-height: 1;
+    display: none;
 }
 
 /* --- 3. BODY (SCROLLABLE) --- */
@@ -356,6 +357,7 @@
     text-align: center;
     transition: all 0.2s;
     border: none;
+    display: none;
 }
 
 .adv-filter__btn-reset {
@@ -389,6 +391,9 @@
 
 /* --- RESPONSIVE / MOBILE STYLES --- */
 @media (max-width: 1024px) {
+    .adv-filter__close-btn, .adv-filter__btn-reset, .adv-filter__btn-apply{
+        display: block;
+    }
     .adv-filter__container {
         display: flex !important;
         flex-direction: column;

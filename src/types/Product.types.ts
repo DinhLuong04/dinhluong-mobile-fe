@@ -169,3 +169,18 @@ export interface ProductFilterParams {
   minRefreshRate?: number;
   maxRefreshRate?: number;
 }
+
+export interface ComboProduct {
+  id: number;           // ID combo
+  relatedProductId: number; // ID sản phẩm phụ
+  name: string;
+  image: string;
+  price: string;        // "450.000đ"
+  oldPrice: string;     // "500.000đ"
+  saving: string;       // "Tiết kiệm: 50.000đ"
+  rawPrice: number;     // 450000 (để tính toán nếu cần)
+  rawDiscount: number;
+}
+
+// Type cho phản hồi API Combo
+export type ComboResponse = ComboProduct[];

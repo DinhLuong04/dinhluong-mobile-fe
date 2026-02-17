@@ -5,7 +5,8 @@ import { API_CONFIG } from '../config/api.config';
 // 1. IMPORT CÁC TYPE TỪ FILE BẠN VỪA TẠO
 import type { 
   Product, 
-  ProductDetail, 
+  ProductDetail,
+  ComboResponse,
   PageResponse, 
   ApiResponse, 
   ProductFilterParams 
@@ -103,5 +104,23 @@ export const productService = {
       console.error("Batch Product Error:", error);
       return [];
     }
-  }
+  },
+  getCombos: async (slug: string): Promise<ComboResponse> => {
+    try {
+      const response = await httpClient.get<ApiResponse<ComboResponse>>(
+        `${API_CONFIG.PRODUCTS.GET_LIST}/${slug}/combos` // Giả sử path là /products/{slug}/combos
+      );
+
+      if (response.code !== 200 || !response.data) {
+        // Nếu không có combo, trả về mảng rỗng thay vì throw error
+        // để giao diện chỉ cần ẩn đi chứ không lỗi trang
+        return [];
+      }
+
+      return response.data;
+    } catch (error) {
+      console.error("Combo API Error:", error);
+      return []; // Trả về rỗng nếu lỗi
+    }
+  },
 };

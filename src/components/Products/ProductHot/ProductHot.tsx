@@ -11,7 +11,8 @@ import ProductCard from '../ProductCard/ProductCard';
 // --- Dữ liệu mẫu (Đã chuẩn hóa theo Interface Product mới) ---
 const mockProducts: Product[] = [
     {
-        id: "iPhone 17 Pro Max",
+        id: 1,
+        slug: "iPhone 17 Pro Max",
         name: "iPhone 17 Pro Max 256GB",
         image: "https://cdn2.fptshop.com.vn/unsafe/360x0/filters:format(webp):quality(75)/iphone_17_pro_max_silver_1_7b25d56e26.png",
         price: 37690000,
@@ -29,7 +30,9 @@ const mockProducts: Product[] = [
         promotionText: "Thanh toán qua ví Zalopay giảm đến 500,000đ"
     },
     {
-        id: "Honor Magic V3 5G 12GB 512GB",
+        
+        id: 2,
+        slug: "Honor Magic V3 5G 12GB 512GB",
         name: "Honor Magic V3 5G 12GB 512GB",
         image: "https://cdn2.fptshop.com.vn/unsafe/360x0/filters:format(webp):quality(75)/honor_magic_v3_xanh_2_2e82ae0429.png",
         price: 29990000,
@@ -46,7 +49,8 @@ const mockProducts: Product[] = [
         promotionText: "Giảm 800.000đ khi thanh toán qua thẻ Visa SCB."
     },
     {
-        id: "Xiaomi Poco M7 Pro 5G 8GB 256GB",
+        id: 3,
+        slug: "Xiaomi Poco M7 Pro 5G 8GB 256GB",
         name: "Xiaomi Poco M7 Pro 5G 8GB 256GB",
         image: "https://cdn2.fptshop.com.vn/unsafe/360x0/filters:format(webp):quality(75)/xiaomi_poco_m7_pro_xanh_5_20cec22a7c.jpg",
         price: 5490000,
@@ -62,7 +66,8 @@ const mockProducts: Product[] = [
         promotionText: "Giảm 5% tối đa 50,000đ cho Khách hàng thân thiết"
     },
     {
-        id: "OPPO Find N3 5G 16GB 512GB",
+        id: 4,
+        slug: "OPPO Find N3 5G 16GB 512GB",
         name: "OPPO Find N3 5G 16GB 512GB",
         image: "https://cdn2.fptshop.com.vn/unsafe/360x0/filters:format(webp):quality(75)/2023_11_7_638349536349641250_oppo-find-n3-5g-den-7.jpg",
         price: 26990000,
@@ -78,7 +83,8 @@ const mockProducts: Product[] = [
         promotionText: "Chủ thẻ MB Bank MasterCard: Giảm 10%"
     },
     {
-        id: "Tecno Spark 40C 8GB 256GB",
+        id: 5,
+        slug: "Tecno Spark 40C 8GB 256GB",
         name: "Tecno Spark 40C 8GB 256GB",
         image: "https://cdn2.fptshop.com.vn/unsafe/360x0/filters:format(webp):quality(75)/tecno_spark_40c_xanh_5_c23af5300b.png",
         price: 3290000,
@@ -94,7 +100,8 @@ const mockProducts: Product[] = [
         promotionText: "Trả góp 0%"
     },
     {
-        id: "iPhone 17 Pro Max 111",
+        id: 6,
+        slug: "iPhone 17 Pro Max 111",
         name: "iPhone 17 Pro Max 256GB",
         image: "https://cdn2.fptshop.com.vn/unsafe/360x0/filters:format(webp):quality(75)/iphone_17_pro_max_silver_1_7b25d56e26.png",
         price: 37690000,
@@ -112,7 +119,8 @@ const mockProducts: Product[] = [
         promotionText: "Thanh toán qua ví Zalopay giảm đến 500,000đ"
     },
     {
-        id: "iPhone 17 Pro Max 256GBđaa",
+        id: 7,
+        slug: "iPhone 17 Pro Max 256GBđaa",
         name: "iPhone 17 Pro Max 256GB",
         image: "https://cdn2.fptshop.com.vn/unsafe/360x0/filters:format(webp):quality(75)/iphone_17_pro_max_silver_1_7b25d56e26.png",
         price: 37690000,

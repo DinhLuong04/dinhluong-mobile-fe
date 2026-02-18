@@ -22,7 +22,7 @@ const ViewedProducts = () => {
                             {/* Truyền prop onCompare là undefined để không hiện nút (hoặc xử lý bằng CSS wrapper như trên) */}
                             <ProductCard 
                                 product={product} 
-                                onClick={handleProductClick}
+                                //onClick={handleProductClick}
                                 // Không truyền onCompare ở đây nếu ProductCard hỗ trợ ẩn nút khi prop này null
                             />
                         </div>

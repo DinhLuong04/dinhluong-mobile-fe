@@ -138,7 +138,7 @@ const LoginPage: React.FC = () => {
          const confirmResend = window.confirm("Tài khoản chưa được kích hoạt. Bạn có muốn hệ thống gửi lại email xác thực không?");
          if(confirmResend) {
              try {
-                await httpClient.post('/auth/resend-verification', null, { params: { email: formData.email }});
+                await httpClient.post(`/auth/resend-verification?email=${formData.email}`, null);
                 alert("✅ Đã gửi lại email xác thực! Vui lòng kiểm tra hộp thư.");
              } catch (err: any) {
                 alert("❌ Gửi lại thất bại: " + (err.response?.data?.message || err.message));

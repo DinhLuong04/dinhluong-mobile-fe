@@ -28,7 +28,7 @@ const StickyCompareBar: React.FC<StickyCompareBarProps> = ({
         }
 
         // 3. Lấy ra mảng slug (Lưu ý: Trong Type của bạn id chính là slug)
-        const slugs = compareList.map(product => product.id).join(',');
+        const slugs = compareList.map(product => product.slug).join(',');
 
         // 4. Chuyển hướng kèm theo query params
         // Giả sử đường dẫn trang so sánh của bạn là "/compare-product"

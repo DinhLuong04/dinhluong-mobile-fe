@@ -7,7 +7,10 @@ import App from './App.tsx';
 import { install } from '@twind/core';  // 'install' thay vì 'setup' (tương đương)
 import config from './twind.config.ts';
 import "./assets/variables.css";
-install(config);  // Setup một lần, không cần Provider
+install({
+  ...config,
+  hash: false, 
+})  // Setup một lần, không cần Provider
 import {BrowserRouter} from 'react-router-dom';
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>

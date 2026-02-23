@@ -29,6 +29,15 @@ export default function useRouteElements() {
                     index: true, 
                     element: <HomePage />
                 },
+                // --- THÊM 2 ROUTE DANH MỤC VÀO ĐÂY ---
+                {
+                    path: 'dien-thoai',
+                    element: <HomePage />
+                },
+                {
+                    path: 'phu-kien',
+                    element: <HomePage />
+                },
                 {
                     path: 'search',
                     element:<SearchPage/>

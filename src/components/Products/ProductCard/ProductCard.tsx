@@ -23,7 +23,7 @@ interface ProductCardProps {
     product: Product; // Đổi tên prop từ 'data' sang 'product' cho chuẩn ngữ nghĩa
     onCompare?: (product: Product) => void;
 }
-
+import { addProductToViewedHistory } from '../../../utils/viewedProductHelper';
 const ProductCard: React.FC<ProductCardProps> = ({ product, onCompare }) => {
 
     const navigate = useNavigate();
@@ -31,6 +31,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onCompare }) => {
     // Xử lý chuyển trang
     const handleGoToDetail = (e: React.MouseEvent) => {
         e.stopPropagation(); 
+        addProductToViewedHistory(product);
         navigate(`/Product/${product.slug}`, { state: { product } });
     };
 

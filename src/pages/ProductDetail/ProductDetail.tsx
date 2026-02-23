@@ -18,8 +18,8 @@ const ProductDetail = () => {
         <PromotionCombo slug={slug} />
         <ProductDescription/>
         <ProductReviews/>
-        <ProductComparison/>
-        <ViewedProducts/>
+        {/* <ProductComparison/> */}
+        <ViewedProducts currentSlug={slug} />
         <PolicySection />
     </div>);
 };

@@ -1,30 +1,41 @@
-import React from 'react';
-import ProductCard from '../../../Products/ProductCard/ProductCard'; // Đường dẫn tới file ProductCard của bạn
-import { viewedProducts } from './viewedProductsData';
+// Trong file src/components/ProductDetail/ProductDetailSection/ProductsViewed/ViewedProducts.tsx
+
+import React, { useEffect, useState } from 'react';
+import ProductCard from '../../../Products/ProductCard/ProductCard'; 
 import './viewedProducts.css';
 import type { Product } from '../../../../types/Product.types';
 
-const ViewedProducts = () => {
-    
-    const handleProductClick = (product: Product) => {
-        console.log("Click sản phẩm đã xem:", product.name);
-        // Điều hướng tới trang chi tiết
-    };
+// 1. Import hàm đọc lịch sử
+import { getViewedProductsFromHistory } from '../../../../utils/viewedProductHelper';
+
+interface ViewedProductsProps {
+    currentSlug?: string; // Nhận slug của trang hiện tại để không hiển thị lại chính nó
+}
+
+const ViewedProducts: React.FC<ViewedProductsProps> = ({ currentSlug }) => {
+    const [viewedList, setViewedList] = useState<Product[]>([]);
+
+    // 2. Load dữ liệu từ Local Storage 1 lần khi render
+    useEffect(() => {
+        const list = getViewedProductsFromHistory();
+        setViewedList(list);
+    }, [currentSlug]); // Nếu slug đổi thì load lại
+
+    // 3. Lọc bỏ sản phẩm đang xem hiện tại (nếu có)
+    const displayProducts = viewedList.filter(p => p.slug !== currentSlug);
+
+    // 4. Nếu chưa xem gì cả, ẩn luôn Component này đi
+    if (displayProducts.length === 0) return null;
 
     return (
         <div className="container vp-wrapper">
             <div className="vp-container">
                 <h2 className="vp-title">Sản phẩm đã xem</h2>
-                
                 <div className="vp-slider">
-                    {viewedProducts.map(product => (
+                    {displayProducts.map(product => (
                         <div key={product.id} className="vp-slider-item">
-                            {/* Truyền prop onCompare là undefined để không hiện nút (hoặc xử lý bằng CSS wrapper như trên) */}
-                            <ProductCard 
-                                product={product} 
-                                //onClick={handleProductClick}
-                                // Không truyền onCompare ở đây nếu ProductCard hỗ trợ ẩn nút khi prop này null
-                            />
+                            {/* Load lại ProductCard */}
+                            <ProductCard product={product} />
                         </div>
                     ))}
                 </div>

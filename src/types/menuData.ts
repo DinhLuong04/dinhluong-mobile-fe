@@ -78,6 +78,5 @@ export const mainCategories: CategoryItem[] = [
     ]
   },
   { id: 2, label: "Phụ Kiện", hasMegaMenu: false, path: "/phu-kien" }, // Các mục khác không có banner thì thôi
-  { id: 3, label: "Máy cũ giá rẻ", hasMegaMenu: false, path: "/may-cu" },
-  { id: 4, label: "Tin tức", hasMegaMenu: false, path: "/tin-tuc" },
+  { id: 3, label: "Tin tức", hasMegaMenu: false, path: "/tin-tuc" },
 ];

@@ -154,6 +154,7 @@ export interface CartSummary {
 }
 
 export interface ProductFilterParams {
+  category?: string;
   search?: string;
   brands?: string[];
   os?: string[];

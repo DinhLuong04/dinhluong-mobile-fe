@@ -1,0 +1,258 @@
+/* Tổng quan container */
+.order-detail-wrapper {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  color: #333;
+}
+
+/* Phần Header (Nút quay lại & Tiêu đề) */
+.od-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.od-back-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #f5f5f5;
+  color: #333;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-right: 16px;
+}
+
+.od-back-btn:hover {
+  background: #e0e0e0;
+}
+
+.od-title {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+/* Dùng chung cho các khối Card */
+.od-card {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+  border: 1px solid #f0f0f0;
+}
+
+.od-card-title {
+  margin: 0 0 16px 0;
+  font-size: 16px;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: #444;
+  border-bottom: 1px solid #f0f0f0;
+  padding-bottom: 12px;
+}
+
+/* Card trạng thái */
+.od-status-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 15px;
+}
+
+.od-status-badge {
+  color: #d70018;
+  font-weight: 700;
+  background: #fff0f1;
+  padding: 6px 12px;
+  border-radius: 6px;
+  text-transform: uppercase;
+  font-size: 13px;
+}
+
+/* Card Địa chỉ */
+.od-address-name {
+  font-size: 15px;
+  margin-bottom: 6px;
+}
+
+.od-address-detail {
+  color: #666;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* Card Sản phẩm */
+.od-product-item {
+  border-bottom: 1px solid #f0f0f0;
+  padding-bottom: 20px;
+  margin-bottom: 20px;
+}
+
+.od-product-item:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+  margin-bottom: 0;
+}
+
+/* SP Chính */
+.od-main-product {
+  display: flex;
+  gap: 16px;
+}
+
+.od-product-img {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+  border-radius: 8px;
+  border: 1px solid #eee;
+  background: #fafafa;
+}
+
+.od-product-info {
+  flex: 1;
+}
+
+.od-product-name {
+  font-weight: 600;
+  font-size: 15px;
+  margin-bottom: 4px;
+  line-height: 1.4;
+}
+
+.od-product-variant {
+  font-size: 13px;
+  color: #777;
+  margin-bottom: 4px;
+}
+
+.od-product-qty {
+  font-size: 13px;
+  color: #555;
+}
+
+.od-product-price {
+  font-weight: 700;
+  color: #d70018;
+  font-size: 15px;
+  text-align: right;
+}
+
+/* SP Combo (Thụt lề và có viền cây thư mục) */
+.od-combo-section {
+  margin-top: 12px;
+  padding-left: 20px;
+  margin-left: 40px;
+  border-left: 2px dashed #e0e0e0;
+}
+
+.od-combo-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #0066cc;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.od-combo-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #f8f9fa;
+  padding: 10px 12px;
+  border-radius: 8px;
+  margin-bottom: 8px;
+  transition: background 0.2s;
+}
+
+.od-combo-item:hover {
+  background: #f1f3f5;
+}
+
+.od-combo-img {
+  width: 44px;
+  height: 44px;
+  object-fit: contain;
+  border-radius: 6px;
+  background: #fff;
+  border: 1px solid #eee;
+}
+
+.od-combo-info {
+  flex: 1;
+}
+
+.od-combo-name {
+  font-size: 13px;
+  font-weight: 500;
+  margin-bottom: 2px;
+}
+
+.od-combo-qty {
+  font-size: 12px;
+  color: #777;
+}
+
+.od-combo-price {
+  font-size: 14px;
+  font-weight: 600;
+  color: #d70018;
+}
+
+.od-combo-price.free {
+  color: #008a00;
+}
+
+/* Card Tổng tiền */
+.od-total-card {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding: 24px;
+}
+
+.od-total-text {
+  font-size: 16px;
+  color: #555;
+  font-weight: 500;
+}
+
+.od-total-amount {
+  color: #d70018;
+  font-size: 24px;
+  font-weight: 700;
+  margin-left: 12px;
+}
+
+/* Responsive cho Mobile */
+@media (max-width: 600px) {
+  .order-detail-wrapper {
+    padding: 12px;
+  }
+  
+  .od-main-product {
+    flex-direction: column;
+    position: relative;
+  }
+  
+  .od-product-price {
+    text-align: left;
+    margin-top: 8px;
+  }
+
+  .od-combo-section {
+    margin-left: 20px;
+    padding-left: 12px;
+  }
+}

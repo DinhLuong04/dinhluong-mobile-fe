@@ -146,3 +146,21 @@
 .oh-empty-img { width: 140px; height: auto; object-fit: contain; }
 .oh-empty-text { font-size: 14px; color: #9ca3af; }
 .oh-empty-link { color: #d70018; text-decoration: none; font-weight: 600; margin-left: 4px; }
+
+.order-list-render::-webkit-scrollbar {
+  width: 6px; /* Độ rộng của thanh cuộn */
+}
+
+.order-list-render::-webkit-scrollbar-track {
+  background: #f1f1f1; /* Màu nền của rãnh cuộn */
+  border-radius: 4px;
+}
+
+.order-list-render::-webkit-scrollbar-thumb {
+  background: #ccc; /* Màu của thanh trượt */
+  border-radius: 4px;
+}
+
+.order-list-render::-webkit-scrollbar-thumb:hover {
+  background: #aaa; /* Màu khi di chuột vào thanh trượt */
+}

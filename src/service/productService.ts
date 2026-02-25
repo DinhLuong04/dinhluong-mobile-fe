@@ -123,4 +123,10 @@ export const productService = {
       return []; // Trả về rỗng nếu lỗi
     }
   },
+  getFeaturedProducts: async (limit: number = 10) => {
+    // Giả sử bạn config API giống các hàm khác
+    const response = await fetch(`http://localhost:8080/api/products/featured?limit=${limit}`);
+    const json = await response.json();
+    return json.data || []; // Trả về mảng dữ liệu luôn
+  },
 };

@@ -1,85 +1,168 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom"; 
 import type { CartItem as CartItemType } from "../../types/Product.types"; 
 import { OrderSummary } from "../../components/Cart/OrderSummary/OrderSummary";
 import { CartItem } from "../../components/Cart/CartItem/CartItem";
 import { CartAlert } from "../../components/Cart/CartAlert/CartAlert";
-import "./CartPage.css"; // Import file CSS
-
-// --- DỮ LIỆU MẪU (GIỮ NGUYÊN) ---
-const INITIAL_PRODUCTS: CartItemType[] = [
-  {
-    id: 1,
-    name: "Điện thoại Nokia 105 DS Pro 4G Đen TA-1538 128MB Đen",
-    sku: "TA-1538",
-    image: "https://cdn2.fptshop.com.vn/unsafe/128x0/filters:format(webp):quality(75)/2023_8_14_638276308842946387_nokia-105-ds-pro-4g-den-5.jpg",
-    colorName: "Đen",
-    slug: "nokia-105-ds-pro-4g",
-    price: 690000,
-    originalPrice: 0,
-    quantity: 1,
-    checked: true,
-    combos: [
-        { id: "combo-nokia-1", name: "Combo Sim TD149 kèm Bảo hành", price: 199000, originalPrice: 349000, image: "https://cdn2.fptshop.com.vn/unsafe/96x0/filters:format(webp):quality(75)/sticker_2f113e56cd.png", checked: false },
-        { id: "combo-nokia-2", name: "Combo eSIM TD149 kèm Bảo hành", price: 199000, originalPrice: 349000, image: "https://cdn2.fptshop.com.vn/unsafe/96x0/filters:format(webp):quality(75)/sticker_2f113e56cd.png", checked: false }
-    ]
-  },
-  {
-    id: 2,
-    name: "iPhone 17 Pro Max 256GB Xanh Đậm",
-    sku: "IP17PM-BLUE",
-    image: "https://cdn2.fptshop.com.vn/unsafe/128x0/filters:format(webp):quality(75)/iphone_17_pro_max_deep_blue_1_eea0b1d2e9.png",
-    colorName: "Xanh Đậm",
-    slug: "iphone-17-pro-max",
-    price: 37690000,
-    originalPrice: 37990000,
-    quantity: 1,
-    checked: true,
-    combos: [
-        { id: "combo-ip17-1", name: "Gói Phụ kiện Chuẩn", price: 899000, originalPrice: 1388000, image: "https://cdn2.fptshop.com.vn/unsafe/96x0/filters:format(webp):quality(75)/combo_chuan_ip17prm_ca9cd4eb52.png", checked: true }
-    ]
-  },
-  {
-    id: 3,
-    name: "iPhone 16 Pro Max 256GB Titan Sa Mạc",
-    sku: "IP16PM-DESERT",
-    image: "https://cdn2.fptshop.com.vn/unsafe/128x0/filters:format(webp):quality(75)/iphone_16_pro_max_desert_titan_3552a28ae0.png",
-    colorName: "Titan Sa Mạc",
-    slug: "iphone-16-pro-max",
-    price: 32490000,
-    originalPrice: 34290000,
-    quantity: 2,
-    checked: true,
-    combos: [
-        { id: "combo-ip16-1", name: "Gói Phụ kiện iFan", price: 2437000, originalPrice: 0, image: "https://cdn2.fptshop.com.vn/unsafe/96x0/filters:format(webp):quality(75)/Goi_PK_i_Fan_i_Phone_16_Pro_Max_52d5526043.png", checked: false },
-        { id: "combo-ip16-2", name: "Gói Phụ kiện Chuẩn", price: 859000, originalPrice: 1388000, image: "https://cdn2.fptshop.com.vn/unsafe/96x0/filters:format(webp):quality(75)/Goi_PK_Chuan_i_Phone_16_Pro_Max_8c5690c448.png", checked: false },
-        { id: "combo-ip16-3", name: "Combo Sim TD199 kèm bảo hành", price: 249000, originalPrice: 399000, image: "https://cdn2.fptshop.com.vn/unsafe/96x0/filters:format(webp):quality(75)/sticker_2f113e56cd.png", checked: false },
-        { id: "combo-ip16-4", name: "Combo eSim TD199 kèm bảo hành", price: 249000, originalPrice: 399000, image: "https://cdn2.fptshop.com.vn/unsafe/96x0/filters:format(webp):quality(75)/sticker_2f113e56cd.png", checked: false }
-    ]
-  }
-];
+import "./CartPage.css"; 
 
 const CartPage = () => {
-  const [products, setProducts] = useState<CartItemType[]>(INITIAL_PRODUCTS);
+  const navigate = useNavigate(); 
 
-  // State quản lý Popup
+  const [products, setProducts] = useState<CartItemType[]>([]);
+  const [loading, setLoading] = useState(true);
+
   const [alertState, setAlertState] = useState<{
     isOpen: boolean;
     message: string;
     title?: string; 
     type?: "alert" | "confirm";
     onConfirm: () => void;
-
   }>({
     isOpen: false,
     message: "",
     onConfirm: () => {},
   });
 
-  // --- LOGIC XỬ LÝ SẢN PHẨM ---
-  const updateQuantity = (id: number | string, val: number) => {
-    setProducts(prev => prev.map(p => p.id === id ? { ...p, quantity: val } : p));
+  // ==========================================
+  // 1. API GET: LẤY DANH SÁCH GIỎ HÀNG TỪ SERVER
+  // ==========================================
+  const fetchCartData = async () => {
+    const userStr = localStorage.getItem('user');
+    if (!userStr) {
+        setLoading(false);
+        return;
+    }
+    const user = JSON.parse(userStr);
+
+    try {
+        const response = await fetch(`http://localhost:8080/api/cart/${user.id}`, {
+            method: 'GET',
+            headers: { 'Authorization': `Bearer ${user.token}` }
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            
+            if (data.data && data.data.items) {
+                let fetchedItems = data.data.items;
+
+                // XỬ LÝ TỰ ĐỘNG TÍCH CHỌN COMBO KHI THÊM TỪ CHI TIẾT SẢN PHẨM
+                const autoCheckStr = localStorage.getItem('AUTO_CHECK_CART_ITEMS');
+                if (autoCheckStr) {
+                    try {
+                        const autoCheckIds = JSON.parse(autoCheckStr);
+                        fetchedItems = fetchedItems.map((item: CartItemType) => {
+                            if (autoCheckIds.includes(item.id)) {
+                                return {
+                                    ...item,
+                                    checked: true,
+                                    combos: item.combos?.map(c => ({ ...c, checked: true }))
+                                };
+                            }
+                            return item;
+                        });
+                        localStorage.removeItem('AUTO_CHECK_CART_ITEMS');
+                    } catch (e) {
+                        console.error("Lỗi parse AUTO_CHECK_CART_ITEMS:", e);
+                    }
+                }
+
+                setProducts(fetchedItems);
+            }
+        }
+    } catch (error) {
+        console.error("Lỗi khi tải giỏ hàng:", error);
+    } finally {
+        setLoading(false);
+    }
   };
 
+  useEffect(() => {
+    // 🧹 Dọn dẹp payload cũ nếu user từ trang Thanh toán back lại
+    localStorage.removeItem('CHECKOUT_PAYLOAD');
+    fetchCartData();
+  }, []);
+
+  // ==========================================
+  // 2. CẬP NHẬT SỐ LƯỢNG LÊN SERVER
+  // ==========================================
+  const updateQuantity = async (id: number | string, val: number) => {
+    setProducts(prev => prev.map(p => p.id === id ? { ...p, quantity: val } : p));
+    const userStr = localStorage.getItem('user');
+    if (!userStr) return;
+    const user = JSON.parse(userStr);
+    try {
+        await fetch(`http://localhost:8080/api/cart/update/${id}?quantity=${val}`, {
+            method: 'PUT',
+            headers: { 'Authorization': `Bearer ${user.token}` }
+        });
+    } catch (error) {
+        console.error("Lỗi cập nhật số lượng:", error);
+    }
+  };
+
+  // ==========================================
+  // 3. XÓA SẢN PHẨM KHỎI SERVER
+  // ==========================================
+  const removeProduct = (id: number | string) => {
+    setAlertState({
+        isOpen: true,
+        message: "Bạn có chắc muốn xóa sản phẩm này khỏi giỏ hàng?",
+        onConfirm: async () => {
+            setAlertState(prev => ({ ...prev, isOpen: false }));
+            const userStr = localStorage.getItem('user');
+            if (!userStr) return;
+            const user = JSON.parse(userStr);
+            try {
+                const response = await fetch(`http://localhost:8080/api/cart/remove/${id}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${user.token}` }
+                });
+                if (response.ok) {
+                    setProducts(prev => prev.filter(p => p.id !== id));
+                    window.dispatchEvent(new Event('cartUpdated')); 
+                }
+            } catch (error) {
+                console.error("Lỗi xóa sản phẩm:", error);
+            }
+        }
+    });
+  };
+
+  const handleRemoveSelected = () => {
+    const selectedItems = products.filter(p => p.checked);
+    if (selectedItems.length === 0) {
+        setAlertState({ isOpen: true, message: "Vui lòng chọn ít nhất một sản phẩm để xóa!", onConfirm: () => {} });
+        return;
+    }
+    setAlertState({
+        isOpen: true,
+        message: `Bạn có chắc chắn muốn xóa ${selectedItems.length} sản phẩm đã chọn?`,
+        onConfirm: async () => {
+            setAlertState(prev => ({ ...prev, isOpen: false }));
+            const userStr = localStorage.getItem('user');
+            if (!userStr) return;
+            const user = JSON.parse(userStr);
+            try {
+                for (let item of selectedItems) {
+                    await fetch(`http://localhost:8080/api/cart/remove/${item.id}`, {
+                        method: 'DELETE',
+                        headers: { 'Authorization': `Bearer ${user.token}` }
+                    });
+                }
+                setProducts(prev => prev.filter(p => !p.checked));
+                window.dispatchEvent(new Event('cartUpdated')); 
+            } catch (error) {
+                 console.error("Lỗi xóa nhiều sản phẩm:", error);
+            }
+        }
+    });
+  };
+
+  // ==========================================
+  // 4. XỬ LÝ GIAO DIỆN (CHECKBOX)
+  // ==========================================
   const toggleCheck = (id: number | string) => {
     setProducts(prev => prev.map(p => p.id === id ? { ...p, checked: !p.checked } : p));
   };
@@ -98,38 +181,9 @@ const CartPage = () => {
     }));
   };
 
-  const removeProduct = (id: number | string) => {
-    setAlertState({
-        isOpen: true,
-        message: "Bạn có chắc muốn xóa sản phẩm này khỏi giỏ hàng?",
-        onConfirm: () => {
-            setProducts(prev => prev.filter(p => p.id !== id));
-        }
-    });
-  };
-
-  const handleRemoveSelected = () => {
-    const selectedItems = products.filter(p => p.checked);
-
-    if (selectedItems.length === 0) {
-        setAlertState({
-            isOpen: true,
-            message: "Vui lòng chọn ít nhất một sản phẩm để xóa!",
-            onConfirm: () => {} 
-        });
-        return;
-    }
-
-    setAlertState({
-        isOpen: true,
-        message: `Bạn có chắc chắn muốn xóa ${selectedItems.length} sản phẩm đã chọn khỏi giỏ hàng?`,
-        onConfirm: () => {
-            setProducts(prev => prev.filter(p => !p.checked));
-        }
-    });
-  };
-
-  // --- TÍNH TOÁN TIỀN ---
+  // ==========================================
+  // 5. TÍNH TOÁN TIỀN 
+  // ==========================================
   const totalPrice = products.reduce((sum, p) => {
     if (!p.checked) return sum;
     const basePrice = p.originalPrice || p.price; 
@@ -153,46 +207,58 @@ const CartPage = () => {
   const selectedCount = products.filter(p => p.checked).length;
   const isRemoveDisabled = selectedCount === 0;
 
-  // --- HÀM XỬ LÝ KHI BẤM NÚT XÁC NHẬN ĐƠN ---
+  // ==========================================
+  // 6. 🔥 XỬ LÝ THANH TOÁN (Chuyển trang Checkout)
+  // ==========================================
   const handleCheckout = () => {
-    // 1. Tìm sản phẩm nào đang vi phạm luật
-    const invalidProduct = products.find(p => {
-        // Điều kiện 1: Sản phẩm đó đang được chọn mua (checked = true)
-        if (!p.checked) return false;
+    const selectedItems = products.filter(p => p.checked);
 
-        // Điều kiện 2: Số lượng mua từ 2 trở lên
-        if (p.quantity < 2) return false;
-
-        // Điều kiện 3: Có tích chọn ít nhất 1 combo bên trong nó không?
-        // (Lưu ý: p.combos có thể undefined nên cần optional chaining ?.)
-        const hasSelectedCombo = p.combos?.some(combo => combo.checked);
-
-        // NẾU: Số lượng >= 2 VÀ Có tích chọn combo => VI PHẠM (return true)
-        return hasSelectedCombo;
-    });
-
-    // 2. Nếu tìm thấy sản phẩm vi phạm -> Báo lỗi Popup
-    if (invalidProduct) {
-        setAlertState({
-            isOpen: true,
-            title: "Quy định mua hàng",
-            message: `Sản phẩm "${invalidProduct.name}" đang được chọn kèm Combo giá sốc nên chỉ được mua với số lượng là 1. Vui lòng bỏ chọn Combo hoặc giảm số lượng về 1 để tiếp tục.`,
-            type: "alert",
-            onConfirm: () => {}
-        });
-        return; // Dừng lại, không cho đi tiếp
+    if (selectedItems.length === 0) {
+        setAlertState({ isOpen: true, message: "Vui lòng chọn ít nhất 1 sản phẩm!", onConfirm: () => {} });
+        return;
     }
 
-    // 3. Nếu không có lỗi gì -> Chuyển sang trang thanh toán
-    // window.location.href = "/checkout"; hoặc navigate("/checkout");
-    alert("Đơn hàng hợp lệ! Đang chuyển sang thanh toán...");
+    // 1. Lọc ra các sản phẩm được chọn (bỏ đi những combo không được tick để mang sang Checkout cho nhẹ)
+    const itemsToCheckout = selectedItems.map(item => ({
+        ...item,
+        combos: item.combos ? item.combos.filter(c => c.checked) : []
+    }));
+
+    // 2. Gói toàn bộ dữ liệu cần thiết vào 1 Object
+    const checkoutPayload = {
+        // Dữ liệu dùng để Backend xử lý (Chỉ chứa ID)
+       idsForBackend: itemsToCheckout.map(item => ({
+            // 🔥 THAY ĐỔI: Sử dụng productVariantId thay vì id
+            variantId: item.productVariantId,
+            quantity: item.quantity,
+            // Combo id vẫn lấy từ trường id của CartComboItemDto
+            comboIds: item.combos?.map(c => c.id) || []
+        })),
+
+        // Dữ liệu dùng để Frontend vẽ giao diện (Hình ảnh, tên, giá, tổng tiền...)
+        uiData: {
+            items: itemsToCheckout,
+            summary: {
+                totalPrice: totalPrice + comboPrice,
+                totalDiscount: totalDiscount,
+                finalPrice: finalPrice
+            }
+        }
+    };
+
+    // 3. Lưu cục Object xịn xò này vào LocalStorage
+    localStorage.setItem('CHECKOUT_PAYLOAD', JSON.stringify(checkoutPayload));
+
+    // 4. Bay sang trang Thanh toán
+    navigate('/checkout'); 
   };
+
+  if (loading) return <div style={{textAlign: "center", padding: "100px"}}>Đang tải giỏ hàng...</div>;
 
   return (
     <div className="cart-page-wrapper">
       <div className="cart-container">
         
-        {/* POPUP ALERT */}
         <CartAlert 
             isOpen={alertState.isOpen}
             message={alertState.message}
@@ -203,7 +269,6 @@ const CartPage = () => {
         <div className="cart-grid">
           
           <div className="cart-main">
-            {/* Header: Chọn tất cả & Xóa */}
             <div className="cart-header">
               <div className="header-left">
                 <input 
@@ -230,7 +295,6 @@ const CartPage = () => {
               </button>
             </div>
 
-            {/* Danh sách sản phẩm */}
             <div className="cart-list">
               {products.length > 0 ? products.map((product) => (
                 <CartItem
@@ -242,20 +306,21 @@ const CartPage = () => {
                   onToggleCombo={toggleCombo}
                 />
               )) : (
-                  <div className="cart-empty">
-                      <p>Giỏ hàng trống</p>
+                  <div className="cart-empty" style={{textAlign: "center", padding: "40px", backgroundColor: "#fff"}}>
+                      <p>Giỏ hàng của bạn đang trống</p>
+                      <a href="/" style={{color: "#cb1c22", fontWeight: "bold", textDecoration: "none", marginTop: "10px", display: "inline-block"}}>Tiếp tục mua sắm</a>
                   </div>
               )}
             </div>
           </div>
 
-          {/* Cột phải: Tổng tiền */}
           <div className="cart-sidebar">
+             {/* 🔥 Truyền các props vào OrderSummary */}
              <OrderSummary 
-                totalPrice={totalPrice + comboPrice} 
-                totalDiscount={totalDiscount}
-                finalPrice={finalPrice}
-               onCheckout={handleCheckout}
+               totalPrice={totalPrice + comboPrice} 
+               totalDiscount={totalDiscount}
+               finalPrice={finalPrice}
+               onCheckout={handleCheckout} 
              />
           </div>
         </div>

@@ -1,98 +1,211 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react'; // 👉 Thêm useCallback
 import "./Profile.css";
-
-// --- KHAI BÁO COMPONENT ICON BÊN NGOÀI (Tránh lỗi render) ---
+import { EditProfileModal } from './EditProfileModal/EditProfileModal';
+import { AddressModal } from './AddressModal/AddressModal';
+import { ChangePasswordModal } from './ChangePasswordModal/ChangePasswordModal'; // Đổi đường dẫn cho đúng với cấu trúc thư mục của bạn
+// --- KHAI BÁO COMPONENT ICON BÊN NGOÀI ---
 const EditIcon = () => (
   <svg stroke="currentColor" fill="none" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round" height="18" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M7 7h-1a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-1"></path><path d="M20.385 6.585a2.1 2.1 0 0 0 -2.97 -2.97l-8.415 8.385v3h3l8.385 -8.415z"></path><path d="M16 5l3 3"></path></svg>
 );
-
 const PlusIcon = () => (
   <svg stroke="currentColor" fill="none" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round" height="18" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M12 5l0 14"></path><path d="M5 12l14 0"></path></svg>
 );
-
 const LinkIcon = () => (
   <svg stroke="currentColor" fill="none" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round" height="18" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M9 15l6 -6"></path><path d="M11 6l.463 -.536a5 5 0 0 1 7.071 7.072l-.534 .464"></path><path d="M13 18l-.397 .534a5.068 5.068 0 0 1 -7.127 0a4.972 4.972 0 0 1 0 -7.071l.524 -.463"></path></svg>
 );
 // -------------------------------------------------------------
 
 const Profile = () => {
-  // Dữ liệu User (Thêm trường avatar)
-  const [userInfo, setUserInfo] = useState({
-    avatar: "https://cdn-static.smember.com.vn/_next/static/media/avata-ant.b574f3e9.svg", // Ảnh mặc định
-    name: "End new bie Back",
-    gender: "-",
-    dob: "22/02/2004",
-    phone: "0945368613",
-    email: "backendnewbie2004@gmail.com",
-    address: "-"
+  const [addressList, setAddressList] = useState<any[]>([]);
+  const [userInfo, setUserInfo] = useState(() => {
+    const userStr = localStorage.getItem('user');
+    const localUser = userStr ? JSON.parse(userStr) : null;
+    
+    return {
+      avatar: localUser?.avatarUrl || localUser?.avatar || "https://cdn-static.smember.com.vn/_next/static/media/avata-ant.b574f3e9.svg", 
+      name: localUser?.name || "Người dùng",
+      phone: localUser?.phone || "Chưa cập nhật",
+      email: localUser?.email || "Chưa cập nhật",
+      address: "Chưa có địa chỉ mặc định",
+      typeAccount: localUser?.typeAccount || "NORMAL" // 👉 Lấy typeAccount từ localStorage
+    };
   });
 
-  const addressList = [
-    { id: 1, name: "End new bie Back", phone: "0945368613", fullAddress: "dâdad, Xã Liên Bão, Huyện Tiên Du, Bắc Ninh", isDefault: true },
-    { id: 2, name: "End new bie Back", phone: "0945368613", fullAddress: "a, Xã Bằng Thành, Huyện Pác Nặm, Bắc Kạn", isDefault: false },
-    { id: 3, name: "End new bie Back", phone: "0945368613", fullAddress: "âf, Thị trấn Núi Sập, Huyện Thoại Sơn, An Giang", isDefault: false },
-  ];
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isAddressModalOpen, setIsAddressModalOpen] = useState(false);
+  const [editingAddress, setEditingAddress] = useState<any>(null);
+  const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
+  // 👉 Đưa hàm lên TRƯỚC useEffect
+  const getToken = useCallback(() => {
+    const userStr = localStorage.getItem('user');
+    return userStr ? JSON.parse(userStr).token : '';
+  }, []);
 
-  // Xử lý khi chọn ảnh mới (Preview ảnh)
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0];
-      const imageUrl = URL.createObjectURL(file);
-      setUserInfo({ ...userInfo, avatar: imageUrl });
+  const fetchUserProfile = useCallback(async () => {
+    try {
+      const res = await fetch('http://localhost:8080/api/users/profile', {
+        headers: { 
+            'Authorization': `Bearer ${getToken()}`,
+            'Content-Type': 'application/json'
+        }
+      });
+      const data = await res.json();
+      
+      if (data.code === 200) {
+        const profileData = data.data;
+        setUserInfo(prev => ({
+          ...prev,
+          name: profileData.name || "Người dùng",
+          email: profileData.email || "Chưa cập nhật",
+          phone: profileData.phone || "Chưa cập nhật",
+          avatar: profileData.avatarUrl || prev.avatar
+        }));
+        
+        const userStr = localStorage.getItem('user');
+        if (userStr) {
+          const localUser = JSON.parse(userStr);
+          localStorage.setItem('user', JSON.stringify({ ...localUser, ...profileData }));
+        }
+      }
+    } catch (error) {
+      console.error("Lỗi lấy thông tin cá nhân", error);
     }
+  }, [getToken]);
+
+  const fetchAddresses = useCallback(async () => {
+    try {
+      const res = await fetch('http://localhost:8080/api/addresses', {
+        headers: { 
+            'Authorization': `Bearer ${getToken()}`,
+            'Content-Type': 'application/json'
+        }
+      });
+      const data = await res.json();
+      
+      if (data.code === 200) {
+        setAddressList(data.data || []);
+        const defaultAddr = (data.data || []).find((a: any) => a.isDefault);
+        if (defaultAddr) {
+          const fullAddrString = [defaultAddr.street, defaultAddr.city, defaultAddr.province, defaultAddr.country]
+                                  .filter(Boolean).join(", ");
+          setUserInfo(prev => ({ ...prev, address: fullAddrString }));
+        }
+      }
+    } catch (error) {
+      console.error("Lỗi lấy danh sách địa chỉ", error);
+    }
+  }, [getToken]);
+
+  // 👉 Đặt useEffect ở đây, sau khi các hàm đã khai báo xong
+  useEffect(() => {
+    fetchUserProfile();
+    fetchAddresses();
+  }, [fetchUserProfile, fetchAddresses]);
+
+  const handleSetDefault = async (addressId: number) => {
+    try {
+      const res = await fetch(`http://localhost:8080/api/addresses/${addressId}/default`, {
+        method: 'PUT',
+        headers: { 
+            'Authorization': `Bearer ${getToken()}`,
+            'Content-Type': 'application/json'
+        }
+      });
+      const data = await res.json();
+      if (data.code === 200) {
+        fetchAddresses(); 
+      } else {
+          alert(data.message || "Có lỗi xảy ra");
+      }
+    } catch (error) {
+      console.error("Lỗi set địa chỉ mặc định", error);
+    }
+  };
+
+  const handleDeleteAddress = async (addressId: number) => {
+    if (!window.confirm("Bạn có chắc chắn muốn xóa địa chỉ này?")) {
+      return;
+    }
+
+    try {
+      const res = await fetch(`http://localhost:8080/api/addresses/${addressId}`, {
+        method: 'DELETE',
+        headers: { 
+            'Authorization': `Bearer ${getToken()}`,
+            'Content-Type': 'application/json'
+        }
+      });
+      const data = await res.json();
+      
+      if (data.code === 200) {
+        fetchAddresses(); 
+      } else {
+        alert(data.message || "Có lỗi xảy ra khi xóa");
+      }
+    } catch (error) {
+      console.error("Lỗi xóa địa chỉ", error);
+    }
+  };
+
+  const openEditAddressModal = (addr: any) => {
+    setEditingAddress(addr); 
+    setIsAddressModalOpen(true); 
+  };
+
+  const openAddAddressModal = () => {
+    setEditingAddress(null); 
+    setIsAddressModalOpen(true);
   };
 
   return (
     <div className="profile-container">
+      <EditProfileModal 
+        isOpen={isEditModalOpen} 
+        onClose={() => setIsEditModalOpen(false)} 
+        initialData={{
+          fullName: userInfo.name !== "Người dùng" ? userInfo.name : "",
+          phone: userInfo.phone !== "Chưa cập nhật" ? userInfo.phone : "",
+          avatar: userInfo.avatar
+        }}
+        onSaveSuccess={fetchUserProfile}
+      />
       
-      {/* KHỐI 1: THÔNG TIN CÁ NHÂN */}
+      <AddressModal
+        isOpen={isAddressModalOpen}
+        onClose={() => {
+            setIsAddressModalOpen(false);
+            setEditingAddress(null);
+        }}
+        onSaveSuccess={fetchAddresses}
+        initialData={editingAddress}
+      />
+      <ChangePasswordModal 
+        isOpen={isPasswordModalOpen}
+        onClose={() => setIsPasswordModalOpen(false)}
+      />
       <div className="profile-card">
         <div className="card-header">
           <div className="card-title">Thông tin cá nhân</div>
-          <button className="card-action">
+          <button className="card-action" onClick={() => setIsEditModalOpen(true)}>
             <EditIcon /> Cập nhật
           </button>
         </div>
         
         <div className="info-grid">
-          {/* Cột Trái */}
           <div className="info-col">
-            
-            {/* --- THÊM PHẦN AVATAR VÀO ĐÂY --- */}
             <div className="avatar-row">
               <span className="info-label">Ảnh đại diện:</span>
               <div className="avatar-wrapper">
-                <img src={userInfo.avatar} alt="Avatar" className="current-avatar" />
-                
-                {/* Input file ẩn, dùng label để kích hoạt */}
-                <input 
-                  type="file" 
-                  id="avatar-upload" 
-                  accept="image/*" 
-                  onChange={handleImageChange}
-                />
-                <label htmlFor="avatar-upload" className="upload-label">
-                  Thay đổi
-                </label>
+                <img src={userInfo.avatar} alt="Avatar" className="current-avatar" style={{ objectFit: 'cover' }} />
               </div>
             </div>
-            {/* ------------------------------- */}
 
             <div className="info-row">
               <span className="info-label">Họ và tên:</span>
               <span className="info-value">{userInfo.name}</span>
             </div>
-            <div className="info-row">
-              <span className="info-label">Giới tính:</span>
-              <span className="info-value">{userInfo.gender}</span>
-            </div>
-            <div className="info-row">
-              <span className="info-label">Ngày sinh:</span>
-              <span className="info-value">{userInfo.dob}</span>
-            </div>
           </div>
 
-          {/* Cột Phải */}
           <div className="info-col">
             <div className="info-row">
               <span className="info-label">Số điện thoại:</span>
@@ -110,55 +223,76 @@ const Profile = () => {
         </div>
       </div>
 
-      {/* KHỐI 2: SỔ ĐỊA CHỈ */}
       <div className="profile-card">
         <div className="card-header">
           <div className="card-title">Sổ địa chỉ</div>
-          <button className="card-action">
+          <button className="card-action" onClick={openAddAddressModal}>
             <PlusIcon /> Thêm địa chỉ
           </button>
         </div>
 
         <div className="address-grid">
           {addressList.map((addr) => (
-            <div key={addr.id} className="address-item">
+            <div key={addr.id} className="address-item" style={{ border: addr.isDefault ? '1px solid #cb1c22' : '1px solid #eaeaea' }}>
               <div className="address-content">
                 <div className="address-header">
-                   <span className="addr-name">{addr.name}</span>
-                   <div className="addr-divider"></div>
-                   <span className="addr-phone">{addr.phone}</span>
+                    <span className="addr-name">{userInfo.name}</span>
+                    <div className="addr-divider"></div>
+                    <span className="addr-phone">{userInfo.phone}</span>
+                    {addr.isDefault && (
+                        <span style={{ marginLeft: '10px', color: '#cb1c22', fontSize: '12px', border: '1px solid #cb1c22', padding: '2px 6px', borderRadius: '4px' }}>
+                            Mặc định
+                        </span>
+                    )}
                 </div>
-                <div className="addr-text">{addr.fullAddress}</div>
+                <div className="addr-text">
+                    {[addr.street, addr.city, addr.province, addr.country].filter(Boolean).join(", ")}
+                </div>
               </div>
               <div className="address-actions">
-                <button className="btn-addr">Xóa</button>
-                <button className="btn-addr btn-update">Cập nhật</button>
+                {!addr.isDefault && (
+                    <button className="btn-addr" onClick={() => handleSetDefault(addr.id)} style={{ color: '#0066cc' }}>
+                        Đặt mặc định
+                    </button>
+                )}
+                <button className="btn-addr" onClick={() => handleDeleteAddress(addr.id)}>
+                    Xóa
+                </button>
+                <button className="btn-addr btn-update" onClick={() => openEditAddressModal(addr)}>
+                    Cập nhật
+                </button>
               </div>
             </div>
           ))}
+          
+          {addressList.length === 0 && (
+              <p style={{ color: '#666', fontSize: '14px', fontStyle: 'italic' }}>Bạn chưa lưu địa chỉ nào.</p>
+          )}
         </div>
       </div>
 
-      {/* KHỐI 3: MẬT KHẨU & LIÊN KẾT */}
       <div className="bottom-grid">
         <div className="profile-card">
           <div className="card-header">
             <div className="card-title">Mật khẩu</div>
-            <button className="card-action">
-              <EditIcon /> Thay đổi mật khẩu
-            </button>
+            {userInfo.typeAccount === 'NORMAL' ? (
+                <button className="card-action" onClick={() => setIsPasswordModalOpen(true)}>
+                  <EditIcon /> Thay đổi mật khẩu
+                </button>
+              ) : (
+                /* 👉 NẾU LÀ FACEBOOK / GOOGLE THÌ HIỆN TEXT THÔNG BÁO */
+                <span style={{ fontSize: '13px', color: '#666', fontStyle: 'italic', marginTop: '2px' }}>
+                  Không áp dụng cho tài khoản {userInfo.typeAccount}
+                </span>
+              )}
           </div>
-          <div className="info-row">
-            <span className="info-label">Cập nhật lần cuối lúc:</span>
-            <span className="info-value">12/01/2026 09:35</span>
-          </div>
+          
         </div>
 
         <div className="profile-card">
           <div className="card-header">
             <div className="card-title">Tài khoản liên kết</div>
           </div>
-          
           <div className="linked-row">
             <div className="linked-info">
               <img src="https://cdn-static.smember.com.vn/_next/static/media/logo-google.b6f9570f.svg" alt="Google" className="linked-logo" />
@@ -169,7 +303,6 @@ const Profile = () => {
               <LinkIcon /> Hủy liên kết
             </div>
           </div>
-
           <div className="linked-row">
             <div className="linked-info">
               <img src="https://cdn-static.smember.com.vn/_next/static/media/logo-zalo.120d889f.svg" alt="Zalo" className="linked-logo" />
@@ -181,7 +314,6 @@ const Profile = () => {
           </div>
         </div>
       </div>
-
     </div>
   );
 };

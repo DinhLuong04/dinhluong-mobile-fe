@@ -65,6 +65,11 @@
     cursor: pointer;
     width: 100%;
     font-size: 14px;
+    transition: background-color 0.2s;
+}
+
+.pr-btn-rate:hover {
+    background-color: #b0151a;
 }
 
 .pr-summary-right {
@@ -95,7 +100,7 @@
     background-color: #e5e7eb;
     border-radius: 10px;
     overflow: hidden;
-    max-width: 500px; /* Giới hạn chiều dài thanh */
+    max-width: 500px;
 }
 
 .pr-progress-fill {
@@ -115,7 +120,7 @@
     margin: 20px 0;
 }
 
-/* --- 2. FILTER & INPUT SECTION --- */
+/* --- 2. FILTER SECTION --- */
 .pr-filter-section {
     display: flex;
     align-items: center;
@@ -133,6 +138,7 @@
 
 .pr-filters {
     display: flex;
+    flex-wrap: wrap;
     gap: 8px;
 }
 
@@ -144,6 +150,11 @@
     cursor: pointer;
     background: #fff;
     color: #333;
+    transition: all 0.2s;
+}
+
+.pr-filter-pill:hover {
+    background-color: #f9fafb;
 }
 
 .pr-filter-pill.active {
@@ -153,41 +164,6 @@
     font-weight: 600;
 }
 
-.pr-input-wrapper {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 10px;
-}
-
-.pr-text-input {
-    flex: 1;
-    border: 1px solid #e5e7eb;
-    border-radius: 8px;
-    padding: 12px;
-    font-size: 14px;
-    outline: none;
-}
-
-.pr-btn-submit {
-    background-color: #000;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    padding: 0 25px;
-    font-weight: 600;
-    cursor: pointer;
-    white-space: nowrap;
-}
-
-.pr-upload-action {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    color: #1250dc; /* Màu xanh link */
-    font-size: 14px;
-    cursor: pointer;
-    margin-bottom: 25px;
-}
 
 /* --- 3. COMMENT LIST --- */
 .pr-comment-item {
@@ -201,7 +177,7 @@
     width: 40px;
     height: 40px;
     border-radius: 50%;
-    background-color: #9ca3af; /* Màu xám avatar */
+    background-color: #9ca3af;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -260,18 +236,19 @@
     font-size: 13px;
     color: #555;
     cursor: pointer;
+    transition: all 0.2s;
 }
 
 .pr-action-btn:hover {
     background-color: #f9fafb;
-    color: #cb1c22; /* Hover màu đỏ */
+    color: #cb1c22;
     border-color: #cb1c22;
 }
 
 /* --- ADMIN REPLY BOX --- */
 .pr-reply-box {
     margin-top: 15px;
-    background-color: #f3f4f6; /* Nền xám nhạt */
+    background-color: #f3f4f6;
     padding: 15px;
     border-radius: 12px;
     display: flex;
@@ -279,7 +256,6 @@
     position: relative;
 }
 
-/* Mũi tên trỏ lên của box reply */
 .pr-reply-box::before {
     content: "";
     position: absolute;
@@ -303,7 +279,7 @@
 }
 
 .pr-badge-admin {
-    background: linear-gradient(90deg, #d6a567 0%, #b38549 100%); /* Màu vàng đồng quản trị viên */
+    background: linear-gradient(90deg, #d6a567 0%, #b38549 100%);
     color: white;
     font-size: 11px;
     padding: 2px 8px;
@@ -315,17 +291,20 @@
     flex: 1;
 }
 
-/* --- PAGINATION --- */
+/* --- 4. PAGINATION --- */
 .pr-pagination {
     display: flex;
     justify-content: center;
+    align-items: center;
     gap: 8px;
     margin-top: 30px;
 }
 
+/* Áp dụng chung cho cả button và các cục số */
 .pr-page-item {
-    width: 32px;
+    min-width: 32px;
     height: 32px;
+    padding: 0 10px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -333,16 +312,29 @@
     font-size: 14px;
     cursor: pointer;
     color: #555;
+    background-color: transparent;
+    border: 1px solid transparent;
+    transition: background-color 0.2s;
+}
+
+button.pr-page-item {
+    border: 1px solid #e5e7eb;
 }
 
 .pr-page-item.active {
     background-color: #cb1c22;
     color: white;
     font-weight: 600;
+    border-color: #cb1c22;
 }
 
-.pr-page-item:hover:not(.active) {
+.pr-page-item:hover:not(.active):not(.disabled) {
     background-color: #f3f4f6;
+}
+
+.pr-page-item.disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
 }
 
 /* --- RESPONSIVE MOBILE --- */
@@ -364,14 +356,254 @@
         max-width: none;
     }
     .pr-filter-section {
-        flex-direction: row;
-        align-items: center;
-    }
-    .pr-input-wrapper {
         flex-direction: column;
+        align-items: flex-start;
     }
-    .pr-btn-submit {
-        width: 100%;
-        padding: 10px;
+}
+
+
+/* ==================================================
+   GIAO DIỆN Ô NHẬP CHÍNH (FPT STYLE)
+================================================== */
+.fpt-main-input-section {
+    margin-top: 20px;
+    margin-bottom: 30px;
+}
+
+.fpt-main-input-row {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.fpt-main-input-wrapper {
+    flex: 1;
+    position: relative;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    background: #fff;
+    display: flex;
+    align-items: center;
+}
+
+.fpt-main-input {
+    width: 100%;
+    border: none;
+    background: transparent;
+    padding: 12px 15px;
+    font-size: 15px;
+    color: #333;
+    outline: none;
+    border-radius: 8px;
+}
+
+.fpt-char-count-main {
+    font-size: 12px;
+    color: #9ca3af;
+    padding-right: 15px;
+    user-select: none;
+}
+
+.fpt-btn-black {
+    background-color: #000;
+    color: #fff;
+    border: none;
+    border-radius: 30px; /* Bo tròn hoàn toàn (Pill shape) */
+    padding: 12px 24px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: opacity 0.2s;
+}
+
+.fpt-btn-black:hover:not(:disabled) {
+    opacity: 0.8;
+}
+
+.fpt-btn-black:disabled {
+    background-color: #666;
+    cursor: not-allowed;
+}
+
+.fpt-upload-wrapper {
+    margin-top: 10px;
+}
+
+.fpt-upload-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: #1250dc; /* Màu xanh nước biển FPT */
+    font-size: 14px;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.fpt-upload-link:hover {
+    text-decoration: underline;
+}
+
+.fpt-preview-images {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+    flex-wrap: wrap;
+}
+
+.fpt-preview-item {
+    position: relative;
+    width: 60px;
+    height: 60px;
+    border-radius: 6px;
+    border: 1px solid #e5e7eb;
+    overflow: hidden;
+}
+
+.fpt-preview-item img, 
+.fpt-preview-item video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.fpt-preview-item button {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    background: rgba(0,0,0,0.6);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 18px;
+    height: 18px;
+    font-size: 12px;
+    line-height: 1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+
+/* ==================================================
+   GIAO DIỆN BOX TRẢ LỜI (FPT STYLE - MÀU XÁM)
+================================================== */
+.fpt-reply-container {
+    background-color: #f3f4f6; /* Màu xám nhạt */
+    border-radius: 8px;
+    padding: 16px;
+    display: flex;
+    gap: 12px;
+    margin-top: 12px;
+    margin-bottom: 20px;
+}
+
+.fpt-reply-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #9ca3af;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    flex-shrink: 0;
+}
+
+.fpt-reply-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.fpt-reply-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.fpt-reply-info {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.fpt-reply-info .reply-label {
+    color: #6b7280;
+    font-size: 14px;
+}
+
+.fpt-reply-info .reply-name {
+    color: #111827;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.fpt-reply-close {
+    cursor: pointer;
+    color: #6b7280;
+}
+
+.fpt-reply-input-wrapper {
+    position: relative;
+    background: #fff;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    padding: 10px;
+    margin-bottom: 12px;
+}
+
+.fpt-reply-textarea {
+    width: 100%;
+    border: none;
+    outline: none;
+    resize: none;
+    font-size: 14px;
+    font-family: Inter, sans-serif;
+    color: #333;
+    padding-bottom: 20px; /* Chừa chỗ cho biến đếm */
+}
+
+.fpt-char-count {
+    position: absolute;
+    bottom: 8px;
+    right: 12px;
+    font-size: 12px;
+    color: #9ca3af;
+}
+
+.fpt-btn-red {
+    align-self: flex-start;
+    background-color: #cb1c22;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 8px 30px;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.fpt-btn-red:hover:not(:disabled) {
+    background-color: #b0151a;
+}
+
+.fpt-btn-red:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* --- Mobile Responsive cho ô input chính --- */
+@media (max-width: 768px) {
+    .fpt-main-input-row {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .fpt-btn-black {
+        border-radius: 8px; /* Trên mobile thường vuông vắn hơn */
     }
 }

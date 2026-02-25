@@ -96,7 +96,7 @@ const PromotionCombo: React.FC<PromotionComboProps> = ({ slug }) => {
                                 <b>{formatVND(totalSaving)}</b>
                             </div>
                         </div>
-                        <div className="combo-actions">
+                        {/* <div className="combo-actions">
                             <button className="combo-btn-cart-icon">
                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 32 32" fill="#cb1c22">
 
@@ -105,7 +105,7 @@ const PromotionCombo: React.FC<PromotionComboProps> = ({ slug }) => {
                                 </svg>
                             </button>
                             <button className="combo-btn-buy">Chọn mua kèm</button>
-                        </div>
+                        </div> */}
                     </div>
 
                 </div>

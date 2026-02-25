@@ -7,6 +7,7 @@ import { useGoogleLogin, type TokenResponse } from '@react-oauth/google';
 import FacebookLogin from 'react-facebook-login/dist/facebook-login-render-props';
 import type { AuthData } from '../../types/auth.types';
 import httpClient from '../../api/axiosClient';
+import { BackToHomeButton } from '../../components/Common/BackToHomeButton/BackToHomeButton';
 
 const FACEBOOK_APP_ID = import.meta.env.VITE_FACEBOOK_CLIENT_ID;
 
@@ -51,16 +52,49 @@ const LoginPage: React.FC = () => {
   }, [searchParams]);
 
   const handleLoginSuccess = (authData: AuthData) => {
-      const userData = {
-          id: authData.id,
-          name: authData.name,
-          email: authData.email,
-          avatar: authData.avatar,
-          token: authData.token,
-      };
-      login(userData);
-      navigate('/');
-  };
+    let userRole = 'USER'; // Mặc định là USER
+
+    try {
+        if (authData.token) {
+            // Cắt chuỗi JWT lấy phần Payload
+            const base64Url = authData.token.split('.')[1];
+            const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+            
+            // Decode an toàn cho Unicode (TSX hỗ trợ tốt)
+            const jsonPayload = decodeURIComponent(
+                window.atob(base64).split('').map(function(c) {
+                    return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+                }).join('')
+            );
+            
+            const decodedToken = JSON.parse(jsonPayload);
+            userRole = decodedToken.role || 'USER'; // Lấy role từ token
+        }
+    } catch (error) {
+        console.error("Lỗi giải mã token:", error);
+    }
+
+    // Gán dữ liệu với Type an toàn
+    const userData: AuthData = {
+        id: authData.id,
+        name: authData.name,
+        email: authData.email,
+        avatar: authData.avatar,
+        typeAccount: authData.typeAccount,
+        token: authData.token,
+        role: userRole, 
+    };
+    
+    login(userData); // Gọi hàm từ useAuth context
+    window.dispatchEvent(new Event('cartUpdated'));
+
+    // Điều hướng dựa trên Role
+    if (userRole === 'ADMIN' || userRole === 'ROLE_ADMIN') {
+        navigate('/admin');
+    } else {
+        navigate('/');
+    }
+};
 
   const loginGoogleAction = useGoogleLogin({
     onSuccess: async (tokenResponse: TokenResponse) => {
@@ -154,9 +188,13 @@ const LoginPage: React.FC = () => {
   };
 
   return (
+    
     <div className="auth-page-container">
+      
       <div className="auth-card">
+        
         <div className="auth-form-side">
+          <BackToHomeButton />
           {/* HEADER CHỈ CÒN TIÊU ĐỀ */}
           <div className="auth-form-header">
             <h3 className="auth-title">Đăng nhập</h3>

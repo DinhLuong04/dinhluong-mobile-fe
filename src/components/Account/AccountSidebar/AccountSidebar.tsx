@@ -19,7 +19,8 @@ const AccountSidebar = () => {
 
     // Hàm 2: Khi bấm "Đồng ý" trong Modal -> Thực hiện đăng xuất
     const handleConfirmLogout = () => {
-        logout();       // Gọi hàm logout từ AuthProvider
+        logout(); 
+        window.dispatchEvent(new Event('cartUpdated'));      // Gọi hàm logout từ AuthProvider
         navigate('/');  // Chuyển hướng về trang chủ
         setShowLogoutModal(false); // Đóng modal
     };

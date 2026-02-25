@@ -71,6 +71,7 @@ export interface ColorOption {
 }
 
 export interface VariantDetail {
+  id: number | string;
   sku: string;
   rom: string;
   colorName: string;
@@ -123,7 +124,8 @@ export interface CartComboItem {
 // Định nghĩa Item chính trong giỏ hàng
 export interface CartItem {
   // --- Thông tin định danh ---
-  id: number | string; // ID sản phẩm
+  id: number | string; 
+  productVariantId: number | string; // ID sản phẩm
   sku: string; // Quan trọng: Mã SKU để phân biệt phiên bản (VD: IP15-256-BLUE)
 
   // --- Thông tin hiển thị ---

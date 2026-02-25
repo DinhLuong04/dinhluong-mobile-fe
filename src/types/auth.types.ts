@@ -10,12 +10,13 @@ export interface RegisterRequest {
 }
 
 export interface AuthData {
-  token: string;
   id: number;
-  email: string;
   name: string;
-  avatar: string | null;
+  email: string;
+  avatar?: string;
   typeAccount: string;
+  token: string;
+  role?: string; // Bổ sung dòng này
 }
 
 export interface ApiResponse<T> {

@@ -1,0 +1,151 @@
+/* 1. LỚP PHỦ TỐI MÀU (OVERLAY) */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.5); /* Nền đen trong suốt */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999; /* Đảm bảo modal luôn nằm trên cùng */
+}
+
+/* 2. KHUNG MODAL CHÍNH */
+.voucher-modal {
+    background-color: #fff;
+    width: 450px;
+    max-width: 90%;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+/* 3. PHẦN HEADER */
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px;
+    border-bottom: 1px solid #ebebeb;
+    background-color: #fff;
+}
+
+.modal-header h3 {
+    margin: 0;
+    font-size: 18px;
+    color: #333;
+    font-weight: 600;
+}
+
+.close-btn {
+    background: transparent;
+    border: none;
+    font-size: 28px;
+    line-height: 1;
+    color: #999;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.close-btn:hover {
+    color: #cb1c22; /* Đổi sang màu đỏ khi hover */
+}
+
+/* 4. PHẦN NỘI DUNG (BODY) */
+.modal-body {
+    padding: 20px;
+    max-height: 60vh;
+    overflow-y: auto; /* Cuộn dọc nếu có quá nhiều voucher */
+    background-color: #f8f9fa; /* Màu nền xám nhạt để nổi bật thẻ voucher trắng */
+}
+
+.modal-body p {
+    text-align: center;
+    color: #666;
+    margin: 20px 0;
+    font-size: 15px;
+}
+
+/* 5. THẺ VOUCHER (Đã tinh chỉnh lại từ code của bạn) */
+.voucher-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    margin-bottom: 16px;
+    padding: 16px;
+    position: relative;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+
+/* Hiệu ứng khoét lỗ 2 bên viền thẻ voucher */
+.voucher-card::before, .voucher-card::after {
+    content: '';
+    position: absolute;
+    width: 14px;
+    height: 14px;
+    background: #f8f9fa; /* Phải trùng màu với .modal-body */
+    border-radius: 50%;
+    top: calc(50% - 7px);
+}
+
+.voucher-card::before {
+    left: -8px;
+    border-right: 1px solid #e0e0e0;
+}
+
+.voucher-card::after {
+    right: -8px;
+    border-left: 1px solid #e0e0e0;
+}
+
+/* Chi tiết chữ trong Voucher */
+.v-code { 
+    font-weight: 700; 
+    color: #333; 
+    margin: 0; 
+    text-transform: uppercase;
+}
+.v-desc { 
+    color: #cb1c22; 
+    font-size: 16px; 
+    font-weight: 600; 
+    margin: 6px 0; 
+}
+.v-condition { 
+    font-size: 13px; 
+    color: #888; 
+    margin: 0; 
+}
+
+/* Nút Chọn */
+.btn-select {
+    background: #cb1c22;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background 0.2s;
+}
+
+.btn-select:hover {
+    background: #a8151b;
+}
+
+/* Trạng thái không đủ điều kiện (Disabled) */
+.voucher-card.disabled { 
+    opacity: 0.5; 
+    filter: grayscale(100%); 
+}
+.voucher-card.disabled .btn-select { 
+    background: #ccc; 
+    cursor: not-allowed; 
+}

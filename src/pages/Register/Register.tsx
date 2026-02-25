@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import '../Login/Login.css';
 import { authService } from '../../service/authService'; // ⚠️ Nhớ import service của bạn
+import { BackToHomeButton } from '../../components/Common/BackToHomeButton/BackToHomeButton';
 
 const RegisterPage: React.FC = () => {
   // 1. State lưu dữ liệu form
@@ -63,6 +64,7 @@ const RegisterPage: React.FC = () => {
       <div className="auth-card">
         
         <div className="auth-form-side">
+           <BackToHomeButton />
           <div className="auth-form-header">
             <h3 className="auth-title">Đăng ký</h3>
             {/* Có thể ẩn social login khi đang ở mode đăng ký mail */}

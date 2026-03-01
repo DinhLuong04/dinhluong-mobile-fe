@@ -1,56 +1,120 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './BtnUser.css';
 import { Link } from 'react-router-dom';
 import LoginToggle from './LoginToggle/LoginToggle';
-// 1. Import Hook từ Context
-import { useAuth } from '../../../contexts/AuthContext'; 
+import Notification from './Notification/Notification'; // Import component Notification
+import { useAuth } from '../../../contexts/AuthContext';
+import { Badge, message } from 'antd';
+import { Client } from '@stomp/stompjs';
 
 const BtnUser = () => {
-    // 2. Thay vì biến cứng, hãy lấy dữ liệu thật từ Context
-    // user: chứa thông tin (name, email...)
-    // isLogin: true/false
-    // logout: hàm đăng xuất
     const { isLogin, user } = useAuth(); 
+    const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+    const [isNotifOpen, setIsNotifOpen] = useState(false);
+    const [unreadCount, setUnreadCount] = useState(0);
 
-    // State quản lý ẩn/hiện menu (giữ nguyên)
-    const [isOpen, setIsOpen] = useState(false);
-
-    const handleToggle = () => {
-        setIsOpen(!isOpen);
+    // Xử lý mở/đóng menu (mở cái này thì đóng cái kia)
+    const handleUserToggle = () => {
+        setIsUserMenuOpen(!isUserMenuOpen);
+        setIsNotifOpen(false); 
     };
 
-    const handleClose = () => {
-        setIsOpen(false);
+    const handleNotifToggle = () => {
+        setIsNotifOpen(!isNotifOpen);
+        setIsUserMenuOpen(false); 
     };
 
-    // Hàm xử lý khi bấm Đăng xuất (truyền xuống LoginToggle nếu cần)
-    // const handleLogoutClick = () => {
-    //     logout(); // Gọi hàm logout của context
-    //     setIsOpen(false); // Đóng menu
-    // };
+    useEffect(() => {
+        if (!isLogin || !user?.token) return;
+
+        // 1. Fetch số lượng chưa đọc lần đầu
+        const fetchUnreadCount = async () => {
+            try {
+                const res = await fetch('http://localhost:8080/api/notifications/unread-count', {
+                    headers: { 'Authorization': `Bearer ${user.token}` }
+                });
+                const json = await res.json();
+                if (json.status === 'success') {
+                    setUnreadCount(json.data); 
+                }
+            } catch (error) {
+                console.error("Lỗi đếm thông báo", error);
+            }
+        };
+        fetchUnreadCount();
+        
+        // 2. Kết nối WebSocket chạy ngầm
+        const wsUrl = `ws://localhost:8080/ws?token=${user.token}`;
+        const stompClient = new Client({
+            brokerURL: wsUrl, 
+            onConnect: () => {
+                stompClient.subscribe(`/user/queue/notifications`, (msg) => {
+                    const newNotif = JSON.parse(msg.body);
+                    
+                    // Tăng số thông báo chưa đọc lên 1
+                    setUnreadCount(prev => prev + 1);
+                    
+                    // Bắn Popup Toast ra màn hình
+                    message.info({
+                        content: `🔔 ${newNotif.message}`,
+                        duration: 5,
+                        style: { marginTop: '60px' },
+                    });
+                });
+            }
+        });
+
+        stompClient.activate();
+        return () => stompClient.deactivate();
+
+    }, [isLogin, user]);
 
     return (
-        // 3. Dùng biến isLogin của Context để kiểm tra
         !isLogin ? (
             <Link to="/login" className="inner-btn-user" title="Tài khoản">
                 <i className="fa-solid fa-user"></i>
                 <span className="user-text desktop-only">Đăng nhập</span>
             </Link> 
         ) : (
-            <div className="inner-btn-user" onClick={handleToggle} style={{ cursor: 'pointer' }}> 
-                <i className="fa-solid fa-user"></i>
-                {/* 4. Hiển thị tên thật của User */}
-                <span className="user-text-login desktop-only">
-                    {user?.name || "Khách hàng"}
-                </span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
                 
-                {isOpen && (
-                    <LoginToggle 
-                        onClose={handleClose} 
-                        // Bạn nên truyền thêm hàm logout vào đây để tạo nút Đăng xuất bên trong menu
-                        //onLogout={handleLogoutClick}
-                    />
-                )}
+                {/* 🔔 NÚT CHUÔNG THÔNG BÁO */}
+                <div style={{ position: 'relative' }}>
+                    <div onClick={handleNotifToggle} style={{ cursor: 'pointer', padding: '5px' }}>
+                        <Badge count={unreadCount} overflowCount={99} size="small" offset={[-2, 2]}>
+                            <i className="fa-solid fa-bell" style={{ fontSize: '20px', color: '#fff' }}></i>
+                        </Badge>
+                    </div>
+
+                    {/* Khung Dropdown Thông báo */}
+                    {isNotifOpen && (
+                        <div style={{ position: 'absolute', top: '40px', right: '-80px', zIndex: 1000, width: '380px' }}>
+                            <Notification 
+                                onClose={() => setIsNotifOpen(false)} 
+                                refreshTrigger={unreadCount} 
+                                setUnreadCount={setUnreadCount} 
+                            />
+                        </div>
+                    )}
+                </div>
+
+                {/* 👤 NÚT TÀI KHOẢN USER */}
+                <div className="inner-btn-user" style={{ position: 'relative', margin: 0 }}> 
+                    <div onClick={handleUserToggle} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <i className="fa-solid fa-user" style={{ fontSize: '18px' }}></i>
+                        <span className="user-text-login desktop-only">
+                            {user?.name || "Khách hàng"}
+                        </span>
+                    </div>
+                    
+                    {/* Khung Dropdown Menu User */}
+                    {isUserMenuOpen && (
+                        <div style={{ position: 'absolute', top: '40px', right: '0', zIndex: 1000 }}>
+                            <LoginToggle onClose={() => setIsUserMenuOpen(false)} />
+                        </div>
+                    )}
+                </div>
+
             </div>
         )
     );

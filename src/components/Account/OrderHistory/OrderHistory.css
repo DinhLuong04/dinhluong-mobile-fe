@@ -164,3 +164,62 @@
 .order-list-render::-webkit-scrollbar-thumb:hover {
   background: #aaa; /* Màu khi di chuột vào thanh trượt */
 }
+
+.oh-btn {
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    border: none;
+    outline: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Nút Cảnh báo (Hủy đơn) */
+.oh-btn-danger {
+    background-color: #fff;
+    color: #d70018;
+    border: 1px solid #d70018;
+}
+.oh-btn-danger:hover {
+    background-color: #fff2f4;
+}
+
+/* Nút viền ngoài (Xem chi tiết, Đánh giá) */
+.oh-btn-outline {
+    background-color: #fff;
+    color: #444;
+    border: 1px solid #ccc;
+}
+.oh-btn-outline:hover {
+    border-color: #d70018; /* Hover viền đỏ cho đồng bộ */
+    color: #d70018;
+}
+
+/* Nút chính (Mua lại) */
+.oh-btn-primary {
+    background-color: #d70018;
+    color: #fff;
+}
+.oh-btn-primary:hover {
+    background-color: #b50014; /* Đỏ sậm hơn khi hover */
+}
+
+/* Responsive cho Action Bar trên Mobile */
+@media (max-width: 600px) {
+    .order-item-card > div:last-child {
+        flex-direction: column;
+        align-items: flex-start !important;
+        gap: 12px;
+    }
+    
+    .order-item-card > div:last-child > div:last-child {
+        width: 100%;
+        justify-content: flex-end; /* Đẩy các nút sang phải */
+        flex-wrap: wrap; /* Rớt dòng nếu nhiều nút quá */
+    }
+}

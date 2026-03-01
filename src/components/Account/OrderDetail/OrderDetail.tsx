@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import "./OrderDetail.css"; // Nhớ import CSS
+import "./OrderDetail.css";
 
 // --- ĐỊNH NGHĨA TYPE DỮ LIỆU ---
 interface ComboItemDetail {
@@ -14,6 +14,7 @@ interface OrderItemResponse {
   id: number;
   productVariantId: number;
   productName: string;
+  slug: string; // <-- Đã thêm slug
   variantName?: string;
   imageUrl: string;
   quantity: number;
@@ -41,6 +42,15 @@ interface ApiResponse<T> {
   data: T;
 }
 
+const STATUS_LABEL_MAP: Record<string, string> = {
+  PENDING: "Chờ xác nhận",
+  PROCESSING: "Đang xử lý",
+  SHIPPED: "Đang giao hàng",
+  DELIVERED: "Đã giao hàng",
+  RETURNED: "Chuyển hoàn (Bom)",
+  CANCELLED: "Đã huỷ"
+};
+
 const OrderDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>(); 
   const navigate = useNavigate();
@@ -53,8 +63,7 @@ const OrderDetail: React.FC = () => {
     const fetchOrderDetail = async () => {
       try {
         const localUserStr = localStorage.getItem('user');
-        const localUser = localUserStr ? JSON.parse(localUserStr) : {};
-        const token = localUser.token;
+        const token = localUserStr ? JSON.parse(localUserStr).token : null;
 
         if (!token) {
           setError("Vui lòng đăng nhập để xem đơn hàng.");
@@ -63,9 +72,7 @@ const OrderDetail: React.FC = () => {
         }
 
         const response = await fetch(`http://localhost:8080/api/orders/${id}`, {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
+          headers: { 'Authorization': `Bearer ${token}` }
         });
 
         const json: ApiResponse<OrderDetailResponse> = await response.json();
@@ -77,7 +84,6 @@ const OrderDetail: React.FC = () => {
         }
       } catch (err) {
         setError("Lỗi kết nối đến máy chủ.");
-        console.error(err);
       } finally {
         setLoading(false);
       }
@@ -85,6 +91,28 @@ const OrderDetail: React.FC = () => {
 
     if (id) fetchOrderDetail();
   }, [id]);
+
+  // --- HÀM HỦY ĐƠN HÀNG ---
+  const handleCancelOrder = async () => {
+    if (!order || !window.confirm(`Bạn có chắc chắn muốn hủy đơn hàng #${order.id} không?`)) return;
+    try {
+        const localUserStr = localStorage.getItem('user');
+        const token = localUserStr ? JSON.parse(localUserStr).token : null;
+        const response = await fetch(`http://localhost:8080/api/orders/${order.id}/cancel`, {
+            method: 'PUT',
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const json = await response.json();
+        if (response.ok && json.status === 'success') {
+            alert("Hủy đơn hàng thành công!");
+            setOrder({ ...order, status: 'CANCELLED' }); // Cập nhật UI
+        } else {
+            alert(json.message || "Không thể hủy đơn hàng lúc này.");
+        }
+    } catch (error) {
+        alert("Lỗi kết nối máy chủ.");
+    }
+  };
 
   // --- RENDERING TẠM THỜI ---
   if (loading) {
@@ -104,7 +132,7 @@ const OrderDetail: React.FC = () => {
   return (
     <div className="order-detail-wrapper">
       
-      {/* Nút quay lại & Tiêu đề */}
+      {/* Header */}
       <div className="od-header">
         <button onClick={() => navigate(-1)} className="od-back-btn">
           <svg stroke="currentColor" fill="none" strokeWidth="2" viewBox="0 0 24 24" width="16" height="16" xmlns="http://www.w3.org/2000/svg"><path d="M19 12H5"></path><path d="M12 19l-7-7 7-7"></path></svg>
@@ -113,26 +141,27 @@ const OrderDetail: React.FC = () => {
         <h2 className="od-title">Chi tiết đơn hàng #{order.id}</h2>
       </div>
 
-      {/* Thông tin trạng thái */}
+      {/* Trạng thái */}
       <div className="od-card">
         <div className="od-status-row">
           <span>Ngày đặt: <strong>{new Date(order.createdAt).toLocaleString('vi-VN')}</strong></span>
-          <span className="od-status-badge">{order.status}</span>
+          <span className="od-status-badge">
+            {STATUS_LABEL_MAP[order.status] || order.status}
+          </span>
         </div>
       </div>
 
-      {/* Thông tin giao hàng */}
+      {/* Địa chỉ */}
       <div className="od-card">
         <h3 className="od-card-title">Địa chỉ nhận hàng</h3>
         <div className="od-address-name"><strong>{order.receiverName}</strong> | {order.receiverPhone}</div>
         <div className="od-address-detail">{order.receiverAddress}</div>
       </div>
-      {/* 🔥 THÊM MỚI: THÔNG TIN THANH TOÁN */}
+
+      {/* Thanh toán */}
       <div className="od-card">
         <h3 className="od-card-title">Phương thức thanh toán</h3>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '10px' }}>
-          
-          {/* Hiển thị tên phương thức */}
           <div style={{ fontSize: '15px' }}>
             {order.paymentMethod === 'VNPAY' ? (
               <><span style={{ color: '#005baa', fontWeight: 'bold' }}>VNPAY</span> - Thanh toán trực tuyến</>
@@ -140,8 +169,6 @@ const OrderDetail: React.FC = () => {
               <><span style={{ color: '#000', fontWeight: 'bold' }}>COD</span> - Thanh toán khi nhận hàng</>
             )}
           </div>
-
-          {/* Hiển thị trạng thái thanh toán */}
           <div>
             {order.paymentMethod === 'VNPAY' ? (
               order.paymentStatus === 'PAID' 
@@ -151,37 +178,69 @@ const OrderDetail: React.FC = () => {
               <span style={{ color: '#fd7e14', fontWeight: 'bold', backgroundColor: '#fff3cd', padding: '4px 8px', borderRadius: '4px', fontSize: '13px' }}>⏳ Thu tiền mặt</span>
             )}
           </div>
-          
         </div>
-        </div>
-      {/* Danh sách sản phẩm */}
+      </div>
+
+      {/* Danh sách sản phẩm (MỖI SP ĐỀU CÓ NÚT BẤM) */}
       <div className="od-card">
         <h3 className="od-card-title">Sản phẩm đã mua</h3>
-        
         <div className="od-product-list">
           {order.items.map((item) => (
             <div key={item.id} className="od-product-item">
               
-              {/* 1. HIỂN THỊ SẢN PHẨM CHÍNH */}
-              <div className="od-main-product">
-                <img src={item.imageUrl} alt={item.productName} className="od-product-img" />
+              {/* SẢN PHẨM CHÍNH */}
+              <div className="od-main-product" style={{ alignItems: 'flex-start' }}>
+                <img 
+                    src={item.imageUrl} 
+                    alt={item.productName} 
+                    className="od-product-img" 
+                    onClick={() => navigate(`/product/${item.slug}`)}
+                    style={{ cursor: 'pointer' }}
+                />
+                
                 <div className="od-product-info">
-                  <div className="od-product-name">{item.productName}</div>
+                  <div 
+                      className="od-product-name"
+                      onClick={() => navigate(`/product/${item.slug}`)}
+                      style={{ cursor: 'pointer', color: '#005baa' }}
+                  >
+                      {item.productName}
+                  </div>
                   {item.variantName && <div className="od-product-variant">Phân loại: {item.variantName}</div>}
                   <div className="od-product-qty">Số lượng: x{item.quantity}</div>
                 </div>
-                <div className="od-product-price">
-                  {Number(item.priceAtPurchase).toLocaleString('vi-VN')}đ
+
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '8px' }}>
+                  <div className="od-product-price">
+                    {Number(item.priceAtPurchase).toLocaleString('vi-VN')}đ
+                  </div>
+                  
+                  {/* 🔥 CÁC NÚT ĐÁNH GIÁ / MUA LẠI NẰM CẠNH MỖI SẢN PHẨM */}
+                  {order.status === 'DELIVERED' && (
+                    <div style={{ display: 'flex', gap: '8px', marginTop: '10px' }}>
+                       <button 
+                           className="oh-btn oh-btn-outline" 
+                           style={{ padding: '4px 12px', fontSize: '12px' }} 
+                           onClick={() => navigate(`/product/${item.slug}`)} 
+                       >
+                           Đánh giá
+                       </button>
+                       <button 
+                           className="oh-btn oh-btn-primary" 
+                           style={{ padding: '4px 12px', fontSize: '12px' }} 
+                           onClick={() => navigate(`/product/${item.slug}`)} 
+                       >
+                           Mua lại
+                       </button>
+                    </div>
+                  )}
                 </div>
               </div>
 
-              {/* 2. HIỂN THỊ SẢN PHẨM COMBO ĐI KÈM */}
+              {/* SẢN PHẨM COMBO ĐI KÈM */}
               {item.comboItems && item.comboItems.length > 0 && (
                 <div className="od-combo-section">
-                  <div className="od-combo-title">
-                    🎁 Ưu đãi mua kèm / Combo
-                  </div>
-                  
+                  <div className="od-combo-title">🎁 Ưu đãi mua kèm / Combo</div>
                   {item.comboItems.map((combo, comboIdx) => (
                     <div key={comboIdx} className="od-combo-item">
                       <img src={combo.imageUrl} alt={combo.name} className="od-combo-img" />
@@ -196,7 +255,6 @@ const OrderDetail: React.FC = () => {
                   ))}
                 </div>
               )}
-              
             </div>
           ))}
         </div>
@@ -206,6 +264,13 @@ const OrderDetail: React.FC = () => {
       <div className="od-card od-total-card">
         <div className="od-total-text">Tổng thành tiền:</div>
         <div className="od-total-amount">{Number(order.totalAmount).toLocaleString('vi-VN')}đ</div>
+      </div>
+
+      {/* THANH CÔNG CỤ Ở ĐÁY TRANG (Chỉ còn nút Hủy) */}
+      <div className="od-card od-action-card" style={{ display: 'flex', justifyContent: 'flex-end', gap: '15px', marginTop: '15px' }}>
+          {order.status === 'PENDING' && (
+              <button className="oh-btn oh-btn-danger" onClick={handleCancelOrder}>Hủy đơn hàng</button>
+          )}
       </div>
 
     </div>

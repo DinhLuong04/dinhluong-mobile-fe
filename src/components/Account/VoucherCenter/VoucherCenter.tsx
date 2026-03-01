@@ -95,7 +95,7 @@ const VoucherCenter = () => {
           {availableVouchers.map((v) => (
             <div key={v.id} className="voucher-item-avail">
               <div className="voucher-img-box">
-                <img src="/banner-warm-up-home.png" alt="Voucher" className="voucher-img" />
+                <img src="https://res.cloudinary.com/dhujtl4cm/image/upload/v1772182601/voucher_dtyoio.jpg" alt="Voucher" className="voucher-img" />
               </div>
               <div className="voucher-info-box">
                 <div className="voucher-name">

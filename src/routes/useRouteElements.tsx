@@ -9,7 +9,6 @@ import CompareProduct from "../pages/CompareProduct/CompareProduct";
 
 import CartPage from "../pages/Cart/CartPage";
 
-
 import Overview from "../components/Account/Overview/Overview";
 import OrderHistory from "../components/Account/OrderHistory/OrderHistory";
 import Profile from "../components/Account/Profile/Profile";
@@ -37,10 +36,14 @@ import AccessoryEdit from "../pages/Admin/ProductManager/AccessoryEdit/Accessory
 import CategoryManager from "../pages/Admin/CategoryManager/CategoryManager";
 import BrandManager from "../pages/Admin/BrandManager/BrandManager";
 import SpecManager from "../pages/Admin/SpecManager/SpecManager";
-import  ComboManager from "../pages/Admin/ComboManager/ComboManager";
+import ComboManager from "../pages/Admin/ComboManager/ComboManager";
+import UserProtectedRoute from "./UserProtectedRoute";
+
 export default function useRouteElements() {
     const routeElements = useRoutes([
-        // --- CÁC ROUTE DÙNG HEADER CHÍNH ---
+        // ==========================================
+        // CÁC ROUTE DÙNG HEADER CHÍNH (MAIN LAYOUT)
+        // ==========================================
         {
             path: '/',
             element: <MainLayout />,
@@ -49,7 +52,6 @@ export default function useRouteElements() {
                     index: true,
                     element: <HomePage />
                 },
-                // --- THÊM 2 ROUTE DANH MỤC VÀO ĐÂY ---
                 {
                     path: 'dien-thoai',
                     element: <HomePage />
@@ -82,27 +84,26 @@ export default function useRouteElements() {
                     path: "payment/result",
                     element: <PaymentResult />
                 },
-
                 {
-                    path: "member", // Đường dẫn gốc: /member
-                    element: <Member />, // Load khung sườn Sidebar trước
+                    path: "member", 
+                    // Gộp 2 component lồng nhau: Protected gác cổng -> Mở cổng thì render Member (Sidebar)
+                    element: (
+                        <UserProtectedRoute>
+                            <Member />
+                        </UserProtectedRoute>
+                    ), 
                     children: [
                         {
-                            index: true, // Khi vào đúng link /member
-                            element: <Overview /> // -> Load nội dung Dashboard vào chỗ <Outlet/> của AccountLayout
+                            index: true, 
+                            element: <Overview /> 
                         },
-                        // Sau này bạn thêm các trang con khác vào đây dễ dàng:
                         {
-                            path: "order", // Link: /member/order
+                            path: "order", 
                             element: <OrderHistory />
                         },
                         {
-                            path: "order/:id", // Link: /member/order/1 (Số 1 là ID)
+                            path: "order/:id", 
                             element: <OrderDetail />
-                        },
-                        {
-                            path: "promotion", // Link: /member/promotion
-                            element: <div>Trang ưu đãi</div>
                         },
                         {
                             path: "profile",
@@ -114,10 +115,12 @@ export default function useRouteElements() {
                         }
                     ]
                 }
-            ]
+            ] // <-- Bạn đã vô tình xóa mất cái đóng ngoặc này ở code cũ
         },
 
-        // --- CÁC ROUTE AUTH ---
+        // ==========================================
+        // CÁC ROUTE AUTH (KHÔNG DÙNG MAIN LAYOUT)
+        // ==========================================
         {
             path: '/login',
             element: <Login />
@@ -130,6 +133,10 @@ export default function useRouteElements() {
             path: '/forgot-password',
             element: <ForgotPasswordPage />
         },
+
+        // ==========================================
+        // CÁC ROUTE ADMIN
+        // ==========================================
         {
             path: '/admin',
             element: <AdminProtectedRoute />,
@@ -138,58 +145,42 @@ export default function useRouteElements() {
                     element: <AdminLayout />,
                     children: [
                         { index: true, element: <Dashboard /> },
-                        // --- Sales (Quản lý Bán hàng) ---
                         { path: 'orders', element: <OrderManager /> },
-                        { path: 'payments', element: <PaymentManager /> }, // BỔ SUNG ROUTE NÀY
+                        { path: 'payments', element: <PaymentManager /> }, 
                         { path: 'vouchers', element: <VoucherManager /> },
-
-                        // ==========================================
-                        // NHÓM 1: SẢN PHẨM CHÍNH (ĐIỆN THOẠI, LAPTOP)
-                        // ==========================================
                         {
                             path: 'products',
-                            element: <ProductManager defaultType="MAIN" /> // Bảng danh sách
+                            element: <ProductManager defaultType="MAIN" /> 
                         },
                         {
                             path: 'products/create',
-                            element: <ProductCreate />  // Form tạo ĐT (Nhiều Tab, có chọn màu, RAM/ROM)
+                            element: <ProductCreate /> 
                         },
                         {
                             path: 'products/edit/:id',
-                            element: <ProductEdit />    // Form sửa ĐT
+                            element: <ProductEdit /> 
                         },
-
-                        // ==========================================
-                        // NHÓM 2: PHỤ KIỆN
-                        // ==========================================
                         {
                             path: 'accessories',
-                            element: <ProductManager defaultType="ACCESSORY" /> // Vẫn dùng lại cái Bảng danh sách đó
+                            element: <ProductManager defaultType="ACCESSORY" /> 
                         },
                         {
                             path: 'accessories/create',
-                            element: <AccessoryCreate /> // <-- Form tạo Phụ kiện (Gọn nhẹ, ko có Tab biến thể)
+                            element: <AccessoryCreate /> 
                         },
                         {
                             path: 'accessories/edit/:id',
-                            element: <AccessoryEdit />   // <-- Form sửa Phụ kiện (Gọn nhẹ)
+                            element: <AccessoryEdit /> 
                         },
-                        { path: 'accessories', element: <ProductManager defaultType="ACCESSORY" /> }, // BỔ SUNG ROUTE NÀY
-                        { path: 'combos', element: <ComboManager /> }, // BỔ SUNG ROUTE NÀY
-                        { path: 'categories', element: <CategoryManager /> }, // BỔ SUNG ROUTE NÀY
-                        { path: 'brands', element: <BrandManager /> }, // BỔ SUNG ROUTE NÀY
-                        { path: 'specs', element: <SpecManager /> }, // BỔ SUNG ROUTE NÀY
-
-                        // --- Customers (Quản lý Khách hàng) ---
+                        { path: 'combos', element: <ComboManager /> }, 
+                        { path: 'categories', element: <CategoryManager /> }, 
+                        { path: 'brands', element: <BrandManager /> }, 
+                        { path: 'specs', element: <SpecManager /> }, 
                         { path: 'users', element: <UserManager /> },
-                        // { path: 'roles', element: <h2>Vai trò & Phân quyền</h2> }, // Thêm nếu bạn có làm menu Phân quyền
                         { path: 'reviews', element: <ReviewManager /> },
-
-                        // --- Support (Chăm sóc & Hỗ trợ) ---
                         { path: 'chat', element: <LiveChatAdmin /> },
                         { path: 'chatbot', element: <h2>Lịch sử Chatbot</h2> },
                         { path: 'notifications', element: <h2>Quản lý Thông báo</h2> },
-
                         { path: 'settings', element: <h2>Cài đặt hệ thống</h2> },
                     ]
                 }

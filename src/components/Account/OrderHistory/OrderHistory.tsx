@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { message, Modal } from 'antd'; // 1. IMPORT MESSAGE VÀ MODAL TỪ ANTD
 import "./OrderHistory.css";
 
 // 1. Định nghĩa các Interface cho TypeScript
@@ -65,34 +66,43 @@ const OrderHistory: React.FC = () => {
     fetchOrders();
   }, [activeTab]);
 
-  // --- HÀM XỬ LÝ HỦY ĐƠN ---
-  const handleCancelOrder = async (orderId: number) => {
-    if (!window.confirm(`Bạn có chắc chắn muốn hủy đơn hàng #${orderId} không?`)) return;
+  // --- HÀM XỬ LÝ HỦY ĐƠN ĐÃ ĐƯỢC NÂNG CẤP ---
+  const handleCancelOrder = (orderId: number) => {
+    // 2. DÙNG MODAL.CONFIRM THAY CHO WINDOW.CONFIRM
+    Modal.confirm({
+      title: 'Hủy đơn hàng',
+      content: `Bạn có chắc chắn muốn hủy đơn hàng #${orderId} không?`,
+      okText: 'Xác nhận hủy',
+      cancelText: 'Đóng',
+      okType: 'danger',
+      onOk: async () => {
+        try {
+          const token = getToken();
+          const response = await fetch(`http://localhost:8080/api/orders/${orderId}/cancel`, {
+            method: 'PUT',
+            headers: { 'Authorization': `Bearer ${token}` }
+          });
+          const json = await response.json();
 
-    try {
-      const token = getToken();
-      const response = await fetch(`http://localhost:8080/api/orders/${orderId}/cancel`, {
-        method: 'PUT',
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      const json = await response.json();
-
-      if (response.ok && json.status === 'success') {
-        alert("Hủy đơn hàng thành công!");
-        setOrders(prev => prev.map(o => o.id === orderId ? { ...o, status: 'CANCELLED' } : o));
-      } else {
-        alert(json.message || "Không thể hủy đơn hàng lúc này.");
+          if (response.ok && json.status === 'success') {
+            message.success("Hủy đơn hàng thành công!"); // 3. THAY THẾ ALERT
+            setOrders(prev => prev.map(o => o.id === orderId ? { ...o, status: 'CANCELLED' } : o));
+          } else {
+            message.error(json.message || "Không thể hủy đơn hàng lúc này."); // 4. THAY THẾ ALERT
+          }
+        } catch (error) {
+          message.error("Lỗi kết nối máy chủ."); // 5. THAY THẾ ALERT
+        }
       }
-    } catch (error) {
-      alert("Lỗi kết nối máy chủ.");
-    }
+    });
   };
 
   // 🔥 SỬA LẠI: Điều hướng vào trang Chi tiết đơn hàng của Hệ thống (Order Detail)
   const handleGoToDetail = (orderId: number) => {
       navigate(`/member/order/${orderId}`); // <-- Đã sửa
   };
-const handleGoToProductDetail = (order: OrderResponse) => {
+
+  const handleGoToProductDetail = (order: OrderResponse) => {
       // Nếu đơn hàng có sản phẩm, lấy slug của sản phẩm đầu tiên [0] để chuyển hướng
       if (order.items && order.items.length > 0 && order.items[0].slug) {
           navigate(`/product/${order.items[0].slug}`);
@@ -101,6 +111,7 @@ const handleGoToProductDetail = (order: OrderResponse) => {
           navigate(`/member/order/${order.id}`);
       }
   };
+
   return (
     <div className="order-history">
       <div className="oh-mobile-header">Lịch sử mua hàng</div>

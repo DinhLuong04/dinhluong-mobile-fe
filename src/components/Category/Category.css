@@ -378,3 +378,76 @@
     text-decoration: underline;
 
 } 
+
+.mobile-category-header {
+    display: none;
+}
+
+/* --- RESPONSIVE MOBILE CHO CATEGORY --- */
+@media (max-width: 768px) {
+    .container{
+        padding: 0 !important;
+        margin: 0 !important;
+        }
+    .category-container {
+        width: 100%;
+        height: 100vh; /* Phủ kín màn hình */
+        border-radius: 0;
+        box-shadow: none;
+        overflow-y: auto; /* Cho phép cuộn nếu danh sách dài */
+    }
+
+    /* Hiển thị thanh Header trên Mobile */
+    .mobile-category-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 16px 20px;
+        background-color: #cb1c22; /* Màu đỏ chủ đạo */
+        color: white;
+        position: sticky;
+        top: 0;
+        z-index: 10;
+    }
+
+    .mobile-category-header h3 {
+        margin: 0;
+        font-size: 16px;
+        font-weight: 600;
+    }
+
+    .close-menu-btn {
+        background: transparent;
+        border: none;
+        color: white;
+        font-size: 20px;
+        font-weight: bold;
+        cursor: pointer;
+        padding: 0;
+    }
+
+    /* Tinh chỉnh lại danh sách để chạm dễ hơn trên mobile */
+    .category-item {
+        padding: 16px 20px;
+        font-size: 15px;
+        border-bottom: 1px solid #e5e7eb;
+    }
+
+    /* Bỏ viền đỏ bên trái khi active trên mobile để đỡ rối mắt */
+    .category-item.active,
+    .category-item:hover {
+        border-left: none;
+        background-color: #fff; /* Tắt hover màu nền trên mobile */
+        color: #333;
+    }
+
+    /* Đẩy banner cách đáy một chút */
+    .left-menu-banner {
+        padding-bottom: 30px; 
+    }
+
+    /* [Tùy chọn] Ẩn Mega Menu Popup bên phải đi trên Mobile vì nó to không vừa màn hình */
+    .mega-menu {
+        display: none !important; 
+    }
+}

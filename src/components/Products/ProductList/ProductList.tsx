@@ -130,8 +130,16 @@ const ProductList: React.FC<ProductListProps> = ({ onOpenFilter, filters, onData
         <p className="result-count">
             Tìm thấy <strong>{totalElements}</strong> kết quả
         </p>
-        <MobileFilterBar onOpenFilter={onOpenFilter || (() => {})} />
-        <div className="sort-options">
+
+        {/* TRUYỀN THÊM STATE VÀO ĐÂY */}
+        <MobileFilterBar 
+            onOpenFilter={onOpenFilter || (() => {})} 
+            activeSort={activeSort}
+            onSortChange={setActiveSort}
+        />
+        
+        {/* THANH SORT NÀY GIỜ CHỈ DÀNH CHO DESKTOP */}
+        <div className="sort-options desktop-only">
           {SORT_OPTIONS.map((option) => (
             <button
               key={option.id}

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-
+import { message } from 'antd'; 
 interface ChangePasswordModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -45,7 +45,7 @@ export const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({ isOpen
       const data = await res.json();
       
       if (data.code === 200) {
-        alert("Đổi mật khẩu thành công! Vui lòng đăng nhập lại với mật khẩu mới nếu cần.");
+        message.success("Đổi mật khẩu thành công! Vui lòng đăng nhập lại với mật khẩu mới nếu cần.");
         handleClose();
       } else {
         setErrorMsg(data.message || "Có lỗi xảy ra khi đổi mật khẩu");

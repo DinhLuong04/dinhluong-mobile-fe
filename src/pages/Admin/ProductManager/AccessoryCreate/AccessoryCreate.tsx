@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { 
     Form, Input, InputNumber, Select, Button, Card, 
-    Space, Divider, message, Row, Col, Typography 
+    Space, Divider, message, Row, Col, Typography, Upload // 🔥 CẬP NHẬT: Import thêm Upload
 } from 'antd';
 import { PlusOutlined, MinusCircleOutlined, SaveOutlined, ArrowLeftOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import ReactQuill from 'react-quill-new';
 import 'react-quill-new/dist/quill.snow.css';
+
 const generateSlug = (str: string) => {
     if (!str) return '';
     return str.toString().toLowerCase()
@@ -23,8 +24,17 @@ const generateSlug = (str: string) => {
         .replace(/^-+/, '')             // Xóa gạch ngang ở đầu
         .replace(/-+$/, '');            // Xóa gạch ngang ở cuối
 };
+
 const { Title, Text } = Typography;
 const { Option } = Select;
+
+// 🔥 CẬP NHẬT: Hàm xử lý event của component Upload để Form Ant Design hiểu được file
+const normFile = (e: any) => {
+    if (Array.isArray(e)) {
+        return e;
+    }
+    return e?.fileList;
+};
 
 const AccessoryCreate: React.FC = () => {
     const [form] = Form.useForm();
@@ -64,17 +74,17 @@ const AccessoryCreate: React.FC = () => {
         try {
             const token = getAuthToken();
 
-            // 🔥 1. CHUẨN HÓA MẢNG JSON TRƯỚC KHI GỬI
+            // 1. CHUẨN HÓA MẢNG JSON TRƯỚC KHI GỬI
             const formattedSpecsJson = values.specificationsJson?.map((group: any, index: number) => ({
                 id: index + 1,
                 title: group.title,
                 items: group.items || []
             })) || [];
 
+            // 🔥 CẬP NHẬT: Không chứa thumbnailUrl trong payload nữa vì sẽ gửi file ảnh riêng
             const payload = {
                 name: values.name,
                 slug: generateSlug(values.name),
-                thumbnailUrl: values.thumbnailUrl,
                 brandId: values.brandId,
                 categoryId: values.categoryId,
                 description: values.description,
@@ -91,22 +101,31 @@ const AccessoryCreate: React.FC = () => {
                         colorName: 'Mặc định',
                         colorHex: '#ffffff',
                         originalPrice: values.originalPrice,
-                        price: values.displayPrice, // Map vào cột 'price' của variant
+                        price: values.displayPrice, 
                         stockQuantity: values.stockQuantity,
                         isActive: true
                     }
                 ],
-                
-                // Đổi từ specifications thành specificationsJson cho khớp DB
                 specificationsJson: formattedSpecsJson
             };
 
             const formData = new FormData();
-            formData.append("data", JSON.stringify(payload));
+            formData.append("data", JSON.stringify(payload)); // Phần JSON data
+
+            // 🔥 CẬP NHẬT: Lấy file ảnh thực tế và nhét vào form data
+            if (values.thumbnail && values.thumbnail.length > 0) {
+                const imageFile = values.thumbnail[0].originFileObj;
+                // Tham số "thumbnail" hoặc "file" tùy thuộc vào backend Spring Boot của bạn nhận tên biến là gì
+                formData.append("thumbnail", imageFile); 
+            }
 
             const response = await fetch('http://localhost:8080/api/admin/products', {
                 method: 'POST',
-                headers: { 'Authorization': `Bearer ${token}` },
+                headers: { 
+                    'Authorization': `Bearer ${token}` 
+                    // Lưu ý: Tuyệt đối KHÔNG thêm 'Content-Type': 'multipart/form-data' ở đây
+                    // Browser sẽ tự động set boundary cho FormData.
+                },
                 body: formData 
             });
 
@@ -146,8 +165,26 @@ const AccessoryCreate: React.FC = () => {
                                 <Input placeholder="VD: Sạc nhanh Anker 20W" size="large" />
                             </Form.Item>
 
-                            <Form.Item name="thumbnailUrl" label="Link Ảnh đại diện (Thumbnail URL)" rules={[{ required: true }]}>
-                                <Input placeholder="https://cdn.example.com/image.jpg" />
+                            {/* 🔥 CẬP NHẬT: Đổi từ Input URL sang Upload Ảnh */}
+                            <Form.Item 
+                                name="thumbnail" 
+                                label="Ảnh đại diện" 
+                                valuePropName="fileList" 
+                                getValueFromEvent={normFile}
+                                rules={[{ required: true, message: 'Vui lòng chọn ảnh đại diện!' }]}
+                            >
+                                <Upload 
+                                    name="file" 
+                                    listType="picture-card" 
+                                    maxCount={1} 
+                                    beforeUpload={() => false} // Không upload ngay khi chọn, giữ lại để submit cùng form
+                                    accept="image/*"
+                                >
+                                    <div>
+                                        <PlusOutlined />
+                                        <div style={{ marginTop: 8 }}>Chọn ảnh</div>
+                                    </div>
+                                </Upload>
                             </Form.Item>
 
                             <Form.Item 
@@ -162,7 +199,7 @@ const AccessoryCreate: React.FC = () => {
                             </Form.Item>
                         </Card>
 
-                       {/* 🔥 CẬP NHẬT: THÔNG SỐ KỸ THUẬT LỒNG NHAU */}
+                        {/* Thông số kỹ thuật */}
                         <Card title="Thông số kỹ thuật chi tiết" bordered={false} style={{ marginBottom: 24 }}>
                             <Text type="secondary" style={{ display: 'block', marginBottom: 16 }}>
                                 Cấu trúc: Nhóm thông số (VD: Kết nối) {'>'} Thuộc tính (VD: Độ dài - 1.2m)

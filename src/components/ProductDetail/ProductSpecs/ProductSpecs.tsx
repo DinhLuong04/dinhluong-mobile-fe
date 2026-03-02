@@ -66,9 +66,9 @@ const ProductSpecs: React.FC<ProductSpecsProps> = ({
 
                 <div className="pd-policies-flex">
                     {policies.map((p, i) => (
-                        <div key={i} className="pd-policy-item">
-                            <img src={p.icon} alt="" className="policy-icon" />
-                            <span className="policy-text">{p.text}</span>
+                        <div key={i} className="pd-policy-item-1">
+                            <img src={p.icon} alt="" className="policy-icon-1" />
+                            <span className="policy-text-1">{p.text}</span>
                         </div>
                     ))}
                 </div>

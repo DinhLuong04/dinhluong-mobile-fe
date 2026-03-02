@@ -1,37 +1,57 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./BtnCategory.css";
 import Category from "../../Category/Category";
 
 const BtnCategory: React.FC = () => {
-    // Nên để mặc định là false để menu đóng khi mới vào web
     const [isOpen, setIsOpen] = useState<boolean>(false);
+    const [isMobile, setIsMobile] = useState<boolean>(window.innerWidth <= 768);
 
-    const toggleMenu = () => {
-        setIsOpen(!isOpen);
+    // Bắt sự kiện thay đổi kích thước màn hình
+    useEffect(() => {
+        const handleResize = () => setIsMobile(window.innerWidth <= 768);
+        window.addEventListener("resize", handleResize);
+        return () => window.removeEventListener("resize", handleResize);
+    }, []);
+
+    // Khóa cuộn trang (body) khi mở menu full màn hình trên mobile
+    useEffect(() => {
+        if (isMobile && isOpen) {
+            document.body.style.overflow = "hidden";
+        } else {
+            document.body.style.overflow = "auto";
+        }
+        return () => { document.body.style.overflow = "auto"; };
+    }, [isMobile, isOpen]);
+
+    const toggleMenu = () => setIsOpen(!isOpen);
+    const closeMenu = () => setIsOpen(false);
+
+    // Hover chỉ hoạt động nếu KHÔNG phải mobile
+    const handleMouseEnter = () => {
+        if (!isMobile) setIsOpen(true);
     };
-
-    // Hàm xử lý hover: Chuột vào thì mở, chuột ra thì đóng
-    const handleMouseEnter = () => setIsOpen(true);
-    const handleMouseLeave = () => setIsOpen(false);
+    
+    const handleMouseLeave = () => {
+        if (!isMobile) setIsOpen(false);
+    };
 
     return (
         <div 
             className="inner-btn-category" 
-            // Thêm 2 sự kiện này vào wrapper cha
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
         >
             <button
                 className="btn-category"
-                onClick={toggleMenu} // Giữ click cho mobile hoặc tablet
+                onClick={toggleMenu} // Click cho cả PC và Mobile
             >
-                <span style={{ fontSize: "20px" }}>☰</span>
+                <span className="btn-category-icon">☰</span>
             </button>
 
             {/* Dropdown Menu */}
             {isOpen && (
-                <div style={{ position: "absolute", top: "100%", left: 0, zIndex: 1000, paddingTop: "10px"}}>
-                    <Category />
+                <div className={`dropdown-wrapper ${isMobile ? "mobile-fullscreen" : ""}`}>
+                    <Category onClose={closeMenu} />
                 </div>
             )}
         </div>

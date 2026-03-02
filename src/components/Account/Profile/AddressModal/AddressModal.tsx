@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { message } from 'antd'; // 1. IMPORT MESSAGE TỪ ANTD
 
 interface AddressModalProps {
   isOpen: boolean;
@@ -123,7 +124,8 @@ export const AddressModal: React.FC<AddressModalProps> = ({ isOpen, onClose, onS
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedProvince.name || !selectedDistrict.name || !selectedWard.name || !streetDetail) {
-      alert("Vui lòng điền đầy đủ địa chỉ!");
+      // 2. THAY THẾ BẰNG WARNING
+      message.warning("Vui lòng điền đầy đủ địa chỉ!");
       return;
     }
 
@@ -158,15 +160,18 @@ export const AddressModal: React.FC<AddressModalProps> = ({ isOpen, onClose, onS
       const data = await res.json();
       
       if (data.code === 200) {
-        alert(isEditing ? "Cập nhật địa chỉ thành công!" : "Thêm địa chỉ thành công!");
+        // 3. THAY THẾ BẰNG SUCCESS
+        message.success(isEditing ? "Cập nhật địa chỉ thành công!" : "Thêm địa chỉ thành công!");
         onSaveSuccess();
         onClose(); 
       } else {
-        alert(data.message || "Lỗi khi lưu địa chỉ");
+        // 4. THAY THẾ BẰNG ERROR
+        message.error(data.message || "Lỗi khi lưu địa chỉ");
       }
     } catch (error) {
       console.error("Lỗi:", error);
-      alert("Có lỗi xảy ra, vui lòng thử lại!");
+      // 5. THAY THẾ BẰNG ERROR
+      message.error("Có lỗi xảy ra, vui lòng thử lại!");
     } finally {
       setIsLoading(false);
     }

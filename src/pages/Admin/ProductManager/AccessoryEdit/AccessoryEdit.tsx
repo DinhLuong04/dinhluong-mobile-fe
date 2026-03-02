@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import {
     Form, Input, InputNumber, Select, Button, Card,
-    Space, Divider, message, Row, Col, Typography, Spin
+    Space, Divider, message, Row, Col, Typography, Spin, Upload // 🔥 CẬP NHẬT: Import Upload
 } from 'antd';
 import { PlusOutlined, MinusCircleOutlined, SaveOutlined, ArrowLeftOutlined } from '@ant-design/icons';
 import { useNavigate, useParams } from 'react-router-dom';
 import ReactQuill from 'react-quill-new';
 import 'react-quill-new/dist/quill.snow.css';
+
 const generateSlug = (str: string) => {
     if (!str) return '';
     return str.toString().toLowerCase()
@@ -17,27 +18,35 @@ const generateSlug = (str: string) => {
         .replace(/ù|ú|ụ|ủ|ũ|ư|ừ|ứ|ự|ử|ữ/g, "u")
         .replace(/ỳ|ý|ỵ|ỷ|ỹ/g, "y")
         .replace(/đ/g, "d")
-        .replace(/\s+/g, '-')           // Thay khoảng trắng bằng gạch ngang
-        .replace(/[^\w\-]+/g, '')       // Xóa các ký tự đặc biệt
-        .replace(/\-\-+/g, '-')         // Xóa các dấu gạch ngang liên tiếp
-        .replace(/^-+/, '')             // Xóa gạch ngang ở đầu
-        .replace(/-+$/, '');            // Xóa gạch ngang ở cuối
+        .replace(/\s+/g, '-')           
+        .replace(/[^\w\-]+/g, '')       
+        .replace(/\-\-+/g, '-')         
+        .replace(/^-+/, '')             
+        .replace(/-+$/, '');            
 };
+
 const { Title, Text } = Typography;
 const { Option } = Select;
 
+// 🔥 CẬP NHẬT: Hàm xử lý event của component Upload
+const normFile = (e: any) => {
+    if (Array.isArray(e)) {
+        return e;
+    }
+    return e?.fileList;
+};
+
 const AccessoryEdit: React.FC = () => {
-    const { id } = useParams<{ id: string }>(); // Lấy ID phụ kiện từ URL
+    const { id } = useParams<{ id: string }>(); 
     const navigate = useNavigate();
     const [form] = Form.useForm();
 
     const [loading, setLoading] = useState(false);
-    const [fetching, setFetching] = useState(true); // State chờ load dữ liệu cũ
+    const [fetching, setFetching] = useState(true); 
 
     const [brands, setBrands] = useState<any[]>([]);
     const [categories, setCategories] = useState<any[]>([]);
 
-    // Lưu lại ID của biến thể mặc định để lúc Update không bị tạo mới biến thể
     const [defaultVariantId, setDefaultVariantId] = useState<number | null>(null);
 
     const getAuthToken = () => {
@@ -54,44 +63,49 @@ const AccessoryEdit: React.FC = () => {
                 const token = getAuthToken();
                 const headers = { 'Authorization': `Bearer ${token}` };
 
-                // Gọi song song 3 API: Lấy Hãng, Lấy Danh mục, Lấy Chi tiết Sản phẩm
                 const [brandRes, catRes, productRes] = await Promise.all([
                     fetch('http://localhost:8080/api/admin/brands', { headers }),
                     fetch('http://localhost:8080/api/admin/categories', { headers }),
-                    fetch(`http://localhost:8080/api/admin/products/${id}`, { headers }) // Đảm bảo bạn có API GET theo ID này
+                    fetch(`http://localhost:8080/api/admin/products/${id}`, { headers }) 
                 ]);
 
                 if (brandRes.ok) setBrands(await brandRes.json());
                 if (catRes.ok) setCategories(await catRes.json());
 
-               if (productRes.ok) {
-    const json = await productRes.json();
-    if (json.status === 'success') {
-        const product = json.data;
-        
-        const defaultVariant = (product.variants && product.variants.length > 0) 
-                               ? product.variants[0] : null;
-        
-        if (defaultVariant?.id) setDefaultVariantId(defaultVariant.id);
+                if (productRes.ok) {
+                    const json = await productRes.json();
+                    if (json.status === 'success') {
+                        const product = json.data;
+                        
+                        const defaultVariant = (product.variants && product.variants.length > 0) 
+                                               ? product.variants[0] : null;
+                        
+                        if (defaultVariant?.id) setDefaultVariantId(defaultVariant.id);
 
-                        // 🔥 2. Đổ dữ liệu vào Form với các lớp Fallback (Bọc lót)
+                        // 🔥 CẬP NHẬT: Cấu hình hiển thị ảnh cũ vào component Upload
+                        const initialThumbnail = product.thumbnailUrl ? [{
+                            uid: '-1',
+                            name: 'current_image.png',
+                            status: 'done',
+                            url: product.thumbnailUrl,
+                        }] : [];
+
                         form.setFieldsValue({
                             name: product.name,
-                            thumbnailUrl: product.thumbnailUrl,
-                            brandId: product.brandId, // Trong JSON đang là null -> Form sẽ hiện trống bắt chọn lại
+                            thumbnailUrl: product.thumbnailUrl, // Vẫn lưu lại url cũ ngầm
+                            thumbnail: initialThumbnail,        // Đổ vào component Upload
+                            brandId: product.brandId, 
                             categoryId: product.categoryId,
-                            description: product.description || '', // null -> chuỗi rỗng
+                            description: product.description || '', 
                             metaTitle: product.metaTitle,
                             metaDescription: product.metaDescription,
 
-                           // Đảm bảo các trường giá và kho lấy từ Variant (hoặc fallback)
-            sku: defaultVariant?.sku || `PK-${product.id}`,
-            originalPrice: defaultVariant?.price || product.originalPrice || 0,
-            displayPrice: defaultVariant?.price || product.displayPrice || 0,
-            stockQuantity: defaultVariant?.stockQuantity || product.totalStock || 0,
-            
-            // 🔥 LOAD DỮ LIỆU JSON VÀO FORM
-            specificationsJson: product.specificationsJson || []
+                            sku: defaultVariant?.sku || `PK-${product.id}`,
+                            originalPrice: defaultVariant?.price || product.originalPrice || 0,
+                            displayPrice: defaultVariant?.price || product.displayPrice || 0,
+                            stockQuantity: defaultVariant?.stockQuantity || product.totalStock || 0,
+                            
+                            specificationsJson: product.specificationsJson || []
                         });
                     }
                 } else {
@@ -113,15 +127,30 @@ const AccessoryEdit: React.FC = () => {
         try {
             const token = getAuthToken();
             const formattedSpecsJson = values.specificationsJson?.map((group: any, index: number) => ({
-                id: index + 1, // Tự động đánh số thứ tự nhóm 1, 2, 3...
+                id: index + 1, 
                 title: group.title,
                 items: group.items || []
             })) || [];
-            // 🔥 ĐÓNG GÓI LẠI VARIANT: Gom Giá và Kho lại thành 1 object
+
+            // 🔥 CẬP NHẬT: Xử lý logic ảnh (Giữ ảnh cũ hay upload ảnh mới)
+            let finalThumbnailUrl = values.thumbnailUrl; // Mặc định là url cũ
+            let newImageFile = null;
+
+            if (values.thumbnail && values.thumbnail.length > 0) {
+                // Nếu có originFileObj nghĩa là user vừa chọn 1 file mới từ máy
+                if (values.thumbnail[0].originFileObj) {
+                    newImageFile = values.thumbnail[0].originFileObj;
+                    finalThumbnailUrl = null; // Không cần gửi url nữa vì đã gửi file
+                }
+            } else {
+                // Nếu mảng rỗng nghĩa là user đã bấm nút xóa ảnh trên giao diện
+                finalThumbnailUrl = null; 
+            }
+
             const payload = {
                 name: values.name,
                 slug: generateSlug(values.name),
-                thumbnailUrl: values.thumbnailUrl,
+                thumbnailUrl: finalThumbnailUrl, // Backend sẽ lấy url này nếu không có file mới
                 brandId: values.brandId,
                 categoryId: values.categoryId,
                 description: values.description,
@@ -133,28 +162,34 @@ const AccessoryEdit: React.FC = () => {
 
                 variants: [
                     {
-                        id: defaultVariantId, // Vẫn giữ ID để update
+                        id: defaultVariantId, 
                         sku: values.sku,
                         colorName: 'Mặc định',
                         colorHex: '#ffffff',
-                        price: values.displayPrice, // MAP VÀO CỘT price CỦA VARIANT
+                        price: values.displayPrice, 
                         stockQuantity: values.stockQuantity,
                         isActive: true
                     }
                 ],
-
                 specificationsJson: formattedSpecsJson
             };
+
             const formData = new FormData();
             formData.append("data", JSON.stringify(payload));
+            
+            // Nếu có file mới thì append vào
+            if (newImageFile) {
+                formData.append("thumbnail", newImageFile);
+            }
+
             // Gọi API PUT để Update
             const response = await fetch(`http://localhost:8080/api/admin/products/${id}`, {
                 method: 'PUT',
                 headers: {
-                    'Authorization': `Bearer ${token}`,
-
+                    'Authorization': `Bearer ${token}`
+                    // KHÔNG set Content-Type vì FormData sẽ tự động set boundary
                 },
-                body: formData // Truyền formData
+                body: formData 
             });
 
             const json = await response.json();
@@ -181,7 +216,6 @@ const AccessoryEdit: React.FC = () => {
 
     return (
         <div style={{ padding: '0 24px 24px' }}>
-            {/* Header */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', margin: '16px 0' }}>
                 <Space>
                     <Button icon={<ArrowLeftOutlined />} onClick={() => navigate('/admin/accessories')}>Trở về</Button>
@@ -193,16 +227,38 @@ const AccessoryEdit: React.FC = () => {
             </div>
 
             <Form form={form} layout="vertical" onFinish={onFinish}>
+                {/* 🔥 Trường ẩn lưu trữ Link ảnh cũ */}
+                <Form.Item name="thumbnailUrl" hidden>
+                    <Input />
+                </Form.Item>
+
                 <Row gutter={24}>
-                    {/* CỘT TRÁI: Thông tin chính & Thông số */}
                     <Col span={16}>
                         <Card title="Thông tin cơ bản" bordered={false} style={{ marginBottom: 24 }}>
                             <Form.Item name="name" label="Tên phụ kiện" rules={[{ required: true, message: 'Vui lòng nhập tên!' }]}>
                                 <Input placeholder="VD: Sạc nhanh Anker 20W" size="large" />
                             </Form.Item>
 
-                            <Form.Item name="thumbnailUrl" label="Link Ảnh đại diện (Thumbnail URL)" rules={[{ required: true }]}>
-                                <Input placeholder="https://cdn.example.com/image.jpg" />
+                            {/* 🔥 CẬP NHẬT: Giao diện Upload ảnh */}
+                            <Form.Item 
+                                name="thumbnail" 
+                                label="Ảnh đại diện" 
+                                valuePropName="fileList" 
+                                getValueFromEvent={normFile}
+                                rules={[{ required: true, message: 'Vui lòng chọn ảnh đại diện!' }]}
+                            >
+                                <Upload 
+                                    name="file" 
+                                    listType="picture-card" 
+                                    maxCount={1} 
+                                    beforeUpload={() => false} // Không upload ngay, giữ lại submit cùng form
+                                    accept="image/*"
+                                >
+                                    <div>
+                                        <PlusOutlined />
+                                        <div style={{ marginTop: 8 }}>Thay ảnh</div>
+                                    </div>
+                                </Upload>
                             </Form.Item>
 
                             <Form.Item
@@ -214,7 +270,6 @@ const AccessoryEdit: React.FC = () => {
                             </Form.Item>
                         </Card>
 
-                        {/* 🔥 CẬP NHẬT: GIAO DIỆN THÔNG SỐ NHIỀU TẦNG */}
                         <Card title="Thông số kỹ thuật chi tiết" bordered={false} style={{ marginBottom: 24 }}>
                             <Text type="secondary" style={{ display: 'block', marginBottom: 16 }}>
                                 Cấu trúc: Nhóm thông số (VD: Kết nối) {'>'} Thuộc tính (VD: Độ dài - 1.2m)
@@ -284,7 +339,6 @@ const AccessoryEdit: React.FC = () => {
                         </Card>
                     </Col>
 
-                    {/* CỘT PHẢI: Giá bán, Tồn kho, Phân loại */}
                     <Col span={8}>
                         <Card title="Giá & Kho hàng" bordered={false} style={{ marginBottom: 24 }}>
                             <Form.Item name="sku" label="Mã sản phẩm (SKU)">

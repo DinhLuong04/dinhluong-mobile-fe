@@ -52,6 +52,7 @@
 .search-body-layout {
    display: flex;
    justify-content: space-between;
+   align-items: flex-start;
 }
 
 
@@ -119,4 +120,11 @@
    width: 100%;
     
   }
+}
+
+@media (max-width: 768px){
+    .search-body-layout {
+        padding: 0 12px;
+        width: 100%;
+    }
 }

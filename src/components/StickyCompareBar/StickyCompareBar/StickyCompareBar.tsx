@@ -1,5 +1,6 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom'; // 1. Import useNavigate
+import { useNavigate } from 'react-router-dom';
+import { message } from 'antd'; // 1. IMPORT MESSAGE TỪ ANTD
 import './StickyCompareBar.css';
 import type { Product } from '../../../types/Product.types'; 
 
@@ -17,24 +18,20 @@ const StickyCompareBar: React.FC<StickyCompareBarProps> = ({
     onClear 
 }) => {
     const MAX_SLOTS = 3;
-    const navigate = useNavigate(); // 2. Khởi tạo hook navigate
+    const navigate = useNavigate();
 
     // --- HÀM XỬ LÝ SO SÁNH ---
     const handleCompareNow = () => {
-        // Kiểm tra nếu chưa có đủ sản phẩm (tùy chọn: bắt buộc > 1 sản phẩm mới cho so sánh)
+        // 2. THAY THẾ ALERT BẰNG MESSAGE.WARNING
         if (!compareList || compareList.length < 2) {
-            alert("Vui lòng chọn ít nhất 2 sản phẩm để so sánh!");
+            message.warning("Vui lòng chọn ít nhất 2 sản phẩm để so sánh!");
             return;
         }
 
-        // 3. Lấy ra mảng slug (Lưu ý: Trong Type của bạn id chính là slug)
         const slugs = compareList.map(product => product.slug).join(',');
 
-        // 4. Chuyển hướng kèm theo query params
-        // Giả sử đường dẫn trang so sánh của bạn là "/compare-product"
         navigate(`/compare?slugs=${slugs}`);
         
-        // (Tùy chọn) Ẩn thanh so sánh sau khi bấm
         onToggle(); 
     };
 
@@ -67,11 +64,10 @@ const StickyCompareBar: React.FC<StickyCompareBarProps> = ({
                     <div className="action-buttons">
                         <button className="btn btn-clear" onClick={onClear}>Xóa tất cả</button>
                         
-                        {/* 5. Gắn sự kiện vào nút So sánh ngay */}
                         <button 
                             className="btn btn-compare-1"
                             onClick={handleCompareNow}
-                            disabled={compareList.length < 2} // Disable nếu chưa đủ 2 sp
+                            disabled={compareList.length < 2} 
                             style={{ opacity: compareList.length < 2 ? 0.5 : 1, cursor: compareList.length < 2 ? 'not-allowed' : 'pointer' }}
                         >
                             So sánh ngay

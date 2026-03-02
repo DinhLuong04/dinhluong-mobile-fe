@@ -12,6 +12,13 @@ const { Title, Text } = Typography;
 const { Option } = Select;
 const { TextArea } = Input;
 
+const normFile = (e: any) => {
+    if (Array.isArray(e)) {
+        return e;
+    }
+    return e?.fileList;
+};
+
 const ProductEdit: React.FC = () => {
     const { id } = useParams();
     const [form] = Form.useForm();
@@ -33,7 +40,7 @@ const ProductEdit: React.FC = () => {
         return userStr ? JSON.parse(userStr).token : '';
     };
 
-   useEffect(() => {
+    useEffect(() => {
         const fetchAllData = async () => {
             const token = getAuthToken();
             const headers = { 'Authorization': `Bearer ${token}` };
@@ -48,11 +55,11 @@ const ProductEdit: React.FC = () => {
                 if (catRes.ok) setCategories(await catRes.json());
                 if (brandRes.ok) setBrands(await brandRes.json());
 
-                // 🔥 BƯỚC 1: LẤY VÀ LƯU DỮ LIỆU SPEC GROUPS VÀO MỘT BIẾN CỤC BỘ TRƯỚC
+                // LẤY DỮ LIỆU SPEC GROUPS 
                 let fetchedSpecGroups: any[] = [];
                 if (specRes.ok) {
                     fetchedSpecGroups = await specRes.json();
-                    setSpecGroups(fetchedSpecGroups); // Vẫn set vào state để render giao diện
+                    setSpecGroups(fetchedSpecGroups); 
                 }
 
                 const productRes = await fetch(`http://localhost:8080/api/admin/products/${id}`, { headers });
@@ -61,6 +68,15 @@ const ProductEdit: React.FC = () => {
                     if (json.status === 'success') {
                         const formData = { ...json.data };
                         
+                        // 🔥 HIỂN THỊ ẢNH THUMBNAIL CŨ TRÊN Ô UPLOAD
+                        const initialThumbnail = formData.thumbnailUrl ? [{
+                            uid: '-1',
+                            name: 'current_thumbnail.png',
+                            status: 'done',
+                            url: formData.thumbnailUrl,
+                        }] : [];
+                        formData.thumbnail = initialThumbnail;
+
                         // Map EAV để điền vào các ô input tĩnh
                         if (formData.specValues && Array.isArray(formData.specValues)) {
                             formData.specValuesMap = {};
@@ -69,13 +85,9 @@ const ProductEdit: React.FC = () => {
                             });
                         }
 
-                        // 🔥 BƯỚC 2: DÙNG BIẾN CỤC BỘ `fetchedSpecGroups` ĐỂ LỌC (Lúc này nó đã có đủ data)
+                        // LỌC DỮ LIỆU JSON
                         if (formData.specificationsJson && fetchedSpecGroups.length > 0) {
-                            
-                            // Lấy danh sách tên tất cả các nhóm EAV (Màn hình, Camera...)
                             const eavGroupNames = fetchedSpecGroups.map((g: any) => g.name);
-                            
-                            // Giữ lại những nhóm KHÔNG NẰM TRONG EAV (Tức là nhóm tự do do Admin tạo)
                             formData.specificationsJson = formData.specificationsJson.filter(
                                 (group: any) => !eavGroupNames.includes(group.title)
                             );
@@ -103,9 +115,7 @@ const ProductEdit: React.FC = () => {
             const token = getAuthToken();
             const payload = { ...values };
             
-           // ==============================================================
-            // BƯỚC 1: XUẤT EAV ĐỂ BACKEND LƯU BỘ LỌC (Filter tĩnh)
-            // ==============================================================
+            // XỬ LÝ EAV ĐỂ BACKEND LƯU BỘ LỌC
             if (payload.specValuesMap) {
                 payload.specValues = Object.entries(payload.specValuesMap)
                     .filter(([_, val]) => val !== undefined && val !== null && val !== '') 
@@ -115,20 +125,13 @@ const ProductEdit: React.FC = () => {
                     }));
             }
 
-            // ==============================================================
-            // BƯỚC 2: "ĐÚC" EAV THÀNH MẢNG JSON THEO ĐÚNG CẤU TRÚC BẠN MUỐN
-            // ==============================================================
+            // GỘP EAV THÀNH MẢNG JSON
             let combinedJson: any[] = [];
-
             if (payload.specValuesMap) {
-                // Duyệt qua từng Nhóm (Group) từ master data (specGroups)
                 specGroups.forEach(group => {
                     let itemsForThisGroup: any[] = [];
-
-                    // Duyệt qua từng Thuộc tính trong Nhóm đó
                     group.attributes?.forEach((attr: any) => {
                         const val = payload.specValuesMap[attr.id];
-                        // Nếu Admin có nhập giá trị cho ô này -> Thêm vào mảng items
                         if (val !== undefined && val !== null && val !== '') {
                             itemsForThisGroup.push({
                                 label: attr.name,
@@ -137,21 +140,17 @@ const ProductEdit: React.FC = () => {
                         }
                     });
 
-                    // Nếu Nhóm này có ít nhất 1 thuộc tính được nhập -> Push nguyên Nhóm vào JSON
                     if (itemsForThisGroup.length > 0) {
                         combinedJson.push({
-                            title: group.name, // Tên nhóm (VD: "Bộ xử lý", "Màn hình")
+                            title: group.name, 
                             items: itemsForThisGroup
                         });
                     }
                 });
-                
-                delete payload.specValuesMap; // Xong nhiệm vụ thì xóa map tạm đi
+                delete payload.specValuesMap; 
             }
 
-            // ==============================================================
-            // BƯỚC 3: GỘP THÊM CÁC NHÓM JSON TỰ DO (Nếu Admin có tạo thêm)
-            // ==============================================================
+            // GỘP THÊM CÁC NHÓM JSON TỰ DO
             if (payload.specificationsJson && Array.isArray(payload.specificationsJson)) {
                 payload.specificationsJson.forEach((customGroup: any) => {
                     if (customGroup.title && customGroup.items && customGroup.items.length > 0) {
@@ -166,22 +165,41 @@ const ProductEdit: React.FC = () => {
                 });
             }
 
-            // ==============================================================
-            // BƯỚC 4: ĐÁNH LẠI ID TỪ 1 -> N CHO TOÀN BỘ MẢNG
-            // ==============================================================
+            // ĐÁNH LẠI ID TỪ 1 -> N CHO TOÀN BỘ MẢNG
             payload.specificationsJson = combinedJson.map((group, index) => ({
                 ...group,
-                id: index + 1 // Tự động sinh id: 1, 2, 3...
+                id: index + 1
             }));
 
-            // ==============================================================
-            // BƯỚC 5: GÓI VÀO FORMDATA VÀ GỬI ĐI
-            // ==============================================================
+            // 🔥 XỬ LÝ ẢNH THUMBNAIL (GIỮ NGUYÊN)
+            let finalThumbnailUrl = values.thumbnailUrl;
+            let newThumbnailFile = null;
+
+            if (values.thumbnail && values.thumbnail.length > 0) {
+                if (values.thumbnail[0].originFileObj) {
+                    newThumbnailFile = values.thumbnail[0].originFileObj;
+                    finalThumbnailUrl = null; 
+                }
+            } else {
+                finalThumbnailUrl = null; 
+            }
+            payload.thumbnailUrl = finalThumbnailUrl;
+            delete payload.thumbnail;
+
+            // ==========================================
+            // 🔥 NÂNG CẤP: XỬ LÝ ẢNH GALLERY TỪ STATE
+            // ==========================================
+            delete payload.gallery; // Xóa key này đi để không bị vướng rác vào JSON
+
+            // GÓI VÀO FORMDATA VÀ GỬI ĐI
             const formData = new FormData();
             formData.append('data', JSON.stringify(payload));
             
-            if (thumbnailFile) formData.append('thumbnail', thumbnailFile);
+            if (newThumbnailFile) {
+                formData.append('thumbnail', newThumbnailFile);
+            }
             
+            // Dùng trực tiếp biến state galleryFiles mà chúng ta đã lưu khi chọn ảnh!
             if (galleryFiles && galleryFiles.length > 0) {
                 galleryFiles.forEach(file => formData.append('gallery', file));
             }
@@ -206,7 +224,7 @@ const ProductEdit: React.FC = () => {
         }
     };
 
-    // --- 1. TABS THÔNG TIN CHUNG (Đã bổ sung Filter & Tính năng) ---
+    // --- 1. TABS THÔNG TIN CHUNG ---
     const tabBasicInfo = (
         <Space direction="vertical" size="middle" style={{ display: 'flex', width: '100%' }}>
             <Divider orientation="left" style={{ marginTop: 0 }}>Thông tin cơ bản</Divider>
@@ -242,7 +260,6 @@ const ProductEdit: React.FC = () => {
                 <Col span={8}><Form.Item name="status" label="Trạng thái"><Select><Option value="ACTIVE">Đang bán</Option><Option value="INACTIVE">Ẩn</Option></Select></Form.Item></Col>
             </Row>
 
-            {/* BỔ SUNG 1: Nhãn dán và tính năng */}
             <Divider orientation="left">Ghi chú & Tính năng nổi bật</Divider>
             <Row gutter={16}>
                 <Col span={12}>
@@ -260,7 +277,6 @@ const ProductEdit: React.FC = () => {
                 <TextArea rows={2} placeholder="Nhập tóm tắt vài dòng về sản phẩm..." />
             </Form.Item>
 
-            {/* BỔ SUNG 2: Thông số phục vụ Lọc (Indexed Columns) */}
             <Divider orientation="left">Thông số vật lý (Phục vụ bộ lọc tìm kiếm)</Divider>
             <Row gutter={16}>
                 <Col span={8}>
@@ -308,39 +324,38 @@ const ProductEdit: React.FC = () => {
         </Space>
     );
 
-    // --- 2. TABS HÌNH ẢNH ---
+   // --- 2. TABS HÌNH ẢNH ---
     const tabImages = (
         <Space direction="vertical" style={{ display: 'flex', width: '100%' }}>
-            <Form.Item label="Ảnh đại diện (Thumbnail URL)">
-                <Space.Compact style={{ width: '100%' }}>
-                    <Form.Item name="thumbnailUrl" noStyle>
-                         <Input disabled={!!thumbnailFile} placeholder={thumbnailFile ? `Đã chọn file: ${thumbnailFile.name}` : "Nhập URL ảnh..."} style={{ width: 'calc(100% - 100px)' }} />
-                    </Form.Item>
-                    <Upload 
-                        showUploadList={false} 
-                        accept="image/*"
-                        beforeUpload={(file) => {
-                            setThumbnailFile(file); // Lưu file vào state
-                            form.setFieldValue('thumbnailUrl', ''); // Xóa URL cũ nếu chọn up file mới
-                            return false; 
-                        }}
-                    >
-                        <Button icon={<UploadOutlined />} type="primary">Chọn ảnh mới</Button>
-                    </Upload>
-                </Space.Compact>
+            {/* Input Ẩn lưu URL Thumbnail cũ */}
+            <Form.Item name="thumbnailUrl" hidden><Input /></Form.Item>
+            
+            <Form.Item 
+                name="thumbnail" 
+                label="Ảnh đại diện (Thumbnail)" 
+                valuePropName="fileList" 
+                getValueFromEvent={normFile}
+                rules={[{ required: true, message: 'Vui lòng chọn ảnh đại diện!' }]}
+            >
+                <Upload 
+                    name="file" 
+                    listType="picture-card" 
+                    maxCount={1} 
+                    beforeUpload={(file) => {
+                        setThumbnailFile(file); 
+                        form.setFieldValue('thumbnailUrl', ''); 
+                        return false; 
+                    }}
+                    accept="image/*"
+                >
+                    <div>
+                        <PlusOutlined />
+                        <div style={{ marginTop: 8 }}>Thay ảnh</div>
+                    </div>
+                </Upload>
             </Form.Item>
             
-            <Divider orientation="left">Bộ sưu tập ảnh (Gallery)</Divider>
-            {galleryFiles.length > 0 && (
-                <div style={{ marginBottom: 16 }}>
-                    <Text strong>Ảnh chuẩn bị tải lên:</Text>
-                    <ul>
-                        {galleryFiles.map((f, i) => (
-                            <li key={i}>{f.name} <Button type="text" danger onClick={() => setGalleryFiles(prev => prev.filter((_, idx) => idx !== i))}>Xóa</Button></li>
-                        ))}
-                    </ul>
-                </div>
-            )}
+            <Divider orientation="left">Tải thêm ảnh mới vào Bộ sưu tập</Divider>
 
             <Space style={{ marginBottom: 16 }}>
                  <Upload 
@@ -352,29 +367,117 @@ const ProductEdit: React.FC = () => {
                         return false; 
                     }}
                 >
-                    <Button icon={<UploadOutlined />}>Chọn nhiều ảnh mới</Button>
+                    <Button type="primary" ghost icon={<UploadOutlined />}>Chọn thêm nhiều ảnh từ máy tính</Button>
                 </Upload>
             </Space>
 
-            <Text type="secondary" italic>Các URL ảnh đã có (có thể xóa hoặc sửa URL):</Text>
+            {/* 🔥 NÂNG CẤP: HIỂN THỊ ẢNH PREVIEW KHI VỪA CHỌN TỪ MÁY TÍNH */}
+            {galleryFiles.length > 0 && (
+                <div style={{ marginBottom: 24, padding: 16, background: '#e6f7ff', borderRadius: 8, border: '1px dashed #91d5ff' }}>
+                    <Text strong style={{ display: 'block', marginBottom: 12, color: '#1890ff' }}>
+                        ⏳ Ảnh đang chờ tải lên (Chưa lưu):
+                    </Text>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px' }}>
+                        {galleryFiles.map((f, i) => {
+                            // Tạo URL tạm thời để preview ảnh local
+                            const tempUrl = URL.createObjectURL(f);
+                            return (
+                                <Card 
+                                    key={i} 
+                                    size="small" 
+                                    style={{ width: 140, borderColor: '#91d5ff' }} 
+                                    bodyStyle={{ padding: 8 }}
+                                >
+                                    <div style={{ textAlign: 'center', marginBottom: 8 }}>
+                                        <img 
+                                            src={tempUrl} 
+                                            alt="new-gallery" 
+                                            style={{ width: '100%', height: 100, objectFit: 'cover', borderRadius: 6 }} 
+                                        />
+                                    </div>
+                                    <div style={{ textAlign: 'center', marginBottom: 8 }}>
+                                        <Text ellipsis style={{ width: '100%', fontSize: 12 }} title={f.name}>
+                                            {f.name}
+                                        </Text>
+                                    </div>
+                                    <Button 
+                                        danger 
+                                        block
+                                        size="small"
+                                        onClick={() => setGalleryFiles(prev => prev.filter((_, idx) => idx !== i))}
+                                    >
+                                        Hủy bỏ
+                                    </Button>
+                                </Card>
+                            );
+                        })}
+                    </div>
+                </div>
+            )}
+
+            {/* QUẢN LÝ ẢNH CŨ (GIỮ NGUYÊN) */}
+            <Divider orientation="left">Quản lý Bộ sưu tập hiện tại</Divider>
+            <Text type="secondary" italic style={{ display: 'block', marginBottom: 16 }}>
+                Đây là các ảnh đang có sẵn của sản phẩm. Bạn có thể xem, thay đổi thứ tự hoặc xóa chúng.
+            </Text>
+
             <Form.List name="images">
                 {(fields, { add, remove }) => (
-                    <>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px' }}>
                         {fields.map(({ key, name, ...restField }) => (
-                            <Space key={key} style={{ display: 'flex', marginBottom: 8 }} align="baseline">
+                            <Card 
+                                key={key} 
+                                size="small" 
+                                style={{ width: 220, position: 'relative', borderColor: '#d9d9d9' }} 
+                                bodyStyle={{ padding: 12 }}
+                            >
                                 <Form.Item {...restField} name={[name, 'id']} style={{ display: 'none' }}><Input /></Form.Item>
-                                <Form.Item {...restField} name={[name, 'imageUrl']} label="URL Ảnh"><Input placeholder="https://..." style={{ width: 400 }} /></Form.Item>
-                                <Form.Item {...restField} name={[name, 'sortOrder']} label="Thứ tự"><InputNumber min={1} /></Form.Item>
-                                <MinusCircleOutlined onClick={() => remove(name)} style={{ color: 'red' }} />
-                            </Space>
+                                
+                                <Form.Item noStyle shouldUpdate>
+                                    {() => {
+                                        const imgUrl = form.getFieldValue(['images', name, 'imageUrl']);
+                                        return imgUrl ? (
+                                            <div style={{ textAlign: 'center', marginBottom: 12 }}>
+                                                <img 
+                                                    src={imgUrl} 
+                                                    alt="gallery" 
+                                                    style={{ width: '100%', height: 140, objectFit: 'cover', borderRadius: 6, border: '1px solid #f0f0f0' }} 
+                                                />
+                                            </div>
+                                        ) : (
+                                            <div style={{ width: '100%', height: 140, background: '#f5f5f5', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 6, marginBottom: 12 }}>
+                                                <Text type="secondary">Chưa có URL</Text>
+                                            </div>
+                                        );
+                                    }}
+                                </Form.Item>
+
+                                <Form.Item {...restField} name={[name, 'imageUrl']} style={{ marginBottom: 12 }}>
+                                    <Input placeholder="Nhập URL ảnh..." size="small" />
+                                </Form.Item>
+                                
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                    <Form.Item {...restField} name={[name, 'sortOrder']} label="Thứ tự" style={{ marginBottom: 0 }}>
+                                        <InputNumber min={1} size="small" style={{ width: 60 }} />
+                                    </Form.Item>
+                                    <Button danger type="text" icon={<MinusCircleOutlined />} onClick={() => remove(name)} title="Xóa ảnh này" />
+                                </div>
+                            </Card>
                         ))}
-                        <Form.Item><Button type="dashed" onClick={() => add()} block icon={<PlusOutlined />}>Thêm URL ảnh thủ công</Button></Form.Item>
-                    </>
+                        
+                        <Button 
+                            type="dashed" 
+                            onClick={() => add()} 
+                            style={{ width: 220, height: 260, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}
+                        >
+                            <PlusOutlined style={{ fontSize: 24, marginBottom: 8 }} />
+                            Thêm URL ảnh thủ công
+                        </Button>
+                    </div>
                 )}
             </Form.List>
         </Space>
     );
-
     // --- 3. TABS PHIÊN BẢN (VARIANTS) ---
     const tabVariants = (
         <Form.List name="variants">
@@ -385,9 +488,64 @@ const ProductEdit: React.FC = () => {
                             <Form.Item {...restField} name={[name, 'id']} style={{ display: 'none' }}><Input /></Form.Item>
                             <Row gutter={16}>
                                 <Col span={12}><Form.Item {...restField} name={[name, 'sku']} label="Mã SKU" rules={[{ required: true }]}><Input /></Form.Item></Col>
+                                
+                                {/* 🔥 NÂNG CẤP: UPLOAD ẢNH VARIANT TỨC THỜI (GIỐNG CREATE) */}
                                 <Col span={12}>
-                                    <Form.Item {...restField} name={[name, 'imageUrl']} label="URL Ảnh cho phiên bản này (Nếu có)">
-                                        <Input placeholder="Link ảnh cho màu này..." />
+                                    <Form.Item label="Ảnh phiên bản (Màu sắc)">
+                                        <Space.Compact style={{ width: '100%' }}>
+                                            <Form.Item {...restField} name={[name, 'imageUrl']} noStyle>
+                                                <Input placeholder="URL ảnh sẽ hiện ở đây..." style={{ width: 'calc(100% - 105px)' }} />
+                                            </Form.Item>
+
+                                            <Upload
+                                                showUploadList={false}
+                                                accept="image/*"
+                                                customRequest={async (options) => {
+                                                    const { file, onSuccess, onError } = options;
+                                                    const formData = new FormData();
+                                                    formData.append('file', file as File);
+
+                                                    try {
+                                                        const res = await fetch('http://localhost:8080/api/admin/products/upload', {
+                                                            method: 'POST',
+                                                            headers: { 'Authorization': `Bearer ${getAuthToken()}` },
+                                                            body: formData
+                                                        });
+                                                        const data = await res.json();
+
+                                                        if (res.ok && data.status === 'success') {
+                                                            form.setFieldValue(['variants', name, 'imageUrl'], data.data);
+                                                            onSuccess?.("ok");
+                                                            message.success("Tải ảnh lên thành công!");
+                                                        } else {
+                                                            onError?.(new Error("Lỗi server"));
+                                                            message.error(data.message || "Lỗi tải ảnh");
+                                                        }
+                                                    } catch (err) {
+                                                        onError?.(new Error("Lỗi mạng"));
+                                                        message.error("Lỗi kết nối máy chủ!");
+                                                    }
+                                                }}
+                                            >
+                                                <Button icon={<UploadOutlined />} type="primary">Tải ảnh</Button>
+                                            </Upload>
+                                        </Space.Compact>
+
+                                        {/* Preview ảnh nhỏ ở dưới */}
+                                        <Form.Item noStyle shouldUpdate={(prevValues, currentValues) => {
+                                            const prevUrl = prevValues.variants?.[name]?.imageUrl;
+                                            const currentUrl = currentValues.variants?.[name]?.imageUrl;
+                                            return prevUrl !== currentUrl;
+                                        }}>
+                                            {() => {
+                                                const currentUrl = form.getFieldValue(['variants', name, 'imageUrl']);
+                                                return currentUrl ? (
+                                                    <div style={{ marginTop: 8 }}>
+                                                        <img src={currentUrl} alt="Preview" style={{ height: 40, width: 40, objectFit: 'cover', borderRadius: 4, border: '1px solid #d9d9d9' }} />
+                                                    </div>
+                                                ) : null;
+                                            }}
+                                        </Form.Item>
                                     </Form.Item>
                                 </Col>
                             </Row>
@@ -508,17 +666,17 @@ const ProductEdit: React.FC = () => {
         </Space>
     );
 
-    const tabItems = [
-        { key: '1', label: 'Thông tin chung', children: tabBasicInfo },
-        { key: '2', label: 'Hình ảnh', children: tabImages },
-        { key: '3', label: 'Phiên bản (Variants)', children: tabVariants },
-        { key: '4', label: 'Thông số kỹ thuật', children: tabSpecs },
+   const tabItems = [
+        { key: '1', label: 'Thông tin chung', children: tabBasicInfo, forceRender: true },
+        { key: '2', label: 'Hình ảnh', children: tabImages, forceRender: true },
+        { key: '3', label: 'Phiên bản (Variants)', children: tabVariants, forceRender: true },
+        { key: '4', label: 'Thông số kỹ thuật', children: tabSpecs, forceRender: true },
     ];
 
     return (
         <div style={{ padding: 24, maxWidth: 1200, margin: '0 auto' }}>
             <Card title={<Title level={4} style={{ margin: 0 }}>Cập nhật Sản phẩm #{id}</Title>} extra={<Button icon={<ArrowLeftOutlined />} onClick={() => navigate(-1)}>Quay lại</Button>}>
-                <Spin spinning={loading} tip="Đang tải thông tin sản phẩm...">
+                <Spin spinning={loading} description="Đang tải thông tin sản phẩm...">
                     <Form form={form} layout="vertical" onFinish={onFinish}>
                         <Tabs defaultActiveKey="1" items={tabItems} />
                         <Divider />

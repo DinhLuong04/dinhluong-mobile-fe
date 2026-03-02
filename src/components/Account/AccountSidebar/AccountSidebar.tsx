@@ -87,7 +87,7 @@ const AccountSidebar = () => {
                     <span>Chính sách bảo hành</span>
                 </a>
 
-                <NavLink to="/member/suport" className={({ isActive }) => isActive ? "sidebar-item active" : "sidebar-item"}>
+                <NavLink to="#" className={({ isActive }) => isActive ? "sidebar-item active" : "sidebar-item"}>
                     {renderIcon(<><path d="M3 7a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v10a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-10z"></path><path d="M3 7l9 6l9 -6"></path></>)}
                     <span>Góp ý - Phản hồi - Hỗ trợ</span>
                 </NavLink>

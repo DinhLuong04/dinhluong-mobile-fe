@@ -142,7 +142,7 @@ export interface CartItem {
   // --- Trạng thái (UI State) ---
   quantity: number; // Số lượng khách mua
   checked: boolean; // Checkbox chọn thanh toán
-
+  stockQuantity: number; // Số lượng tồn kho (để disable checkbox nếu hết hàng)
   // --- Dữ liệu lồng nhau ---
   combos?: CartComboItem[]; // Danh sách ưu đãi mua kèm
 }

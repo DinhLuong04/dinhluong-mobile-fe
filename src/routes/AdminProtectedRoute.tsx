@@ -1,23 +1,33 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
-import type { AuthData } from '../types/auth.types'; // Nhớ import đúng đường dẫn
+import { message } from 'antd';
+import type { AuthData } from '../types/auth.types';
 
 const AdminProtectedRoute: React.FC = () => {
     const userStr = localStorage.getItem('user');
     const user: AuthData | null = userStr ? JSON.parse(userStr) : null;
 
-    // 1. Chưa đăng nhập
+    // 1. Kiểm tra an toàn quyền Admin (nếu chưa login thì mặc định là false)
+    const isAdmin = user ? (user.role === 'ADMIN' || user.role === 'ROLE_ADMIN') : false;
+
+    // 2. GỌI HOOK Ở TRÊN CÙNG (Tuyệt đối không để sau các lệnh return)
+    useEffect(() => {
+        // Chỉ hiện thông báo báo lỗi khi: ĐÃ đăng nhập NHƯNG KHÔNG CÓ quyền Admin
+        if (user && !isAdmin) {
+            message.error("Bạn không có quyền truy cập trang quản trị!");
+        }
+    }, [user, isAdmin]);
+
+    // 3. Xử lý các điều kiện chuyển hướng (Early Returns) SAU KHI đã gọi xong Hooks
     if (!user) {
         return <Navigate to="/login" replace />;
     }
 
-    // 2. Không phải Admin
-    if (user.role !== 'ADMIN' && user.role !== 'ROLE_ADMIN') {
-        alert("Bạn không có quyền truy cập trang quản trị!");
+    if (!isAdmin) {
         return <Navigate to="/" replace />;
     }
 
-    // 3. Đúng là Admin thì cho đi tiếp
+    // 4. Hợp lệ thì cho đi tiếp
     return <Outlet />;
 };
 

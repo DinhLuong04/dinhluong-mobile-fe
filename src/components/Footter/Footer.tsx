@@ -18,7 +18,7 @@ export default function Footer() {
                         <p>Bao gồm Cửa hàng DinhLuong Mobile, Phụ kiện chính hãng</p>
                     </div>
                     <div>
-                        <a href="/cua-hang" className="btn-store-list">
+                        <a href="#" className="btn-store-list">
                             Xem danh sách cửa hàng
                         </a>
                     </div>

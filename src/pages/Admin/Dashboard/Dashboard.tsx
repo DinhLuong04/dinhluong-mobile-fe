@@ -41,77 +41,44 @@ const Dashboard: React.FC = () => {
     const [data, setData] = useState<DashboardData | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [timeFilter, setTimeFilter] = useState<string>('this_month');
-
+    const getAuthToken = () => {
+        const user = localStorage.getItem('user');
+        return user ? JSON.parse(user).token : '';
+    };
     // ==========================================
     // 3. GIẢ LẬP GỌI API THEO FILTER
     // ==========================================
+
     useEffect(() => {
         const fetchDashboardData = async () => {
             setIsLoading(true);
             try {
-                // Thay thế bằng hàm: await axiosClient.get(`/api/admin/dashboard?time=${timeFilter}`)
-                await new Promise(resolve => setTimeout(resolve, 800)); // Fake delay
-                
-                // MOCK DATA: Thay đổi nhẹ số liệu dựa trên filter để thấy sự khác biệt
-                const multiplier = timeFilter === 'today' ? 0.1 : timeFilter === 'this_week' ? 0.3 : 1;
-                
-                const mockData: DashboardData = {
-                    overview: {
-                        totalRevenue: 345000000 * multiplier,
-                        completedOrders: Math.round(124 * multiplier),
-                        newUsers: Math.round(45 * multiplier),
-                        pendingTasks: 12 // Tin nhắn + comment chưa duyệt
-                    },
-                    revenueTrends: [
-                        { date: '01/02', revenue: 15000000 * multiplier, orders: 5 },
-                        { date: '05/02', revenue: 42000000 * multiplier, orders: 15 },
-                        { date: '10/02', revenue: 28000000 * multiplier, orders: 8 },
-                        { date: '15/02', revenue: 85000000 * multiplier, orders: 25 },
-                        { date: '20/02', revenue: 56000000 * multiplier, orders: 18 },
-                        { date: '25/02', revenue: 119000000 * multiplier, orders: 53 },
-                    ],
-                    paymentMethods: [
-                        { name: 'Thanh toán COD', value: 45, color: '#faad14' },
-                        { name: 'VNPAY', value: 35, color: '#1890ff' },
-                        { name: 'MOMO', value: 20, color: '#eb2f96' },
-                    ],
-                    topProducts: [
-                        { id: 1, name: 'iPhone 15 Pro Max', variant: '256GB - Titan Tự nhiên', sold: 42, revenue: 1250000000, image: '📱' },
-                        { id: 2, name: 'Samsung Galaxy S24 Ultra', variant: '512GB - Xám', sold: 35, revenue: 1120000000, image: '📱' },
-                        { id: 3, name: 'Xiaomi 14 Pro', variant: '12GB/256GB - Đen', sold: 28, revenue: 560000000, image: '📱' },
-                        { id: 4, name: 'Oppo Find X7 Ultra', variant: '16GB/512GB', sold: 15, revenue: 345000000, image: '📱' },
-                    ],
-                    lowStockVariants: [
-                        { sku: 'IP15PM-256-BLK', name: 'iPhone 15 Pro Max', variant: '256GB - Đen', stock: 2, image: '📱' },
-                        { sku: 'SS-S24U-256-YEL', name: 'Galaxy S24 Ultra', variant: '256GB - Vàng', stock: 1, image: '📱' },
-                        { sku: 'XM-RMN13-128', name: 'Redmi Note 13', variant: '128GB - Xanh', stock: 4, image: '📱' },
-                    ],
-                    topBrands: [
-                        { name: 'Apple', revenue: 1850000000, fill: '#000000' },
-                        { name: 'Samsung', revenue: 1420000000, fill: '#1428A0' },
-                        { name: 'Xiaomi', revenue: 860000000, fill: '#FF6700' },
-                    ],
-                    activeVouchers: [
-                        { code: 'GIAM100K', used: 120, limit: 200, expiry: '2026-03-01' },
-                        { code: 'FREESHIP', used: 4500, limit: 5000, expiry: '2026-12-31' },
-                        { code: 'TET2026', used: 99, limit: 100, expiry: '2026-02-28' }, // Sắp hết
-                    ],
-                    supportStats: {
-                        chatbotHandled: 1250,
-                        humanHandled: 350,
-                        avgRating: 4.8
+                // Gọi API thật
+                const response = await fetch(`http://localhost:8080/api/admin/dashboard?time=${timeFilter}`, {
+                    method: 'GET',
+                    headers: { 
+                        'Authorization': `Bearer ${getAuthToken()}` 
                     }
-                };
-                setData(mockData);
+                });
+
+                const json = await response.json();
+
+                // Kiểm tra status từ server trả về
+                if (response.ok && json.status === 'success') {
+                    setData(json.data); // Cập nhật state bằng dữ liệu thật
+                } else {
+                    console.error("Lỗi từ server:", json.message);
+                    // Có thể thêm message.error(json.message) của Antd ở đây nếu muốn báo lỗi lên UI
+                }
             } catch (error) {
-                console.error("Lỗi tải dữ liệu Dashboard:", error);
+                console.error("Lỗi kết nối khi tải dữ liệu Dashboard:", error);
             } finally {
                 setIsLoading(false);
             }
         };
 
         fetchDashboardData();
-    }, [timeFilter]);
+    }, [timeFilter]); // Gọi lại API mỗi khi timeFilter thay đổi
 
     // ==========================================
     // 4. RENDER GIAO DIỆN
@@ -278,7 +245,7 @@ const Dashboard: React.FC = () => {
                 <Row gutter={[16, 16]} style={{ marginTop: 16 }}>
                     {/* Cột 1: Vouchers */}
                     <Col xs={24} lg={12}>
-                        <Card title={<><GiftOutlined /> Hiệu suất Mã giảm giá (Vouchers)</>} bordered={false} style={{ borderRadius: 12, height: 250, boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
+                        <Card title={<><GiftOutlined /> Hiệu suất Mã giảm giá (Vouchers)</>} bordered={false} style={{ borderRadius: 12, height: '100%', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
                             <Space direction="vertical" size="middle" style={{ width: '100%' }}>
                                 {data?.activeVouchers?.map(v => {
                                     const percent = Math.round((v.used / v.limit) * 100);
@@ -305,7 +272,7 @@ const Dashboard: React.FC = () => {
 
                     {/* Cột 2: Hiệu năng CSKH & AI */}
                     <Col xs={24} lg={12}>
-                        <Card title={<><RobotOutlined /> Hiệu quả CSKH & Trợ lý ảo AI</>} bordered={false} style={{ borderRadius: 12, height: 250, boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
+                        <Card title={<><RobotOutlined /> Hiệu quả CSKH & Trợ lý ảo AI</>} bordered={false} style={{ borderRadius: 12, height: '100%', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
                             <Row align="middle" justify="center" style={{ height: '100%' }}>
                                 <Col span={10} style={{ textAlign: 'center' }}>
                                     {/* Tính phần trăm AI đỡ tải */}

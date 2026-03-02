@@ -1,212 +1,231 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { 
-    Form, Input, InputNumber, Select, Switch, Button, 
-    Card, Tabs, Space, Row, Col, Typography, message, Divider, Upload,Spin
+import {
+    Form, Input, InputNumber, Select, Switch, Button,
+    Card, Tabs, Space, Row, Col, Typography, message, Divider, Upload, Spin
 } from 'antd';
-import { 
-    PlusOutlined, MinusCircleOutlined, SaveOutlined, ArrowLeftOutlined, UploadOutlined
+import {
+    PlusOutlined, MinusCircleOutlined, SaveOutlined, ArrowLeftOutlined, UploadOutlined // 🔥 ĐÃ THÊM UploadOutlined Ở ĐÂY
 } from '@ant-design/icons';
-import { useNavigate,useLocation  } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 const { Title, Text } = Typography;
 const { Option } = Select;
 const { TextArea } = Input;
 
+// 🔥 CẬP NHẬT: Hàm xử lý event của component Upload
+const normFile = (e: any) => {
+    if (Array.isArray(e)) {
+        return e;
+    }
+    return e?.fileList;
+};
+
 const ProductCreate: React.FC = () => {
     const [form] = Form.useForm();
     const navigate = useNavigate();
-    const location = useLocation(); // Hook để nhận state từ trang ProductManager truyền sang
+    const location = useLocation();
     const hasFetched = useRef(false);
-    const [loading, setLoading] = useState(false); // Trạng thái Load khi Clone
 
+    const [loading, setLoading] = useState(false);
     const [submitting, setSubmitting] = useState(false);
-    
+
     // Lưu tạm các file ảnh chưa upload
     const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
     const [galleryFiles, setGalleryFiles] = useState<File[]>([]);
 
     const [categories, setCategories] = useState<any[]>([]);
     const [brands, setBrands] = useState<any[]>([]);
-    const [specGroups, setSpecGroups] = useState<any[]>([]); 
+    const [specGroups, setSpecGroups] = useState<any[]>([]);
 
     const getAuthToken = () => {
         const userStr = localStorage.getItem('user');
         return userStr ? JSON.parse(userStr).token : '';
     };
 
-  useEffect(() => {
-    const fetchInitialData = async () => {
-        if (hasFetched.current) return;
-        hasFetched.current = true;
-        const token = getAuthToken();
-        const headers = { 'Authorization': `Bearer ${token}` };
-        try {
-            // 1. Tải Master Data
-            const [catRes, brandRes, specRes] = await Promise.all([
-                fetch('http://localhost:8080/api/admin/categories', { headers }),
-                fetch('http://localhost:8080/api/admin/brands', { headers }),
-                fetch('http://localhost:8080/api/admin/spec-groups', { headers })
-            ]);
-            
-            if (catRes.ok) setCategories(await catRes.json());
-            if (brandRes.ok) setBrands(await brandRes.json());
+    useEffect(() => {
+        const fetchInitialData = async () => {
+            if (hasFetched.current) return;
+            hasFetched.current = true;
+            const token = getAuthToken();
+            const headers = { 'Authorization': `Bearer ${token}` };
+            try {
+                // 1. Tải Master Data
+                const [catRes, brandRes, specRes] = await Promise.all([
+                    fetch('http://localhost:8080/api/admin/categories', { headers }),
+                    fetch('http://localhost:8080/api/admin/brands', { headers }),
+                    fetch('http://localhost:8080/api/admin/spec-groups', { headers })
+                ]);
 
-            // 🔥 Lưu vào biến cục bộ để dùng ngay lập tức cho logic Clone phía dưới
-            let fetchedSpecGroups: any[] = [];
-            if (specRes.ok) {
-                fetchedSpecGroups = await specRes.json();
-                setSpecGroups(fetchedSpecGroups);
-            }
+                if (catRes.ok) setCategories(await catRes.json());
+                if (brandRes.ok) setBrands(await brandRes.json());
 
-            // 2. XỬ LÝ NHÂN BẢN (CLONE)
-            const cloneId = location.state?.cloneFromId;
-            if (cloneId) {
-                setLoading(true);
-                const productRes = await fetch(`http://localhost:8080/api/admin/products/${cloneId}`, { headers });
-                if (productRes.ok) {
-                    const json = await productRes.json();
-                    if (json.status === 'success') {
-                        const formData = { ...json.data };
-                        
-                        formData.id = null;
-                        formData.name = formData.name + " (Copy)";
-                        formData.slug = formData.slug + "-copy-" + Date.now();
-                        
-                        // ... (giữ nguyên logic clone variants, images, highlightSpecs) ...
+                let fetchedSpecGroups: any[] = [];
+                if (specRes.ok) {
+                    fetchedSpecGroups = await specRes.json();
+                    setSpecGroups(fetchedSpecGroups);
+                }
 
-                        // Map EAV
-                        if (formData.specValues && Array.isArray(formData.specValues)) {
-                            formData.specValuesMap = {};
-                            formData.specValues.forEach((item: any) => {
-                                formData.specValuesMap[item.attributeId] = item.value;
-                            });
+                // 2. XỬ LÝ NHÂN BẢN (CLONE)
+                const cloneId = location.state?.cloneFromId;
+                if (cloneId) {
+                    setLoading(true);
+                    const productRes = await fetch(`http://localhost:8080/api/admin/products/${cloneId}`, { headers });
+                    if (productRes.ok) {
+                        const json = await productRes.json();
+                        if (json.status === 'success') {
+                            const formData = { ...json.data };
+
+                            formData.id = null;
+                            formData.name = formData.name + " (Copy)";
+                            formData.slug = formData.slug + "-copy-" + Date.now();
+
+                            // 🔥 CẬP NHẬT: Xử lý hiển thị ảnh Thumbnail khi Clone
+                            const initialThumbnail = formData.thumbnailUrl ? [{
+                                uid: '-1',
+                                name: 'cloned_image.png',
+                                status: 'done',
+                                url: formData.thumbnailUrl,
+                            }] : [];
+                            formData.thumbnail = initialThumbnail;
+
+                            // Map EAV
+                            if (formData.specValues && Array.isArray(formData.specValues)) {
+                                formData.specValuesMap = {};
+                                formData.specValues.forEach((item: any) => {
+                                    formData.specValuesMap[item.attributeId] = item.value;
+                                });
+                            }
+
+                            // LỌC BỎ CÁC NHÓM EAV RA KHỎI FORM JSON ĐỂ TRÁNH TRÙNG LẶP
+                            if (formData.specificationsJson && fetchedSpecGroups.length > 0) {
+                                const eavGroupNames = fetchedSpecGroups.map((g: any) => g.name);
+                                formData.specificationsJson = formData.specificationsJson.filter(
+                                    (group: any) => !eavGroupNames.includes(group.title)
+                                );
+                            }
+
+                            form.setFieldsValue(formData);
+                            message.success("Đã sao chép dữ liệu thành công!");
                         }
-
-                        // 🔥 LỌC BỎ CÁC NHÓM EAV RA KHỎI FORM JSON ĐỂ TRÁNH TRÙNG LẶP KHI CLONE
-                        if (formData.specificationsJson && fetchedSpecGroups.length > 0) {
-                            const eavGroupNames = fetchedSpecGroups.map((g: any) => g.name);
-                            formData.specificationsJson = formData.specificationsJson.filter(
-                                (group: any) => !eavGroupNames.includes(group.title)
-                            );
-                        }
-                        
-                        form.setFieldsValue(formData);
-                        message.success("Đã sao chép dữ liệu thành công!");
                     }
                 }
+            } catch (error) {
+                message.error("Lỗi khi tải dữ liệu khởi tạo!");
+            } finally {
+                setLoading(false);
             }
-        } catch (error) {
-            message.error("Lỗi khi tải dữ liệu khởi tạo!");
-        } finally {
-            setLoading(false);
-        }
-    };
-    fetchInitialData();
-}, [location.state, form]);
+        };
+        fetchInitialData();
+    }, [location.state, form]);
 
     const onFinish = async (values: any) => {
-    setSubmitting(true);
-    try {
-        const token = getAuthToken();
-        const payload = { ...values };
+        setSubmitting(true);
+        try {
+            const token = getAuthToken();
+            const payload = { ...values };
 
-        // ==============================================================
-        // BƯỚC 1: XUẤT EAV ĐỂ BACKEND LƯU BỘ LỌC (Filter tĩnh)
-        // ==============================================================
-        if (payload.specValuesMap) {
-            payload.specValues = Object.entries(payload.specValuesMap)
-                .filter(([_, val]) => val !== undefined && val !== null && val !== '') 
-                .map(([attrId, val]) => ({
-                    attributeId: Number(attrId),
-                    value: val
-                }));
-        }
+            // --- XỬ LÝ EAV & JSON SPECIFICATIONS (Giữ nguyên logic của bạn) ---
+            if (payload.specValuesMap) {
+                payload.specValues = Object.entries(payload.specValuesMap)
+                    .filter(([_, val]) => val !== undefined && val !== null && val !== '')
+                    .map(([attrId, val]) => ({
+                        attributeId: Number(attrId),
+                        value: val
+                    }));
+            }
 
-        // ==============================================================
-        // BƯỚC 2: "ĐÚC" EAV THÀNH MẢNG JSON
-        // ==============================================================
-        let combinedJson: any[] = [];
+            let combinedJson: any[] = [];
+            if (values.specValuesMap) {
+                specGroups.forEach(group => {
+                    let itemsForThisGroup: any[] = [];
+                    group.attributes?.forEach((attr: any) => {
+                        const val = values.specValuesMap[attr.id];
+                        if (val !== undefined && val !== null && val !== '') {
+                            itemsForThisGroup.push({ label: attr.name, value: String(val) });
+                        }
+                    });
+                    if (itemsForThisGroup.length > 0) {
+                        combinedJson.push({ title: group.name, items: itemsForThisGroup });
+                    }
+                });
+            }
 
-        if (values.specValuesMap) {
-            specGroups.forEach(group => {
-                let itemsForThisGroup: any[] = [];
-
-                group.attributes?.forEach((attr: any) => {
-                    const val = values.specValuesMap[attr.id];
-                    if (val !== undefined && val !== null && val !== '') {
-                        itemsForThisGroup.push({
-                            label: attr.name,
-                            value: String(val)
+            if (payload.specificationsJson && Array.isArray(payload.specificationsJson)) {
+                payload.specificationsJson.forEach((customGroup: any) => {
+                    if (customGroup.title && customGroup.items && customGroup.items.length > 0) {
+                        combinedJson.push({
+                            title: customGroup.title,
+                            items: customGroup.items.map((i: any) => ({ label: i.label, value: i.value }))
                         });
                     }
                 });
+            }
 
-                if (itemsForThisGroup.length > 0) {
-                    combinedJson.push({
-                        title: group.name,
-                        items: itemsForThisGroup
-                    });
+            payload.specificationsJson = combinedJson.map((group, index) => ({
+                ...group, id: index + 1
+            }));
+            delete payload.specValuesMap;
+
+            // 🔥 CẬP NHẬT: XỬ LÝ LOGIC FILE ẢNH CHO BACKEND
+            let finalThumbnailUrl = values.thumbnailUrl;
+            let newThumbnailFile = null;
+
+            // Xử lý Thumbnail
+            if (values.thumbnail && values.thumbnail.length > 0) {
+                if (values.thumbnail[0].originFileObj) {
+                    newThumbnailFile = values.thumbnail[0].originFileObj;
+                    finalThumbnailUrl = null;
                 }
+            } else {
+                finalThumbnailUrl = null;
+            }
+            payload.thumbnailUrl = finalThumbnailUrl;
+            delete payload.thumbnail; // Xóa khỏi JSON
+
+            // Xử lý Gallery
+            const galleryFilesToUpload: File[] = [];
+            if (values.gallery && values.gallery.length > 0) {
+                values.gallery.forEach((fileItem: any) => {
+                    if (fileItem.originFileObj) {
+                        galleryFilesToUpload.push(fileItem.originFileObj);
+                    }
+                });
+            }
+            delete payload.gallery; // Xóa khỏi JSON
+
+            // GÓI FORMDATA VÀ GỬI
+            const formData = new FormData();
+            formData.append('data', JSON.stringify(payload));
+
+            if (newThumbnailFile) {
+                formData.append('thumbnail', newThumbnailFile);
+            }
+
+            if (galleryFilesToUpload.length > 0) {
+                galleryFilesToUpload.forEach(file => formData.append('gallery', file));
+            }
+
+            const res = await fetch('http://localhost:8080/api/admin/products', {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${token}` }, // Không set Content-Type
+                body: formData
             });
+
+            const json = await res.json();
+            if (res.ok && json.status === 'success') {
+                message.success("Thêm mới sản phẩm thành công!");
+                navigate(-1);
+            } else {
+                message.error(json.message || "Lỗi lưu sản phẩm");
+            }
+        } catch (error) {
+            message.error("Lỗi kết nối đến máy chủ!");
+        } finally {
+            setSubmitting(false);
         }
+    };
 
-        // ==============================================================
-        // BƯỚC 3: GỘP THÊM CÁC NHÓM JSON TỰ DO (Ở Tab 4 dưới cùng)
-        // ==============================================================
-        if (payload.specificationsJson && Array.isArray(payload.specificationsJson)) {
-            payload.specificationsJson.forEach((customGroup: any) => {
-                if (customGroup.title && customGroup.items && customGroup.items.length > 0) {
-                    combinedJson.push({
-                        title: customGroup.title,
-                        items: customGroup.items.map((i: any) => ({
-                            label: i.label,
-                            value: i.value
-                        }))
-                    });
-                }
-            });
-        }
-
-        // BƯỚC 4: Đánh lại ID cho chuẩn
-        payload.specificationsJson = combinedJson.map((group, index) => ({
-            ...group,
-            id: index + 1
-        }));
-        
-        delete payload.specValuesMap; // Xóa map tạm
-
-        // ==============================================================
-        // BƯỚC 5: GÓI FORMDATA VÀ GỬI
-        // ==============================================================
-        const formData = new FormData();
-        formData.append('data', JSON.stringify(payload));
-
-        if (thumbnailFile) formData.append('thumbnail', thumbnailFile);
-        if (galleryFiles && galleryFiles.length > 0) {
-            galleryFiles.forEach(file => formData.append('gallery', file));
-        }
-
-        const res = await fetch('http://localhost:8080/api/admin/products', {
-            method: 'POST',
-            headers: { 'Authorization': `Bearer ${token}` },
-            body: formData 
-        });
-
-        const json = await res.json();
-        if (res.ok && json.status === 'success') {
-            message.success("Thêm mới sản phẩm thành công!");
-            navigate(-1);
-        } else {
-            message.error(json.message || "Lỗi lưu sản phẩm");
-        }
-    } catch (error) {
-        message.error("Lỗi kết nối đến máy chủ!");
-    } finally {
-        setSubmitting(false);
-    }
-};
-
-    // --- 1. TABS THÔNG TIN CHUNG (Đã bổ sung Filter & Tính năng) ---
+    // --- 1. TABS THÔNG TIN CHUNG ---
     const tabBasicInfo = (
         <Space direction="vertical" size="middle" style={{ display: 'flex', width: '100%' }}>
             <Divider orientation="left" style={{ marginTop: 0 }}>Thông tin cơ bản</Divider>
@@ -239,7 +258,6 @@ const ProductCreate: React.FC = () => {
                 <Col span={8}><Form.Item name="status" label="Trạng thái" initialValue="ACTIVE"><Select><Option value="ACTIVE">Đang bán</Option><Option value="INACTIVE">Ẩn</Option></Select></Form.Item></Col>
             </Row>
 
-            {/* BỔ SUNG 1: Nhãn dán và tính năng */}
             <Divider orientation="left">Ghi chú & Tính năng nổi bật</Divider>
             <Row gutter={16}>
                 <Col span={12}>
@@ -257,7 +275,6 @@ const ProductCreate: React.FC = () => {
                 <TextArea rows={2} placeholder="Nhập tóm tắt vài dòng về sản phẩm..." />
             </Form.Item>
 
-            {/* BỔ SUNG 2: Thông số phục vụ Lọc (Indexed Columns) */}
             <Divider orientation="left">Thông số vật lý (Phục vụ bộ lọc tìm kiếm)</Divider>
             <Row gutter={16}>
                 <Col span={8}>
@@ -308,53 +325,57 @@ const ProductCreate: React.FC = () => {
     // --- 2. TABS HÌNH ẢNH ---
     const tabImages = (
         <Space direction="vertical" style={{ display: 'flex', width: '100%' }}>
-            
-            <Form.Item label="Ảnh đại diện (Thumbnail URL)">
-                <Space.Compact style={{ width: '100%' }}>
-                    <Form.Item name="thumbnailUrl" noStyle>
-                         <Input disabled={!!thumbnailFile} placeholder={thumbnailFile ? `Đã chọn file: ${thumbnailFile.name}` : "Nhập URL ảnh..."} style={{ width: 'calc(100% - 100px)' }} />
-                    </Form.Item>
-                    <Upload 
-                        showUploadList={false} 
-                        accept="image/*"
-                        beforeUpload={(file) => {
-                            setThumbnailFile(file);
-                            form.setFieldValue('thumbnailUrl', ''); 
-                            return false;
-                        }}
-                    >
-                        <Button icon={<UploadOutlined />} type="primary">Chọn ảnh</Button>
-                    </Upload>
-                </Space.Compact>
-            </Form.Item>
-            
-            <Divider orientation="left">Bộ sưu tập ảnh (Slideshow)</Divider>
-            {galleryFiles.length > 0 && (
-                <div style={{ marginBottom: 16 }}>
-                    <Text strong>Ảnh chuẩn bị tải lên:</Text>
-                    <ul>
-                        {galleryFiles.map((f, i) => (
-                            <li key={i}>{f.name} <Button type="text" danger onClick={() => setGalleryFiles(prev => prev.filter((_, idx) => idx !== i))}>Xóa</Button></li>
-                        ))}
-                    </ul>
-                </div>
-            )}
 
-            <Space style={{ marginBottom: 16 }}>
-                 <Upload 
-                    multiple 
-                    showUploadList={false}
+            {/* Trường ẩn lưu thumbnailUrl khi clone */}
+            <Form.Item name="thumbnailUrl" hidden><Input /></Form.Item>
+
+            {/* 🔥 CẬP NHẬT: Upload Ảnh Đại Diện */}
+            <Form.Item
+                name="thumbnail"
+                label="Ảnh đại diện (Thumbnail)"
+                valuePropName="fileList"
+                getValueFromEvent={normFile}
+                rules={[{ required: true, message: 'Vui lòng chọn ảnh đại diện!' }]}
+            >
+                <Upload
+                    name="file"
+                    listType="picture-card"
+                    maxCount={1}
+                    beforeUpload={() => false}
                     accept="image/*"
-                    beforeUpload={(file, fileList) => {
-                        setGalleryFiles(prev => [...prev, file]);
-                        return false; 
-                    }}
                 >
-                    <Button icon={<UploadOutlined />}>Chọn nhiều ảnh từ máy tính</Button>
+                    <div>
+                        <PlusOutlined />
+                        <div style={{ marginTop: 8 }}>Chọn ảnh</div>
+                    </div>
                 </Upload>
-            </Space>
+            </Form.Item>
 
-            <Text type="secondary" italic>Hoặc thêm ảnh bằng URL có sẵn:</Text>
+            <Divider orientation="left">Bộ sưu tập ảnh (Slideshow)</Divider>
+
+            {/* 🔥 CẬP NHẬT: Upload nhiều ảnh từ máy tính */}
+            <Form.Item
+                name="gallery"
+                label="Tải lên ảnh mới (Từ máy tính)"
+                valuePropName="fileList"
+                getValueFromEvent={normFile}
+            >
+                <Upload
+                    name="files"
+                    listType="picture-card"
+                    multiple
+                    beforeUpload={() => false}
+                    accept="image/*"
+                >
+                    <div>
+                        <PlusOutlined />
+                        <div style={{ marginTop: 8 }}>Thêm ảnh</div>
+                    </div>
+                </Upload>
+            </Form.Item>
+
+            {/* Form list giữ nguyên để chứa các ảnh URL từ quá trình Clone */}
+            <Text type="secondary" italic>Hoặc nhập trực tiếp URL ảnh (Dùng khi Clone):</Text>
             <Form.List name="images">
                 {(fields, { add, remove }) => (
                     <>
@@ -365,7 +386,7 @@ const ProductCreate: React.FC = () => {
                                 <MinusCircleOutlined onClick={() => remove(name)} style={{ color: 'red' }} />
                             </Space>
                         ))}
-                        <Form.Item><Button type="dashed" onClick={() => add()} block icon={<PlusOutlined />}>Thêm URL ảnh</Button></Form.Item>
+                        <Form.Item><Button type="dashed" onClick={() => add()} block icon={<PlusOutlined />}>Thêm URL ảnh thủ công</Button></Form.Item>
                     </>
                 )}
             </Form.List>
@@ -381,9 +402,64 @@ const ProductCreate: React.FC = () => {
                         <Card size="small" key={key} style={{ marginBottom: 16, background: '#fafafa' }} extra={<MinusCircleOutlined onClick={() => remove(name)} style={{ color: 'red' }} />} title={`Phiên bản #${name + 1}`}>
                             <Row gutter={16}>
                                 <Col span={12}><Form.Item {...restField} name={[name, 'sku']} label="Mã SKU" rules={[{ required: true }]}><Input /></Form.Item></Col>
+                                {/* 🔥 CẬP NHẬT: GIAO DIỆN TẢI ẢNH BIẾN THỂ TỨC THỜI */}
                                 <Col span={12}>
-                                    <Form.Item {...restField} name={[name, 'imageUrl']} label="URL Ảnh cho phiên bản này (Nếu có)">
-                                        <Input placeholder="Link ảnh cho màu này..." />
+                                    <Form.Item label="Ảnh phiên bản (Màu sắc)">
+                                        <Space.Compact style={{ width: '100%' }}>
+                                            <Form.Item {...restField} name={[name, 'imageUrl']} noStyle>
+                                                <Input placeholder="URL ảnh sẽ hiện ở đây..." style={{ width: 'calc(100% - 105px)' }} />
+                                            </Form.Item>
+
+                                            <Upload
+                                                showUploadList={false}
+                                                accept="image/*"
+                                                customRequest={async (options) => {
+                                                    const { file, onSuccess, onError } = options;
+                                                    const formData = new FormData();
+                                                    formData.append('file', file as File);
+
+                                                    try {
+                                                        const res = await fetch('http://localhost:8080/api/admin/products/upload', {
+                                                            method: 'POST',
+                                                            headers: { 'Authorization': `Bearer ${getAuthToken()}` },
+                                                            body: formData
+                                                        });
+                                                        const data = await res.json();
+
+                                                        if (res.ok && data.status === 'success') {
+                                                            // Up thành công, tự động điền URL trả về vào ô Input của Variant này
+                                                            form.setFieldValue(['variants', name, 'imageUrl'], data.data);
+                                                            onSuccess?.("ok");
+                                                            message.success("Tải ảnh lên Cloudinary thành công!");
+                                                        } else {
+                                                            onError?.(new Error("Lỗi server"));
+                                                            message.error(data.message || "Lỗi tải ảnh");
+                                                        }
+                                                    } catch (err) {
+                                                        onError?.(new Error("Lỗi mạng"));
+                                                        message.error("Lỗi kết nối máy chủ!");
+                                                    }
+                                                }}
+                                            >
+                                                <Button icon={<UploadOutlined />} type="primary">Tải ảnh</Button>
+                                            </Upload>
+                                        </Space.Compact>
+
+                                        {/* Hiển thị ảnh thu nhỏ (Preview) nếu đã có URL */}
+                                        <Form.Item noStyle shouldUpdate={(prevValues, currentValues) => {
+                                            const prevUrl = prevValues.variants?.[name]?.imageUrl;
+                                            const currentUrl = currentValues.variants?.[name]?.imageUrl;
+                                            return prevUrl !== currentUrl;
+                                        }}>
+                                            {() => {
+                                                const currentUrl = form.getFieldValue(['variants', name, 'imageUrl']);
+                                                return currentUrl ? (
+                                                    <div style={{ marginTop: 8 }}>
+                                                        <img src={currentUrl} alt="Preview" style={{ height: 40, width: 40, objectFit: 'cover', borderRadius: 4, border: '1px solid #d9d9d9' }} />
+                                                    </div>
+                                                ) : null;
+                                            }}
+                                        </Form.Item>
                                     </Form.Item>
                                 </Col>
                             </Row>
@@ -408,8 +484,7 @@ const ProductCreate: React.FC = () => {
 
     const tabSpecs = (
         <Space direction="vertical" style={{ display: 'flex', width: '100%' }}>
-            
-            {/* PHẦN 1: HIGHLIGHT SPECS (THÔNG SỐ NỔI BẬT DƯỚI TÊN SP) */}
+
             <Divider orientation="left">Điểm nổi bật (Highlight Specs)</Divider>
             <Form.List name="highlightSpecs">
                 {(fields, { add, remove }) => (
@@ -428,7 +503,6 @@ const ProductCreate: React.FC = () => {
                 )}
             </Form.List>
 
-            {/* PHẦN 2: THÔNG SỐ EAV (DÙNG ĐỂ LÀM BỘ LỌC TÌM KIẾM) */}
             <Divider orientation="left">Thông số cơ sở (EAV - Phục vụ bộ lọc)</Divider>
             {specGroups.map(group => (
                 <Card key={group.id} title={group.name} size="small" style={{ marginBottom: 16, background: '#fafafa' }}>
@@ -444,30 +518,29 @@ const ProductCreate: React.FC = () => {
                 </Card>
             ))}
 
-            {/* PHẦN 3: THÔNG SỐ JSON (HIỂN THỊ BẢNG CHI TIẾT GẬP MỞ TÙY BIẾN) */}
             <Divider orientation="left">Bảng thông số chi tiết (JSON Hiển thị)</Divider>
             <Card bordered={false} style={{ background: '#fafafa' }}>
                 <Text type="secondary" style={{ display: 'block', marginBottom: 16 }}>
                     Thêm các nhóm thông số tự do (VD: Thiết kế, Màn hình, Pin...). Phần này dùng để hiển thị chi tiết cho khách hàng.
                 </Text>
-                
+
                 <Form.List name="specificationsJson">
                     {(groupFields, { add: addGroup, remove: removeGroup }) => (
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                             {groupFields.map((groupField) => (
-                                <Card 
-                                    size="small" 
-                                    key={groupField.key} 
+                                <Card
+                                    size="small"
+                                    key={groupField.key}
                                     title={
-                                        <Form.Item 
-                                            {...groupField} 
-                                            name={[groupField.name, 'title']} 
-                                            style={{ margin: 0 }} 
+                                        <Form.Item
+                                            {...groupField}
+                                            name={[groupField.name, 'title']}
+                                            style={{ margin: 0 }}
                                             rules={[{ required: true, message: 'Nhập tên nhóm!' }]}
                                         >
                                             <Input placeholder="Tên nhóm (VD: Màn hình)" style={{ width: 300 }} />
                                         </Form.Item>
-                                    } 
+                                    }
                                     extra={<Button danger type="text" icon={<MinusCircleOutlined />} onClick={() => removeGroup(groupField.name)}>Xóa nhóm</Button>}
                                     style={{ border: '1px solid #d9d9d9' }}
                                 >
@@ -515,18 +588,18 @@ const ProductCreate: React.FC = () => {
         <div style={{ padding: 24, maxWidth: 1200, margin: '0 auto' }}>
             <Card title={<Title level={4} style={{ margin: 0 }}>Thêm mới Sản phẩm / Phụ kiện</Title>} extra={<Button icon={<ArrowLeftOutlined />} onClick={() => navigate(-1)}>Quay lại</Button>}>
                 <Spin spinning={loading} tip="Đang tải dữ liệu nhân bản...">
-                <Form form={form} layout="vertical" onFinish={onFinish} initialValues={{ images: [{}], variants: [{}] }}>
-                    <Tabs defaultActiveKey="1" items={tabItems} />
-                    <Divider />
-                    <Form.Item style={{ textAlign: 'right', marginBottom: 0 }}>
-                        <Space>
-                            <Button onClick={() => form.resetFields()}>Nhập lại</Button>
-                            <Button type="primary" htmlType="submit" loading={submitting} icon={<SaveOutlined />} size="large">
-                                Lưu sản phẩm
-                            </Button>
-                        </Space>
-                    </Form.Item>
-                </Form>
+                    <Form form={form} layout="vertical" onFinish={onFinish} initialValues={{ images: [{}], variants: [{}] }}>
+                        <Tabs defaultActiveKey="1" items={tabItems} />
+                        <Divider />
+                        <Form.Item style={{ textAlign: 'right', marginBottom: 0 }}>
+                            <Space>
+                                <Button onClick={() => form.resetFields()}>Nhập lại</Button>
+                                <Button type="primary" htmlType="submit" loading={submitting} icon={<SaveOutlined />} size="large">
+                                    Lưu sản phẩm
+                                </Button>
+                            </Space>
+                        </Form.Item>
+                    </Form>
                 </Spin>
             </Card>
         </div>

@@ -27,7 +27,21 @@
   flex: 1;
   font-size: 14px;
 }
+.clear-search-btn {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0 8px; /* Tạo khoảng cách 2 bên để dễ bấm chạm trên mobile */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
 
+/* Đổi màu icon X đậm lên một chút khi di chuột vào (trên PC) */
+.clear-search-btn:hover svg {
+    stroke: #333;
+}
 .search-submit {
   background: #fcebeb; 
   border: none;
@@ -85,16 +99,119 @@
   text-decoration: underline;
   color: #fff;
 }
+.mobile-back-btn {
+  display: none;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0 12px 0 0;
+}
 
-/* --- MOBILE --- */
+/* Phần ô nhập liệu */
+.inner-search form {
+  background: #fff;
+  border-radius: 50px; 
+  display: flex;
+  height: 40px; 
+  align-items: center;
+  padding: 0 4px 0 16px;
+  overflow: hidden;
+  width: 100%;
+}
+
+.search-input {
+  border: none;
+  outline: none;
+  flex: 1;
+  font-size: 14px;
+}
+
+.search-submit {
+  background: #fcebeb; 
+  border: none;
+  width: 34px; 
+  height: 34px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0; 
+}
+
+.search-submit svg {
+    stroke: #cd1818; 
+}
+
+/* Dropdown chung trên PC */
+.search-dropdown-wrapper {
+  position: absolute;
+  top: calc(100% + 10px);
+  left: 0;
+  width: 100%;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  z-index: 1000;
+}
+
+/* --- TRẠNG THÁI KHI CLICK MỞ SEARCH TRÊN MOBILE --- */
 @media (max-width: 768px) {
   .inner-search {
     width: 100%; 
     flex: none;
+    margin: 0 !important; /* Xóa margin để chiếm trọn chiều ngang */
   }
   
-  /* Ẩn hot keys trên mobile cho gọn */
-  .hot-keys {
-    display: none;
+  .inner-search.mobile-active {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%; /* Bằng đúng chiều cao của TopHeader */
+    background-color: #cd1818;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    padding: 0 15px; 
+    box-sizing: border-box;
   }
+
+  .inner-search.mobile-active .mobile-back-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* --- CẬP NHẬT ĐOẠN NÀY ĐỂ FIX LỖI TỤT CONTENT --- */
+  .inner-search.mobile-active .search-dropdown-wrapper {
+    position: fixed; 
+    top: 60px; /* Bằng đúng chiều cao TopHeader. Nếu bị hở/lẹm, bạn chỉnh lại 50px hoặc 55px cho khớp nhé */
+    bottom: 0; /* Ghim chạm đáy màn hình */
+    left: 0;
+    width: 100vw;
+    height: auto; /* Dùng top + bottom an toàn hơn calc(100vh) trên trình duyệt mobile */
+    
+    border-radius: 0;
+    box-shadow: none;
+    overflow-y: auto; 
+    background-color: #f3f4f6; 
+    
+    /* FIX LỖI CONTENT BỊ ÉP XUỐNG ĐÁY: */
+    display: block !important; /* Ép về dạng block để thoát khỏi ảnh hưởng của Flexbox cha */
+    padding: 12px 0 40px 0; /* Tạo khoảng trống phía trên cho thoáng mắt */
+  }
+
+  /* Ép nội dung con trồi lên sát mép trên */
+  .inner-search.mobile-active .search-dropdown-wrapper > * {
+    margin-top: 0 !important;
+  }
+  .search-suggestions-container {
+    
+    top: 0 !important;
+    
+}
+.search-content-dropdown {
+    top: 0 !important; /* Ép về top: 0 để trồi lên sát đỉnh trên */
+}
 }

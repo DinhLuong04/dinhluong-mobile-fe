@@ -44,6 +44,9 @@
 
 /* Responsive Mobile (Dưới 768px) */
 @media (max-width: 768px) {
+    .inner-section1-product-detail {
+        padding: 0 12px;
+    }
     /* Ẩn bản desktop (nằm trong cột trái) */
     .pd-specs-desktop {
         display: none;
@@ -51,6 +54,7 @@
 
     /* Hiện bản mobile (nằm dưới cùng) */
     .pd-specs-mobile {
+        width: 100%;
         display: block;
         padding: 0 15px; /* Căn lề cho đẹp trên mobile */
     }

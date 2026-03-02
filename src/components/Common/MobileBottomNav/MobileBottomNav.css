@@ -1,0 +1,207 @@
+/* =========================================
+   MOBILE BOTTOM NAV (Chỉ hiện trên Mobile)
+========================================= */
+.mobile-bottom-nav {
+    display: none;
+}
+
+/* Bao bọc icon để định vị chấm đỏ */
+.nav-icon-wrapper {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Chấm đỏ hiển thị số (Giống trên giỏ hàng) */
+.nav-badge {
+    position: absolute;
+    top: -4px;
+    right: -8px;
+    background-color: #cb1c22;
+    color: white;
+    font-size: 10px;
+    font-weight: bold;
+    height: 16px;
+    min-width: 16px;
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0 4px;
+    border: 1px solid white;
+}
+
+/* =========================================
+   BOTTOM SHEET: HIỆU ỨNG TRƯỢT THÔNG BÁO
+========================================= */
+.bottom-sheet-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 10000; /* Đẩy z-index lên cao một chút */
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease;
+}
+
+.bottom-sheet-overlay.open {
+    opacity: 1;
+    visibility: visible;
+}
+
+.bottom-sheet-container {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 85vh;
+    background: #f5f5f5;
+    z-index: 11000 !important;
+    border-radius: 20px 20px 0 0;
+    transform: translateY(100%);
+    transition: transform 0.3s cubic-bezier(0.1, 0.8, 0.3, 1);
+    display: flex;
+    flex-direction: column;
+}
+
+.bottom-sheet-container.open {
+    transform: translateY(0);
+}
+
+.bottom-sheet-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px;
+    background-color: #cb1c22;
+    color: white;
+    border-radius: 20px 20px 0 0;
+}
+
+.bottom-sheet-header h3 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.bottom-sheet-close {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 20px;
+    font-weight: bold;
+    cursor: pointer;
+    padding: 0;
+}
+
+.bottom-sheet-content {
+    flex: 1;
+    overflow-y: auto;
+}
+
+.bottom-sheet-content .notification-container {
+    box-shadow: none !important;
+    border: none !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+}
+
+.bottom-sheet-content .notification-header {
+    display: flex !important;
+}
+
+.bottom-sheet-content .notification-list {
+    max-height: none !important;
+}
+
+/* =========================================
+   MEDIA QUERY CHO MOBILE
+========================================= */
+@media (max-width: 768px) {
+    .mobile-bottom-nav {
+        display: block;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background-color: #ffffff;
+        box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.08);
+        border-radius: 20px 20px 0 0;
+        padding-bottom: env(safe-area-inset-bottom, 10px);
+        z-index: 99;
+    }
+
+    .notification-container {
+        width: 100% !important;
+    }
+
+    /* Thanh line trượt màu đỏ ở trên */
+    .nav-indicator-wrapper {
+        width: 25%;
+        position: absolute;
+        top: 0;
+        height: 3px;
+        transition: all 0.3s ease-in-out;
+        
+        /* THÊM 2 DÒNG NÀY ĐỂ CĂN GIỮA TUYỆT ĐỐI */
+        display: flex; 
+        justify-content: center; 
+    }
+
+    /* Chỉnh lại độ dài của thanh đỏ */
+    .nav-indicator {
+        background-color: #cb1c22;
+        height: 100%;
+        width: 50%; /* Bạn có thể tăng giảm số này (VD: 40%, 50%, 60%) để thanh dài ngắn tùy ý */
+        border-radius: 0 0 4px 4px;
+    }
+
+    .nav-list {
+        display: flex;
+        width: 100%;
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    /* Từng nút chiếm đúng 1/4 (25%) khoảng trống */
+    .nav-item {
+        /* Xóa (hoặc comment) dòng flex: 1; cũ đi */
+        /* flex: 1; */ 
+        
+        /* THÊM 2 DÒNG NÀY ĐỂ ÉP KÍCH THƯỚC CHUẨN XÁC 100% */
+        width: 25%; 
+        flex-shrink: 0; 
+
+        /* Các dòng dưới giữ nguyên */
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+        padding: 10px 5px 8px 5px;
+        cursor: pointer;
+        user-select: none;
+        color: #71717a;
+        transition: color 0.3s ease;
+    }
+
+    .nav-item svg {
+        width: 24px;
+        height: 24px;
+    }
+
+    .nav-item-text {
+        font-size: 11px;
+        font-weight: 600;
+        text-align: center;
+    }
+
+    .nav-item.active {
+        color: #cb1c22;
+    }
+
+    body {
+        padding-bottom: 70px !important; /* Tránh nội dung web bị che mất bởi nav */
+    }
+}

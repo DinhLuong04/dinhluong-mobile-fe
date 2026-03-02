@@ -1,7 +1,8 @@
 // src/contexts/CompareProvider.tsx
 import React, { useState, useEffect, type ReactNode } from 'react';
-import type { Product } from '../types/Product.types'; // Đảm bảo đường dẫn đúng
-import { CompareContext } from '../contexts/CompareContext'; // Import Context từ file vừa tạo ở Bước 1
+import { message } from 'antd'; // 1. Import message
+import type { Product } from '../types/Product.types';
+import { CompareContext } from '../contexts/CompareContext';
 
 export const CompareProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   
@@ -26,22 +27,21 @@ export const CompareProvider: React.FC<{ children: ReactNode }> = ({ children })
   }, [compareList]);
 
   const addToCompare = (product: Product) => {
-    setCompareList((prev) => {
-      // 1. Kiểm tra trùng lặp
-      if (prev.some((p) => p.id === product.id)) {
-        alert('Sản phẩm này đã có trong danh sách so sánh!');
-        return prev;
-      }
-      // 2. Kiểm tra số lượng
-      if (prev.length >= 3) {
-        alert('Chỉ được so sánh tối đa 3 sản phẩm!');
-        return prev;
-      }
+    // 2. Di chuyển logic kiểm tra ra NGOÀI hàm setCompareList
+    if (compareList.some((p) => p.id === product.id)) {
+      message.warning('Sản phẩm này đã có trong danh sách so sánh!');
+      return;
+    }
+    
+    if (compareList.length >= 3) {
+      message.warning('Chỉ được so sánh tối đa 3 sản phẩm!');
+      return;
+    }
       
-      // Mở thanh so sánh khi thêm thành công
-      setIsVisible(true);
-      return [...prev, product];
-    });
+    // 3. Nếu hợp lệ thì mới cập nhật state và hiện thông báo
+    setCompareList((prev) => [...prev, product]);
+    setIsVisible(true);
+    message.success('Đã thêm vào danh sách so sánh!'); // Phản hồi UX tốt hơn
   };
 
   const removeFromCompare = (id: number | string) => {

@@ -1,31 +1,38 @@
 import React, { useState } from "react";
 import "./Category.css";
-import { mainCategories, phoneMegaData, type TrendIcon, type SubMenuColumn } from "../../types/menuData";
+import { mainCategories } from "../../types/menuData"; // Giữ import của bạn
 import { useNavigate } from "react-router-dom";
 
-const Category: React.FC = () => {
-  // Lấy activeId mặc định là item đầu tiên
+interface CategoryProps {
+    onClose?: () => void; // Thêm prop onClose
+}
+
+const Category: React.FC<CategoryProps> = ({ onClose }) => {
   const [activeId, setActiveId] = useState<number | null>(
     mainCategories && mainCategories.length > 0 ? mainCategories[0].id : null
   );
-  const navigate = useNavigate(); // 2. Khởi tạo navigate
+  const navigate = useNavigate();
 
-  // 3. Hàm xử lý khi click vào menu
   const handleCategoryClick = (path: string) => {
-      navigate(path); // Chuyển hướng đến /dien-thoai, /phu-kien...
+      navigate(path);
+      if (onClose) onClose(); // Đóng menu sau khi click chọn danh mục
   };
+
   return (
     <div className="container">
       <div className="category-container">
         
-        {/* --- PHẦN 1: DANH SÁCH MENU (GIỮ NGUYÊN) --- */}
+        {/* --- HEADER MOBILE (Chỉ hiện trên mobile) --- */}
+        <div className="mobile-category-header">
+            <h3>Danh mục sản phẩm</h3>
+            <button className="close-menu-btn" onClick={onClose}>✕</button>
+        </div>
+
         <ul className="category-list">
           {mainCategories.map((cat) => (
             <li 
               key={cat.id} 
-              // Kiểm tra active
               className={`category-item ${activeId === cat.id ? "active" : ""}`}
-              // Sự kiện hover để đổi activeId
               onMouseEnter={() => setActiveId(cat.id)}
               onClick={() => handleCategoryClick(cat.path)}
             >
@@ -33,16 +40,10 @@ const Category: React.FC = () => {
                 {cat.label}
               </span>
               {cat.hasMegaMenu && <span className="arrow-right">›</span>}
-
-              {/* Render Mega Menu (Nội dung bên phải khi hover) */}
-             
             </li>
           ))}
         </ul>
 
-        {/* --- PHẦN 2: BANNER DƯỚI CATEGORY (ĐẶT Ở ĐÂY LÀ ĐÚNG) --- */}
-        {/* Nằm ngoài thẻ <ul> nhưng vẫn trong thẻ <div className="category-container"> */}
-        
         <div className="left-menu-banner">
             <a href="#" className="banner-link">
                 <img 

@@ -1,7 +1,7 @@
 import React from "react";
 import type { CartItem as CartItemType, CartComboItem } from "../../../types/Product.types";
 import { QuantityInput } from "../QuantityInput/QuantityInput";
-import "./CartItem.css"; // Import file CSS
+import "./CartItem.css";
 
 interface Props {
   product: CartItemType;
@@ -39,10 +39,6 @@ const ComboItem = ({ item, onToggle }: { item: CartComboItem, onToggle: () => vo
   </div>
 );
 
-
-
-
-
 export const CartItem: React.FC<Props> = ({ 
   product, 
   onUpdateQuantity, 
@@ -63,6 +59,7 @@ export const CartItem: React.FC<Props> = ({
             checked={product.checked}
             onChange={() => onToggleCheck(product.id)}
             className="item-checkbox"
+            disabled={product.stockQuantity === 0} // Không cho chọn nếu hết hàng
           />
         </div>
         
@@ -113,12 +110,22 @@ export const CartItem: React.FC<Props> = ({
               )}
             </div>
 
-            {/* Bộ tăng giảm số lượng */}
-            <div style={{display: 'flex', alignItems: 'center'}}>
+            {/* Bộ tăng giảm số lượng & Cảnh báo tồn kho */}
+            <div style={{display: 'flex', flexDirection: 'column', alignItems: 'flex-end'}}>
               <QuantityInput
                 value={product.quantity}
+                max={product.stockQuantity}
                 onChange={(val) => onUpdateQuantity(product.id, val)}
               />
+              
+              {/* Hiển thị cảnh báo nếu sắp hết hàng hoặc đã hết */}
+              {product.stockQuantity === 0 ? (
+                 <span style={{color: 'red', fontSize: '12px', marginTop: '4px'}}>Đã hết hàng</span>
+              ) : product.stockQuantity <= 5 ? (
+                 <span style={{color: '#FF5C00', fontSize: '12px', marginTop: '4px'}}>
+                   Chỉ còn {product.stockQuantity} chiếc
+                 </span>
+              ) : null}
             </div>
           </div>
         </div>

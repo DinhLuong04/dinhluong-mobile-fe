@@ -6,6 +6,11 @@ import type { ProductFilterParams } from '../../types/Product.types';
 import './SearchPage.css';
 import ViewedProducts from '../../components/ProductDetail/ProductDetailSection/ProductsViewed/ViewedProducts';
 import EmptySearch from '../../components/EmptySearch/EmptySearch';
+import StickyCompareMain from '../../components/StickyCompareBar/StickyCompareMain';
+import Chatbot from '../../components/Chatbot/Chatbot';
+import LiveChat from '../../components/LiveChat/LiveChat';
+import ContactFloating from '../../components/ContactFloating/ContactFloating';
+import MobileBottomNav from '../../components/Common/MobileBottomNav/MobileBottomNav';
 
 const SearchPage: React.FC = () => {
     // 1. Lấy keyword từ URL (VD: ?keyword=iphone)
@@ -66,30 +71,35 @@ const SearchPage: React.FC = () => {
 
                     {/* Layout 2 cột */}
                     <div className="search-body-layout">
-                       
-                            <AdvanceFilter
-                                isOpen={isMobileFilterOpen}
-                                onClose={() => setIsMobileFilterOpen(false)}
-                                onApply={handleApplyFilter}
-                                hideBrand={true}
-                            />
-                       
+
+                        <AdvanceFilter
+                            isOpen={isMobileFilterOpen}
+                            onClose={() => setIsMobileFilterOpen(false)}
+                            onApply={handleApplyFilter}
+                            hideBrand={true}
+                        />
+
 
                         {/* Product List */}
-                        
-                            <ProductList
-                                onOpenFilter={() => setIsMobileFilterOpen(true)}
-                                filters={finalFilters}
-                                onDataFetched={handleDataFetched}
-                            />
-                    
+
+                        <ProductList
+                            onOpenFilter={() => setIsMobileFilterOpen(true)}
+                            filters={finalFilters}
+                            onDataFetched={handleDataFetched}
+                        />
+
                     </div>
                 </>
             )}
 
                 <ViewedProducts /></div>
-
+            <ContactFloating />
+            <LiveChat />
+            <Chatbot />
+             <MobileBottomNav />
+            <StickyCompareMain />
         </div>
+
     );
 };
 

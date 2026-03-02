@@ -44,7 +44,7 @@
     position: sticky;
     top: 16px;
     height: calc(100vh - 32px); 
-    z-index: 10;
+    z-index: 100;
     overflow: hidden;
 }
 

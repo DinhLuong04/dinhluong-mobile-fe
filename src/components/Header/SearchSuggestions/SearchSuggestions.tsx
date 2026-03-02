@@ -6,13 +6,13 @@ import type { Product } from '../../../types/Product.types';
 
 interface SearchSuggestionsProps {
     query: string;
-    products: Product[]; // Nhận danh sách sản phẩm từ API
+    products: Product[]; 
     isLoading: boolean;
+    onClose: () => void; // 1. Thêm prop onClose
 }
 
-const SearchSuggestions: React.FC<SearchSuggestionsProps> = ({ query, products, isLoading }) => {
+const SearchSuggestions: React.FC<SearchSuggestionsProps> = ({ query, products, isLoading, onClose }) => {
     
-    // Giả lập gợi ý từ khóa dựa trên query (Thực tế nên lấy từ API nếu có)
     const suggestedKeywords = query ? [
         { id: 1, text: `${query} cũ` },
         { id: 2, text: `${query} chính hãng` },
@@ -21,7 +21,6 @@ const SearchSuggestions: React.FC<SearchSuggestionsProps> = ({ query, products, 
 
     return (
         <div className="search-suggestions-container">
-            {/* 1. Gợi ý từ khóa */}
             <ul className="keyword-list">
                 <li className="keyword-item highlight">
                     <span className="keyword-icon">🔍</span>
@@ -34,7 +33,6 @@ const SearchSuggestions: React.FC<SearchSuggestionsProps> = ({ query, products, 
                 ))}
             </ul>
 
-            {/* 2. Gợi ý sản phẩm từ API */}
             <div className="product-suggestions">
                 <h5 className="product-suggestions-title">Sản phẩm đề xuất</h5>
                 
@@ -44,8 +42,12 @@ const SearchSuggestions: React.FC<SearchSuggestionsProps> = ({ query, products, 
                     <ul className="product-list-suggestions">
                         {products.map(product => (
                             <li key={product.id} className="product-suggestions-item">
-                                {/* Link tới trang chi tiết (do chưa có trang search) */}
-                                <Link to={`/products/${product.slug}`} className="product-suggestions-link">
+                                {/* 2. Gọi hàm onClose khi người dùng click vào thẻ Link */}
+                                <Link 
+                                    to={`/products/${product.slug}`} 
+                                    className="product-suggestions-link"
+                                    onClick={onClose} 
+                                >
                                     <div className="product-suggestions-image">
                                         <img src={product.image} alt={product.name} />
                                     </div>

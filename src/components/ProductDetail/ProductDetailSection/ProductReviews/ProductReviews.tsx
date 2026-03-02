@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { message } from 'antd'; // 1. IMPORT MESSAGE TỪ ANTD
 import ReviewModal from '../../../Common/ReviewModal/ReviewModal'; 
 import ReplyBox from '../../../Common/ReplyBox/ReplyBox';       
 import './ProductReviews.css';
@@ -104,8 +105,8 @@ const ProductReviews: React.FC<ProductReviewsProps> = ({ slug }) => {
 
     // --- SUBMIT: BÌNH LUẬN TRỰC TIẾP ---
     const handleSubmitComment = async () => {
-        if (!commentContent.trim()) return alert("Vui lòng nhập nội dung!");
-        if (!user) return alert("Bạn cần đăng nhập để gửi bình luận!");
+        if (!commentContent.trim()) return message.warning("Vui lòng nhập nội dung!");
+        if (!user) return message.warning("Bạn cần đăng nhập để gửi bình luận!");
 
         setIsSubmittingComment(true);
         try {
@@ -123,15 +124,15 @@ const ProductReviews: React.FC<ProductReviewsProps> = ({ slug }) => {
 
             const result = await response.json();
             if (response.ok) {
-                alert("Gửi bình luận thành công!");
+                message.success("Gửi bình luận thành công!");
                 setCommentContent(""); setCommentFiles([]);
                 setPage(1); setSelectedFilter(null);
                 fetchReviews();
             } else {
-                alert(result.message || "Có lỗi xảy ra.");
+                message.error(result.message || "Có lỗi xảy ra.");
             }
         } catch (error) {
-            alert("Lỗi kết nối server.");
+            message.error("Lỗi kết nối server.");
         } finally {
             setIsSubmittingComment(false);
         }
@@ -139,7 +140,7 @@ const ProductReviews: React.FC<ProductReviewsProps> = ({ slug }) => {
 
     // --- SUBMIT: ĐÁNH GIÁ (Từ Modal) ---
     const handleModalSubmit = async (rating: number, content: string, files: File[]) => {
-        if (!user) return alert("Bạn cần đăng nhập để đánh giá!");
+        if (!user) return message.warning("Bạn cần đăng nhập để đánh giá!");
 
         try {
             const formData = new FormData();
@@ -156,22 +157,22 @@ const ProductReviews: React.FC<ProductReviewsProps> = ({ slug }) => {
 
             const result = await response.json();
             if (response.ok) {
-                alert("Đánh giá thành công!");
+                message.success("Đánh giá thành công!");
                 setIsModalOpen(false);
                 setPage(1); setSelectedFilter(null);
                 fetchReviews();
             } else {
-                alert(result.message || "Có lỗi xảy ra.");
+                message.error(result.message || "Có lỗi xảy ra.");
             }
         } catch (error) {
-            alert("Lỗi kết nối server.");
+            message.error("Lỗi kết nối server.");
         }
     };
 
     // --- SUBMIT: TRẢ LỜI ---
     const handleReplySubmit = async (commentId: number, content: string) => {
-        if (!user) return alert("Bạn cần đăng nhập để trả lời!");
-        if (!content.trim()) return alert("Vui lòng nhập nội dung trả lời!");
+        if (!user) return message.warning("Bạn cần đăng nhập để trả lời!");
+        if (!content.trim()) return message.warning("Vui lòng nhập nội dung trả lời!");
 
         try {
             const formData = new FormData();
@@ -187,14 +188,14 @@ const ProductReviews: React.FC<ProductReviewsProps> = ({ slug }) => {
 
             const result = await response.json();
             if (response.ok) {
-                alert("Đã gửi phản hồi thành công!");
+                message.success("Đã gửi phản hồi thành công!");
                 setReplyingToId(null); 
                 fetchReviews(); 
             } else {
-                alert(result.message || "Có lỗi xảy ra khi gửi phản hồi.");
+                message.error(result.message || "Có lỗi xảy ra khi gửi phản hồi.");
             }
         } catch (error) {
-            alert("Lỗi kết nối server.");
+            message.error("Lỗi kết nối server.");
         }
     };
 

@@ -1,22 +1,34 @@
 import React from 'react';
-import './FiterBar.css';
+import './FiterBar.css'; // Chú ý: bạn đang gõ sai tên file CSS (FiterBar thay vì FilterBar), hãy chắc chắn tên file đúng nhé!
 
 interface MobileFilterBarProps {
   onOpenFilter: () => void;
+  // THÊM 2 PROPS NÀY ĐỂ NHẬN DỮ LIỆU TỪ COMPONENT CHA
+  activeSort: string;
+  onSortChange: (sortId: string) => void;
 }
 
-const MobileFilterBar: React.FC<MobileFilterBarProps> = ({ onOpenFilter }) => {
+const SORT_OPTIONS = [
+  { id: 'featured', label: 'Nổi bật' },
+  { id: 'price_asc', label: 'Giá tăng dần' },
+  { id: 'price_desc', label: 'Giá giảm dần' },
+  { id: 'installment', label: 'Trả góp 0%' },
+];
+
+const MobileFilterBar: React.FC<MobileFilterBarProps> = ({ onOpenFilter, activeSort, onSortChange }) => {
   return (
     <div className="mobile-filter-bar">
       {/* Bên trái: List các nút sort ngang */}
       <div className="mobile-sort-scroll">
-        <button className="mobile-sort-btn active">
-           Nổi bật
-           {/* Icon tam giác góc nếu cần */}
-        </button>
-        <button className="mobile-sort-btn">Giá tăng dần</button>
-        <button className="mobile-sort-btn">Giá giảm dần</button>
-        <button className="mobile-sort-btn">Trả góp 0%</button>
+        {SORT_OPTIONS.map((option) => (
+          <button
+            key={option.id}
+            className={`mobile-sort-btn ${activeSort === option.id ? 'active' : ''}`}
+            onClick={() => onSortChange(option.id)}
+          >
+            {option.label}
+          </button>
+        ))}
       </div>
 
       {/* Vách ngăn mờ */}

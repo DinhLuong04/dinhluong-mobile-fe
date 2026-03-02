@@ -149,8 +149,8 @@
 /* ================= RESPONSIVE MOBILE ================= */
 @media (max-width: 768px) {
     .contact-floating-wrapper {
-        bottom: 90px;
-        right: 25px;
+        bottom: 129px;
+        right: 23px;
     }
 
     .contact-item .label {

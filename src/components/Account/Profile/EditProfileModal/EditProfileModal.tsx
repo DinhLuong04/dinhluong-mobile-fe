@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { message } from 'antd'; // 1. IMPORT MESSAGE TỪ ANTD
 
 interface EditProfileModalProps {
     isOpen: boolean;
@@ -92,16 +93,18 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({ isOpen, onCl
                 // 2. BẮN TÍN HIỆU ĐỂ ACCOUNT HEADER TỰ ĐỘNG ĐỔI ẢNH
                 window.dispatchEvent(new Event('userUpdated'));
 
-
-                alert("Cập nhật thông tin thành công!");
+                // 3. THAY THẾ ALERT BẰNG MESSAGE.SUCCESS
+                message.success("Cập nhật thông tin thành công!");
                 onSaveSuccess(); // Báo cho Profile.tsx fetch lại dữ liệu mới
                 onClose();       // Đóng modal
             } else {
-                alert(data.message || "Lỗi cập nhật");
+                // 4. THAY THẾ ALERT BẰNG MESSAGE.ERROR
+                message.error(data.message || "Lỗi cập nhật");
             }
         } catch (error) {
             console.error("Lỗi cập nhật profile:", error);
-            alert("Có lỗi xảy ra, vui lòng thử lại sau.");
+            // 5. THAY THẾ ALERT BẰNG MESSAGE.ERROR
+            message.error("Có lỗi xảy ra, vui lòng thử lại sau.");
         } finally {
             setIsLoading(false);
         }

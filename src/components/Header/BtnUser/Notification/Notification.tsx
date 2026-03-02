@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Notification.css';
 
-// Thêm prop setUnreadCount để cập nhật lại số trên cái chuông
 interface NotificationProps {
     onClose: () => void;
     refreshTrigger: number;
@@ -27,7 +26,6 @@ const Notification: React.FC<NotificationProps> = ({ onClose, refreshTrigger, se
         return userStr ? JSON.parse(userStr) : null;
     };
 
-    // Chỉ Fetch danh sách từ API
     useEffect(() => {
         const user = getLocalUser();
         if (!user || !user.token) {
@@ -43,6 +41,10 @@ const Notification: React.FC<NotificationProps> = ({ onClose, refreshTrigger, se
                 const json = await res.json();
                 if (json.status === 'success') {
                     setNotifications(json.data);
+                    
+                    // LÔGIC MỚI: Đếm số thông báo chưa đọc và cập nhật ra ngoài
+                    const unread = json.data.filter((n: NotificationItem) => !n.read).length;
+                    setUnreadCount(unread);
                 }
             } catch (error) {
                 console.error("Lỗi tải thông báo", error);
@@ -52,7 +54,7 @@ const Notification: React.FC<NotificationProps> = ({ onClose, refreshTrigger, se
         };
 
         fetchNotifications();
-    }, [refreshTrigger]); // Load lại khi có trigger mới từ component cha
+    }, [refreshTrigger, setUnreadCount]); // Thêm setUnreadCount vào dependency
 
     // Hàm đánh dấu đã đọc tất cả
     const markAllAsRead = async () => {
@@ -64,17 +66,40 @@ const Notification: React.FC<NotificationProps> = ({ onClose, refreshTrigger, se
                 method: 'PUT',
                 headers: { 'Authorization': `Bearer ${user.token}` }
             });
-            // 1. Chuyển hết thông báo hiện tại thành màu trắng (đã đọc)
             setNotifications(prev => prev.map(n => ({ ...n, read: true })));
-            // 2. Đưa số trên cái chuông (ở component cha) về 0
-            setUnreadCount(0);
+            setUnreadCount(0); // Xóa sạch chấm đỏ
         } catch (error) {
             console.error("Lỗi khi đánh dấu đã đọc", error);
         }
     };
 
-    const handleNotificationClick = (notif: NotificationItem) => {
-        onClose(); 
+    // LÔGIC MỚI: Xử lý khi click vào 1 thông báo
+    const handleNotificationClick = async (notif: NotificationItem) => {
+        onClose(); // Đóng popup ngay lập tức để tạo cảm giác mượt mà
+
+        // Nếu thông báo này CHƯA ĐỌC, gọi API đánh dấu đã đọc
+        if (!notif.read) {
+            const user = getLocalUser();
+            if (user && user.token) {
+                try {
+                    // Gọi API update trạng thái của 1 thông báo (Bạn cần có API này ở Backend)
+                    await fetch(`http://localhost:8080/api/notifications/${notif.id}/read`, {
+                        method: 'PUT',
+                        headers: { 'Authorization': `Bearer ${user.token}` }
+                    });
+                    
+                    // Cập nhật lại state danh sách thông báo (đổi màu trắng)
+                    setNotifications(prev => prev.map(n => n.id === notif.id ? { ...n, read: true } : n));
+                    
+                    // Trừ đi 1 số lượng chưa đọc hiện tại
+                    setUnreadCount(notifications.filter(n => !n.read).length - 1);
+                } catch (error) {
+                    console.error("Lỗi khi đọc 1 thông báo", error);
+                }
+            }
+        }
+
+        // Chuyển hướng trang
         if (notif.type === 'ORDER_STATUS') {
             const match = notif.message.match(/#(\d+)/);
             if (match && match[1]) {
@@ -83,7 +108,7 @@ const Notification: React.FC<NotificationProps> = ({ onClose, refreshTrigger, se
                 navigate(`/member/order`); 
             }
         } else if (notif.type === 'PROMOTION') {
-            navigate('/vouchers'); 
+            navigate('/member/voucher'); // Chỉnh lại theo Route đúng của bạn
         }
     };
 
@@ -96,7 +121,6 @@ const Notification: React.FC<NotificationProps> = ({ onClose, refreshTrigger, se
             border: '1px solid #e0e0e0',
             textAlign: 'left'
         }}>
-            {/* Header thông báo */}
             <div className="notification-header" style={{ 
                 padding: '12px 16px', 
                 borderBottom: '1px solid #eee', 
@@ -106,12 +130,15 @@ const Notification: React.FC<NotificationProps> = ({ onClose, refreshTrigger, se
                 backgroundColor: '#fdfdfd'
             }}>
                 <strong style={{ fontSize: '16px', color: '#333', margin: 0 }}>Thông báo</strong>
-                <span onClick={markAllAsRead} style={{ cursor: 'pointer', color: '#007bff', fontSize: '13px' }}>
-                    Đánh dấu đã đọc tất cả ✓
-                </span>
+                
+                {/* Chỉ hiển thị nút này nếu có ít nhất 1 thông báo chưa đọc */}
+                {notifications.some(n => !n.read) && (
+                    <span onClick={markAllAsRead} style={{ cursor: 'pointer', color: '#cb1c22', fontSize: '13px', fontWeight: '500' }}>
+                        Đánh dấu đã đọc ✓
+                    </span>
+                )}
             </div>
 
-            {/* Danh sách thông báo */}
             <div className="notification-list" style={{ maxHeight: '400px', overflowY: 'auto' }}>
                 {loading ? (
                     <div style={{ padding: '30px', textAlign: 'center', color: '#666' }}>Đang tải thông báo...</div>
@@ -128,7 +155,7 @@ const Notification: React.FC<NotificationProps> = ({ onClose, refreshTrigger, se
                                 borderBottom: '1px solid #f0f0f0', 
                                 display: 'flex', 
                                 gap: '15px',
-                                backgroundColor: notif.read ? '#fff' : '#e6f4ff', // Xanh nhạt nếu chưa đọc
+                                backgroundColor: notif.read ? '#fff' : '#fef2f2', // Thay đổi sang màu đỏ nhạt hợp với FPT/DinhLuongMobile
                                 cursor: 'pointer',
                                 transition: 'background-color 0.2s'
                             }}

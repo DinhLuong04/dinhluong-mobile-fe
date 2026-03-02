@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { message, Modal } from 'antd'; // 🔥 IMPORT THÊM MODAL TỪ ANTD
 import "./Checkout.css";
 import { OrderItem } from "../../components/Checkout/OrderItem/OrderItem";
-
 import { PaymentMethod } from "../../components/Checkout/PaymentMethod/PaymentMethod";
 import { CheckoutSummary } from "../../components/Checkout/CheckoutSummary/CheckoutSummary";
 import { DeliveryForm } from '../../components/Checkout/DeliveryForm/DeliveryForm';
 import { OrdererForm } from '../../components/Checkout/CheckoutForms/CheckoutForms';
+
 const Checkout = () => {
     const navigate = useNavigate();
 
@@ -38,7 +39,7 @@ const Checkout = () => {
             deliveryType: 'shipping',
             receiverAddress: '',
             note: '',
-            paymentMethod: 'cod' // Mặc định là thanh toán khi nhận hàng
+            paymentMethod: 'cod' 
         };
     });
 
@@ -62,12 +63,15 @@ const Checkout = () => {
 
     const handlePlaceOrder = async () => {
         if (!formData.receiverName || !formData.receiverPhone || !formData.receiverAddress) {
-            alert("Vui lòng nhập đầy đủ Họ tên, Số điện thoại và Địa chỉ nhận hàng!");
+            message.warning("Vui lòng nhập đầy đủ Họ tên, Số điện thoại và Địa chỉ nhận hàng!");
             return;
         }
 
         const userStr = localStorage.getItem('user');
-        if (!userStr) { alert("Vui lòng đăng nhập!"); return; }
+        if (!userStr) { 
+            message.error("Vui lòng đăng nhập!"); 
+            return; 
+        }
         const user = JSON.parse(userStr);
 
         try {
@@ -84,6 +88,9 @@ const Checkout = () => {
 
             const token = user.token;
             
+            // Hiển thị loading cho pro
+            const hideLoading = message.loading("Hệ thống đang xử lý đơn hàng của bạn...", 0);
+            
             const res = await fetch('http://localhost:8080/api/orders/place', {
                 method: 'POST',
                 headers: {
@@ -93,25 +100,38 @@ const Checkout = () => {
                 body: JSON.stringify(requestBody)
             });
 
+            hideLoading(); // Ẩn loading khi có kết quả
+
             const data = await res.json();
 
             if (res.ok) {
                 localStorage.removeItem('CHECKOUT_PAYLOAD');
                 
                 if (data.paymentUrl) {
-                    // VNPay -> Chuyển hướng tới cổng thanh toán
                     window.location.href = data.paymentUrl;
                 } else {
-                    // COD -> Chuyển sang trang kết quả với type=cod
                     navigate('/payment/result?type=cod&status=success'); 
                 }
             } else {
-                alert(`Lỗi: ${data.message || 'Có lỗi xảy ra khi tạo đơn'}`);
+                // 🔥 BẮT LỖI TỒN KHO HOẶC CONFLICT TỪ BACKEND
+                if (res.status === 409 || res.status === 400) {
+                    Modal.error({
+                        title: 'Thông báo cập nhật giỏ hàng',
+                        content: data.message || 'Một số sản phẩm trong đơn hàng vừa có sự thay đổi về số lượng tồn kho. Vui lòng quay lại giỏ hàng để kiểm tra!',
+                        okText: 'Quay lại giỏ hàng',
+                        onOk: () => {
+                            localStorage.removeItem('CHECKOUT_PAYLOAD');
+                            navigate('/cart');
+                        }
+                    });
+                } else {
+                    message.error(`Lỗi: ${data.message || 'Có lỗi xảy ra khi tạo đơn'}`);
+                }
             }
 
         } catch (error) {
             console.error("Lỗi đặt hàng", error);
-            alert("Không thể kết nối tới server. Vui lòng thử lại sau!");
+            message.error("Không thể kết nối tới server. Vui lòng thử lại sau!");
         }
     };
 

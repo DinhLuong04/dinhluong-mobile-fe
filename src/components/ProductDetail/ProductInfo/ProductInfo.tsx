@@ -1,13 +1,16 @@
-import React, { useState, useMemo ,useEffect} from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { message } from 'antd'; 
 import "./ProductInfo.css";
 import type { ProductDetail, VariantDetail } from '../../../types/Product.types';
+import { ConfirmModal } from '../../Common/ConfirmModal/ConfirmModal';
 
 interface ProductInfoProps {
     product: ProductDetail;
     onVariantChange?: (variantId: number | null) => void;
 }
 
-const ProductInfo: React.FC<ProductInfoProps> = ({ product,onVariantChange }) => {
+const ProductInfo: React.FC<ProductInfoProps> = ({ product, onVariantChange }) => {
     const { 
         name, 
         storageOptions = [], 
@@ -19,13 +22,17 @@ const ProductInfo: React.FC<ProductInfoProps> = ({ product,onVariantChange }) =>
         price: defaultPrice
     } = product;
 
-  
+    const navigate = useNavigate();
 
-   // 1. State lựa chọn (Input của User)
+    // 1. State lựa chọn (Input của User)
     const [selectedStorage, setSelectedStorage] = useState<string>(() => storageOptions.length > 0 ? storageOptions[0] : "");
     const [selectedColor, setSelectedColor] = useState<string>(() => colorOptions.length > 0 ? colorOptions[0].name : "");
 
-    // 2. Logic tìm biến thể (KHAI BÁO TRƯỚC)
+    // State quản lý hiển thị Modal Yêu cầu đăng nhập
+    const [showLoginModal, setShowLoginModal] = useState(false);
+    const [loginMessage, setLoginMessage] = useState("");
+
+    // 2. Logic tìm biến thể
     const selectedVariant = useMemo(() => {
         if (!variants || variants.length === 0) return null;
         return variants.find((v: VariantDetail) => 
@@ -33,7 +40,7 @@ const ProductInfo: React.FC<ProductInfoProps> = ({ product,onVariantChange }) =>
         );
     }, [selectedStorage, selectedColor, variants]);
 
-    // 3. Bắn ID ra ngoài (SỬ DỤNG SAU KHI ĐÃ KHAI BÁO)
+    // 3. Bắn ID ra ngoài
     useEffect(() => {
         if (onVariantChange) {
            onVariantChange(selectedVariant ? Number(selectedVariant.id) : null);
@@ -61,17 +68,25 @@ const ProductInfo: React.FC<ProductInfoProps> = ({ product,onVariantChange }) =>
         return 0;
     }, [displayPrice, currentOriginalPrice]);
 
-    // THÊM HÀM XỬ LÝ ADD TO CART BÌNH THƯỜNG
+    // ==========================================
+    // HÀM 1: THÊM VÀO GIỎ HÀNG
+    // ==========================================
     const handleAddMainToCart = async () => {
         if (!selectedVariant) {
-            alert("Vui lòng chọn phiên bản sản phẩm!");
+            message.warning("Vui lòng chọn phiên bản sản phẩm!");
+            return;
+        }
+
+        // Kiểm tra hết hàng
+        if (currentStock <= 0) {
+            message.warning("Sản phẩm này hiện đang tạm hết hàng!");
             return;
         }
 
         const userStr = localStorage.getItem('user'); 
         if (!userStr) {
-            alert("Vui lòng đăng nhập để thêm vào giỏ hàng!");
-            window.location.href = "/login";
+            setLoginMessage("Vui lòng đăng nhập để thêm sản phẩm này vào giỏ hàng nhé!");
+            setShowLoginModal(true);
             return;
         }
 
@@ -92,15 +107,84 @@ const ProductInfo: React.FC<ProductInfoProps> = ({ product,onVariantChange }) =>
             });
 
             if (response.ok) {
-                alert("Đã thêm sản phẩm vào giỏ hàng!");
-                // Phát tín hiệu giỏ hàng thay đổi (tuỳ chọn)
+                message.success("Đã thêm sản phẩm vào giỏ hàng!");
                 window.dispatchEvent(new Event('cartUpdated')); 
             } else {
-                alert("Có lỗi xảy ra khi thêm vào giỏ hàng!");
+                message.error("Có lỗi xảy ra khi thêm vào giỏ hàng!");
             }
         } catch (error) {
             console.error("Lỗi:", error);
+            message.error("Lỗi kết nối đến máy chủ!");
         }
+    };
+
+    // ==========================================
+    // HÀM 2: MUA NGAY (CHUYỂN SANG TRANG THANH TOÁN)
+    // ==========================================
+    const handleBuyNow = () => {
+        if (!selectedVariant) {
+            message.warning("Vui lòng chọn phiên bản sản phẩm trước khi mua!");
+            return;
+        }
+
+        // Kiểm tra hết hàng
+        if (currentStock <= 0) {
+            message.warning("Sản phẩm này hiện đang tạm hết hàng!");
+            return;
+        }
+
+        const userStr = localStorage.getItem('user'); 
+        if (!userStr) {
+            setLoginMessage("Vui lòng đăng nhập để tiến hành thanh toán!");
+            setShowLoginModal(true);
+            return;
+        }
+
+        // --- ĐÓNG GÓI DATA GIỐNG HỆT CART ---
+        
+        // 1. Lấy ảnh tương ứng với màu đang chọn
+        const currentImage = colorOptions.find(c => c.name === selectedColor)?.img || "https://placehold.co/100x100";
+
+        // 2. Tạo 1 Item giả lập cấu trúc của CartItemType
+        const buyNowItem = {
+            id: `buy_now_${selectedVariant.id}`, 
+            productVariantId: selectedVariant.id,
+            name: name,
+            colorName: selectedColor,
+            rom: selectedStorage,
+            price: displayPrice,
+            originalPrice: currentOriginalPrice > 0 ? currentOriginalPrice : displayPrice,
+            quantity: 1, 
+            thumbnail: currentImage,
+            checked: true,
+            combos: [] 
+        };
+
+        // 3. Tính toán tiền nong cho UI Summary
+        const calcTotalPrice = buyNowItem.originalPrice;
+        const calcFinalPrice = buyNowItem.price;
+        const calcTotalDiscount = Math.max(0, calcTotalPrice - calcFinalPrice);
+
+        // 4. Lắp ráp Payload chuẩn xác như bên CartPage.tsx
+        const checkoutPayload = {
+            idsForBackend: [{
+                variantId: selectedVariant.id,
+                quantity: 1,
+                comboIds: []
+            }],
+            uiData: {
+                items: [buyNowItem],
+                summary: {
+                    totalPrice: calcTotalPrice,
+                    totalDiscount: calcTotalDiscount,
+                    finalPrice: calcFinalPrice
+                }
+            }
+        };
+
+        // 5. Lưu Payload và bay sang trang Checkout
+        localStorage.setItem('CHECKOUT_PAYLOAD', JSON.stringify(checkoutPayload));
+        navigate('/Checkout'); 
     };
 
     return (
@@ -199,13 +283,22 @@ const ProductInfo: React.FC<ProductInfoProps> = ({ product,onVariantChange }) =>
             )}
 
             <div className="pd-actions">
-                <button className="spb-btn-cart-1 icon-btn" onClick={handleAddMainToCart}>
+                <button 
+                    className={`spb-btn-cart-1 icon-btn ${currentStock <= 0 ? 'disabled' : ''}`} 
+                    onClick={handleAddMainToCart}
+                    disabled={currentStock <= 0}
+                    style={{ opacity: currentStock <= 0 ? 0.5 : 1, cursor: currentStock <= 0 ? 'not-allowed' : 'pointer' }}
+                >
                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 32 32" fill="#cb1c22">
                         <path fillRule="evenodd" clipRule="evenodd" d="M4.33398 4.66699C3.7817 4.66699 3.33398 5.11471 3.33398 5.66699C3.33398 6.21928 3.7817 6.66699 4.33398 6.66699H5.07834C5.27901 6.66699 5.50314 6.75873 5.78429 7.27192C6.07381 7.80039 6.26865 8.50767 6.47625 9.26477L6.47897 9.2747L8.1571 14.9397L9.17109 18.6344C9.60812 20.2269 11.0557 21.3307 12.707 21.3307H20.6378C22.2756 21.3307 23.7148 20.2446 24.1639 18.6696L26.6009 10.1241C26.9044 9.05955 26.105 8.00033 24.9981 8.00033H8.33505C8.28964 8.00033 8.24474 8.00211 8.20041 8.0056C8.03675 7.45123 7.82754 6.83891 7.53831 6.31098C7.10442 5.51898 6.34563 4.66699 5.07834 4.66699H4.33398ZM14.6673 25.3337C14.6673 26.8064 13.4734 28.0003 12.0007 28.0003C10.5279 28.0003 9.33398 26.8064 9.33398 25.3337C9.33398 23.8609 10.5279 22.667 12.0007 22.667C13.4734 22.667 14.6673 23.8609 14.6673 25.3337ZM24.0007 25.3337C24.0007 26.8064 22.8067 28.0003 21.334 28.0003C19.8612 28.0003 18.6673 26.8064 18.6673 25.3337C18.6673 23.8609 19.8612 22.667 21.334 22.667C22.8067 22.667 24.0007 23.8609 24.0007 25.3337ZM16.75 10C17.0922 10 17.3696 10.2774 17.3696 10.6196V14.1304H20.8804C21.2226 14.1304 21.5 14.4078 21.5 14.75C21.5 15.0922 21.2226 15.3696 20.8804 15.3696H17.3696V18.8804C17.3696 19.2226 17.0922 19.5 16.75 19.5C16.4078 19.5 16.1304 19.2226 16.1304 18.8804V15.3696H12.6196C12.2774 15.3696 12 15.0922 12 14.75C12 14.4078 12.2774 14.1304 12.6196 14.1304H16.1304V10.6196C16.1304 10.2774 16.4078 10 16.75 10Z" fill="inherit"></path>
                     </svg>
                 </button>
 
-                <button className={`pd-btn-buy ${currentStock <= 0 ? 'disabled' : ''}`} disabled={currentStock <= 0}>
+                <button 
+                    className={`pd-btn-buy ${currentStock <= 0 ? 'disabled' : ''}`} 
+                    disabled={currentStock <= 0}
+                    onClick={handleBuyNow}
+                >
                     {currentStock > 0 ? "Mua ngay" : "Tạm hết hàng"}
                     <span className="pd-btn-subtext">Giao hàng miễn phí hoặc nhận tại shop</span>
                 </button>
@@ -215,6 +308,24 @@ const ProductInfo: React.FC<ProductInfoProps> = ({ product,onVariantChange }) =>
                     <span className="pd-btn-subtext">Duyệt hồ sơ trong 5 phút</span>
                 </button>
             </div>
+
+            {/* MODAL YÊU CẦU ĐĂNG NHẬP */}
+            <ConfirmModal
+                isOpen={showLoginModal}
+                title="Yêu cầu đăng nhập"
+                message={loginMessage}
+                confirmText="Đăng nhập"    // Sửa chữ nút chính
+                cancelText="Đóng"          // Sửa chữ nút phụ
+                
+                // 1. Khi bấm Đăng nhập -> Tắt modal và bay sang trang Login
+                onConfirm={() => {
+                    setShowLoginModal(false);
+                    navigate('/login'); 
+                }}
+                
+                // 2. Khi bấm Đóng hoặc dấu X -> Chỉ tắt modal, ở lại trang hiện tại
+                onClose={() => setShowLoginModal(false)} 
+            />
         </div>
     );
 };

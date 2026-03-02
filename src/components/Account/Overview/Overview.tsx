@@ -44,7 +44,6 @@ const Overview: React.FC = () => {
 
   // Dữ liệu banner tĩnh
   const banners: Banner[] = [
-    { id: 1, src: "https://cdn2.cellphones.com.vn/690x300/https://dashboard.cellphones.com.vn/storage/banner-warm-up-home.png" },
     { id: 2, src: "https://cdn2.cellphones.com.vn/690x300/https://dashboard.cellphones.com.vn/storage/edu-uu-dai-sinh-vien.jpg" },
     { id: 3, src: "https://cdn2.cellphones.com.vn/690x300/https://dashboard.cellphones.com.vn/storage/dac-quyen-online-home.jpg" },
   ];

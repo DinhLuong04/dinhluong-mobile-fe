@@ -222,34 +222,40 @@
   }
 
   .sort-options {
+    display: flex; /* Gọi lại để hiển thị */
     width: 100%;
-    justify-content: flex-start; /* Căn trái để cuộn */
+    justify-content: flex-start;
     padding-bottom: 0;
+    
+    /* Vuốt mượt mà trên điện thoại */
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch; 
+    
+    /* 🛡️ CÁCH LY Z-INDEX: Đẩy hẳn cụm nút này nổi lên trên cùng để không bị thằng nào đè lên */
+    position: relative;
+   z-index: 99;
   }
 
   .sort-btn {
-    border: 1px solid #e5e7eb; /* Thêm viền cho giống nút bấm mobile */
+    border: 1px solid #e5e7eb;
     padding: 6px 12px;
     background: #fff;
+    /* Đảm bảo nút bắt được sự kiện click */
+    cursor: pointer;
+    position: relative;
+    z-index: 100;
   }
-  
-  /* Ẩn dấu chấm tròn ngăn cách trên mobile */
+
   .sort-btn::before {
     display: none;
   }
-  
-  /* Reset màu chữ nút đầu tiên nếu muốn đồng bộ */
-  .sort-btn:first-child {
-    /* Giữ màu đỏ hoặc reset về xám tùy thiết kế */
-    /* color: #6b7280; */ 
-    font-weight: 500;
-  }
-  
-  /* Style Active trên mobile (Nền đỏ chữ trắng hoặc viền đỏ) */
+
+  /* 🛡️ DÙNG !IMPORTANT: Ép trình duyệt phải đổi màu, bất chấp việc bị Hover ảo trên mobile làm phiền */
   .sort-btn.active {
-    border-color: #cb1c22;
-    color: #cb1c22;
-    background: #fef2f2;
+    border-color: #cb1c22 !important;
+    color: #cb1c22 !important;
+    background: #fef2f2 !important;
+    font-weight: 600 !important;
   }
 
  

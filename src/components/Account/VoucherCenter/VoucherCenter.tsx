@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { message } from 'antd'; // 1. IMPORT MESSAGE TỪ ANTD
 import "./VoucherCenter.css";
 
 // --- Components Con ---
@@ -30,7 +31,8 @@ const VoucherCenter = () => {
     return userStr ? JSON.parse(userStr).token : '';
   };
 
-  const fetchVouchers = async () => {
+  // BỌC HÀM NÀY BẰNG useCallback ĐỂ REACT GHI NHỚ NÓ
+  const fetchVouchers = useCallback(async () => {
     try {
       const token = getToken();
       const headers = { 
@@ -52,11 +54,13 @@ const VoucherCenter = () => {
     } catch (error) {
       console.error("Lỗi khi lấy dữ liệu voucher:", error);
     }
-  };
+  }, []); // <-- Array rỗng vì hàm này không phụ thuộc vào state nào bên ngoài
 
-  useEffect(() => {
-    fetchVouchers();
-  }, []);
+ useEffect(() => {
+    (async () => {
+      await fetchVouchers();
+    })();
+  }, [fetchVouchers]);
 
   const handleCollect = async (voucherId: number) => {
     try {
@@ -69,19 +73,23 @@ const VoucherCenter = () => {
       });
       const data = await res.json();
       
-      alert(data.message);
-      
+      // 2. THAY THẾ ALERT BẰNG MESSAGE TÙY THEO TRẠNG THÁI
       if (data.code === 200) {
+        message.success(data.message || "Thu thập voucher thành công!");
         fetchVouchers();
+      } else {
+        message.warning(data.message || "Không thể thu thập voucher lúc này.");
       }
     } catch (error) {
       console.error("Lỗi thu thập voucher:", error);
+      message.error("Lỗi kết nối đến máy chủ.");
     }
   };
 
   const handleCopy = (code: string) => {
     navigator.clipboard.writeText(code);
-    alert(`Đã sao chép mã: ${code}`);
+    // 3. THAY THẾ ALERT BẰNG MESSAGE.SUCCESS
+    message.success(`Đã sao chép mã: ${code}`);
   };
 
   return (
@@ -149,8 +157,9 @@ const VoucherCenter = () => {
 
                 {/* Cột 2: Mã */}
                 <div className="col-code">
-                  {/* Có thể thêm tag tên mã ở đây nếu muốn hiển thị giống ảnh của bạn */}
-                  {vData?.code}
+                  <span style={{ cursor: 'pointer' }} onClick={() => handleCopy(vData?.code)} title="Bấm để copy mã">
+                    {vData?.code} <IconCopy />
+                  </span>
                 </div>
 
                 {/* Cột 3: Trạng thái */}

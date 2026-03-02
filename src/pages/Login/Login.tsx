@@ -8,6 +8,7 @@ import FacebookLogin from 'react-facebook-login/dist/facebook-login-render-props
 import type { AuthData } from '../../types/auth.types';
 import httpClient from '../../api/axiosClient';
 import { BackToHomeButton } from '../../components/Common/BackToHomeButton/BackToHomeButton';
+import { message, Modal } from 'antd'; // 1. THÊM IMPORT NÀY TỪ ANTD
 
 const FACEBOOK_APP_ID = import.meta.env.VITE_FACEBOOK_CLIENT_ID;
 
@@ -169,15 +170,24 @@ const LoginPage: React.FC = () => {
         newErrors.password = 'Sai mật khẩu. Vui lòng thử lại';
       } else if (lowerMsg.includes('chưa được kích hoạt') || lowerMsg.includes('chưa xác thực')) {
          newErrors.general = msg;
-         const confirmResend = window.confirm("Tài khoản chưa được kích hoạt. Bạn có muốn hệ thống gửi lại email xác thực không?");
-         if(confirmResend) {
-             try {
-                await httpClient.post(`/auth/resend-verification?email=${formData.email}`, null);
-                alert("✅ Đã gửi lại email xác thực! Vui lòng kiểm tra hộp thư.");
-             } catch (err: any) {
-                alert("❌ Gửi lại thất bại: " + (err.response?.data?.message || err.message));
-             }
-         }
+         
+         // 2. THAY THẾ window.confirm VÀ alert BẰNG Modal.confirm VÀ message
+         Modal.confirm({
+            title: 'Tài khoản chưa kích hoạt',
+            content: 'Tài khoản chưa được kích hoạt. Bạn có muốn hệ thống gửi lại email xác thực không?',
+            okText: 'Gửi lại',
+            cancelText: 'Hủy',
+            onOk: async () => {
+                // Đưa logic gửi API vào hàm onOk của Modal
+                try {
+                    await httpClient.post(`/auth/resend-verification?email=${formData.email}`, null);
+                    message.success("Đã gửi lại email xác thực! Vui lòng kiểm tra hộp thư.");
+                } catch (err: any) {
+                    message.error("Gửi lại thất bại: " + (err.response?.data?.message || err.message));
+                }
+            }
+         });
+
       } else {
         newErrors.general = msg;
       }

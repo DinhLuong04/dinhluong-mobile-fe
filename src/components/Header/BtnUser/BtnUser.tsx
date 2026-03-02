@@ -79,7 +79,7 @@ const BtnUser = () => {
             <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
                 
                 {/* 🔔 NÚT CHUÔNG THÔNG BÁO */}
-                <div style={{ position: 'relative' }}>
+                <div className='inner-notification' style={{ position: 'relative' }}>
                     <div onClick={handleNotifToggle} style={{ cursor: 'pointer', padding: '5px' }}>
                         <Badge count={unreadCount} overflowCount={99} size="small" offset={[-2, 2]}>
                             <i className="fa-solid fa-bell" style={{ fontSize: '20px', color: '#fff' }}></i>

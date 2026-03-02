@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { message } from 'antd'; // 1. IMPORT MESSAGE TỪ ANTD
 import '../../../components/ProductDetail/ProductDetailSection/ProductReviews/ProductReviews.css'; 
 
 // Tái sử dụng lại StarIcon từ file của bạn
@@ -33,8 +34,10 @@ const ReviewModal: React.FC<ReviewModalProps> = ({ isOpen, hasPurchased, onClose
     };
 
     const submitForm = () => {
-        if(!content) {
-            alert("Vui lòng nhập nội dung!"); return;
+        // 2. THAY THẾ ALERT BẰNG MESSAGE.WARNING
+        if(!content.trim()) {
+            message.warning("Vui lòng nhập nội dung đánh giá!"); 
+            return;
         }
         onSubmitReview(rating, content, selectedFiles);
     };

@@ -52,25 +52,23 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
           <p className="alert-message">{message}</p>
         </div>
 
-        {/* Footer Buttons */}
+       {/* Footer Buttons */}
         <div className="alert-footer">
             {type === "confirm" && (
                 <button 
                     onClick={handleCancel}
                     className="btn-cancel"
                 >
-                    {cancelText} {/* Hiển thị text động */}
+                    {cancelText}
                 </button>
             )}
             
             <button 
-                onClick={() => {
-                    onConfirm();
-                    onClose(); // Thường confirm xong sẽ đóng luôn
-                }}
+                // SỬA LẠI ĐOẠN NÀY: CHỈ GỌI onConfirm()
+                onClick={() => onConfirm()} 
                 className={`btn-confirm-alert ${type === 'alert' ? 'w-full' : 'w-half'}`}
             >
-                {confirmText} {/* Hiển thị text động */}
+                {confirmText}
             </button>
         </div>
       </div>

@@ -339,9 +339,30 @@ const AdvanceFilter: React.FC<AdvanceFilterProps> = ({ isOpen, onClose, onApply,
         </div>
 
         {/* Footer */}
-        <div className="adv-filter__footer">
-          <button className="adv-filter__btn-reset" onClick={() => window.location.reload()}>Thiết lập lại</button>
-          <button className="adv-filter__btn-apply" onClick={collectAndSubmit}>Áp dụng</button>
+       <div className="adv-filter__footer">
+          <button 
+            className="adv-filter__btn-reset" 
+            onClick={() => {
+                if (onClose) onClose(); // 1. Gọi hàm đóng để kích hoạt animation CSS trượt xuống
+                
+                // 2. Delay 300ms (bằng thời gian CSS transition) rồi mới reload trang cho mượt
+                setTimeout(() => {
+                    window.location.reload();
+                }, 300);
+            }}
+          >
+            Thiết lập lại
+          </button>
+          
+          <button 
+            className="adv-filter__btn-apply" 
+            onClick={() => {
+                collectAndSubmit();     // 1. Gom dữ liệu bộ lọc và truyền lên component cha
+                if (onClose) onClose(); // 2. Gọi hàm đóng để ẩn filter đi
+            }}
+          >
+            Áp dụng
+          </button>
         </div>
       </div>
     </>

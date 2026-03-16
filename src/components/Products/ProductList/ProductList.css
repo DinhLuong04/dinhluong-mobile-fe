@@ -200,7 +200,7 @@
     gap: 10px;
   }
   .sort-options{
-    display: none;
+    display: none !important;
   }
 }
 

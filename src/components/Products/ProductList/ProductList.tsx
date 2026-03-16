@@ -139,17 +139,17 @@ const ProductList: React.FC<ProductListProps> = ({ onOpenFilter, filters, onData
         />
         
         {/* THANH SORT NÀY GIỜ CHỈ DÀNH CHO DESKTOP */}
-        <div className="sort-options desktop-only">
-          {SORT_OPTIONS.map((option) => (
-            <button
-              key={option.id}
-              className={`sort-btn ${activeSort === option.id ? 'active' : ''}`}
-              onClick={() => setActiveSort(option.id)}
-            >
-              {option.label}
-            </button>
-          ))}
-        </div>
+        <div className="sort-options">
+  {SORT_OPTIONS.map((option) => (
+    <button
+      key={option.id}
+      className={`sort-btn ${activeSort === option.id ? 'active' : ''}`}
+      onClick={() => setActiveSort(option.id)}
+    >
+      {option.label}
+    </button>
+  ))}
+</div>
       </div>
 
     

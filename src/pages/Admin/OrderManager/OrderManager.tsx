@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import {
     Table, Tag, Button, Space, Drawer, Descriptions,
-    Select, message, Typography, Card, Input, Tabs, Image, List
+    Select, message, Typography, Card, Input, Tabs, Image, List, Modal
 } from 'antd';
 import { EyeOutlined, SearchOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
@@ -15,8 +15,9 @@ interface OrderItemResponse { id: number; productVariantId: number; productName:
 interface OrderDetailResponse {
     id: number; userId: number; totalAmount: number; status: string;
     createdAt: string; receiverName: string; receiverPhone: string; receiverAddress: string;
-    paymentMethod: string;  // 🔥 MỚI THÊM
-    paymentStatus: string;  // 🔥 MỚI THÊM
+    paymentMethod: string;
+    paymentStatus: string;
+    reason?: string; // 🔥 THÊM TRƯỜNG LÝ DO
     items: OrderItemResponse[];
 }
 interface ApiResponse<T> { status: string; code: number; message: string; data: T; }
@@ -26,7 +27,7 @@ const statusConfig: Record<string, { color: string, label: string }> = {
     PROCESSING: { color: 'blue', label: 'Đang xử lý' },
     SHIPPED: { color: 'cyan', label: 'Đang giao hàng' },
     DELIVERED: { color: 'green', label: 'Giao thành công' },
-    RETURNED: { color: 'volcano', label: 'Chuyển hoàn (Bom)' }, // 🔥 BỔ SUNG TRẠNG THÁI NÀY
+    RETURNED: { color: 'volcano', label: 'Chuyển hoàn' },
     CANCELLED: { color: 'red', label: 'Đã hủy' },
 };
 
@@ -41,6 +42,11 @@ const OrderManager: React.FC = () => {
 
     const [drawerVisible, setDrawerVisible] = useState<boolean>(false);
     const [selectedOrder, setSelectedOrder] = useState<OrderDetailResponse | null>(null);
+
+    // 🔥 STATE CHO MODAL LÝ DO
+    const [isReasonModalVisible, setIsReasonModalVisible] = useState<boolean>(false);
+    const [pendingStatus, setPendingStatus] = useState<string>('');
+    const [reasonText, setReasonText] = useState<string>('');
 
     const getAuthToken = () => {
         const userStr = localStorage.getItem('user');
@@ -79,21 +85,43 @@ const OrderManager: React.FC = () => {
         fetchOrders(activeTab, value);
     };
 
-    const handleUpdateStatus = async (newStatus: string) => {
+    // 🔥 HÀM TRUNG GIAN XỬ LÝ CHỌN TRẠNG THÁI
+    const handleSelectStatus = (newStatus: string) => {
+        if (newStatus === 'CANCELLED' || newStatus === 'RETURNED') {
+            setPendingStatus(newStatus);
+            setReasonText(''); // Reset text
+            setIsReasonModalVisible(true); // Mở Modal nhập lý do
+        } else {
+            handleUpdateStatus(newStatus); // Cập nhật thẳng nếu không phải hủy/hoàn
+        }
+    };
+
+    // 🔥 HÀM GỌI API CẬP NHẬT TRẠNG THÁI VÀ LÝ DO
+    const handleUpdateStatus = async (newStatus: string, reason?: string) => {
         if (!selectedOrder) return;
+
+        if ((newStatus === 'CANCELLED' || newStatus === 'RETURNED') && !reason?.trim()) {
+            message.warning("Vui lòng nhập lý do để lưu vết!");
+            return;
+        }
+
         try {
             const token = getAuthToken();
             const response = await fetch(`http://localhost:8080/api/admin/orders/${selectedOrder.id}/status`, {
                 method: 'PUT',
                 headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
-                body: JSON.stringify({ status: newStatus })
+                body: JSON.stringify({ status: newStatus, reason: reason || null }) // Gửi thêm reason
             });
 
             const json: ApiResponse<any> = await response.json();
             if (response.ok && json.status === 'success') {
                 message.success(`Cập nhật đơn hàng thành công!`);
-                setOrders(prev => prev.map(o => o.id === selectedOrder.id ? { ...o, status: newStatus } : o));
-                setSelectedOrder({ ...selectedOrder, status: newStatus });
+                
+                // Cập nhật State nội bộ
+                setOrders(prev => prev.map(o => o.id === selectedOrder.id ? { ...o, status: newStatus, reason: reason } : o));
+                setSelectedOrder({ ...selectedOrder, status: newStatus, reason: reason });
+                setIsReasonModalVisible(false);
+
                 if (activeTab !== 'ALL') {
                     setDrawerVisible(false);
                     fetchOrders(activeTab, searchText);
@@ -106,8 +134,6 @@ const OrderManager: React.FC = () => {
     const columns = [
         { title: 'Mã ĐH', dataIndex: 'id', key: 'id', render: (text: number) => <strong>#{text}</strong> },
         { title: 'Khách hàng', key: 'customer', render: (_: any, record: OrderDetailResponse) => (<div><div>{record.receiverName}</div><Text type="secondary">{record.receiverPhone}</Text></div>) },
-
-        // 🔥 MỚI THÊM: Cột Thanh toán
         {
             title: 'Thanh toán',
             key: 'payment',
@@ -124,7 +150,6 @@ const OrderManager: React.FC = () => {
                 </Space>
             )
         },
-
         { title: 'Tổng tiền', dataIndex: 'totalAmount', key: 'totalAmount', render: (amount: number) => <Text strong type="danger">{formatCurrency(amount)}</Text> },
         { title: 'Ngày đặt', dataIndex: 'createdAt', key: 'createdAt', render: (date: string) => dayjs(date).format('DD/MM/YYYY HH:mm') },
         {
@@ -183,7 +208,7 @@ const OrderManager: React.FC = () => {
         { key: 'PENDING', label: 'Chờ xác nhận' },
         { key: 'PROCESSING', label: 'Đang xử lý' },
         { key: 'SHIPPED', label: 'Đang giao' },
-        { key: 'RETURNED', label: 'Hoàn hàng (Bom)' },
+        { key: 'RETURNED', label: 'Hoàn hàng ' },
         { key: 'DELIVERED', label: 'Đã giao' }, { key: 'CANCELLED', label: 'Đã hủy' },
     ];
 
@@ -213,39 +238,22 @@ const OrderManager: React.FC = () => {
                                 <Select
                                     value={selectedOrder.status}
                                     style={{ width: 170 }}
-                                    onChange={handleUpdateStatus}
-                                    // 1. Khóa hẳn ô Select nếu đơn đã ở chu trình cuối (Thành công / Hoàn hàng / Hủy)
+                                    onChange={handleSelectStatus} // 🔥 GỌI HÀM KIỂM TRA LÝ DO
                                     disabled={['DELIVERED', 'RETURNED', 'CANCELLED'].includes(selectedOrder.status)}
                                 >
                                     {Object.entries(statusConfig).map(([key, val]) => {
-                                        // Đánh số thứ tự chu trình
                                         const levels: Record<string, number> = {
-                                            PENDING: 1,
-                                            PROCESSING: 2,
-                                            SHIPPED: 3,
-                                            DELIVERED: 4,
-                                            RETURNED: 4, // Hoàn hàng cũng là bước cuối (cùng cấp với Đã giao)
-                                            CANCELLED: 99
+                                            PENDING: 1, PROCESSING: 2, SHIPPED: 3, DELIVERED: 4, RETURNED: 4, CANCELLED: 99
                                         };
-
                                         const currentLevel = levels[selectedOrder.status] || 0;
                                         const optionLevel = levels[key] || 0;
 
-                                        // 2. Không cho phép chọn lùi trạng thái
                                         const isBackward = optionLevel < currentLevel;
-
-                                        // 3. Xử lý Logic rẽ nhánh tại bước SHIPPED (Bước 3):
-                                        // - Nếu đang giao (SHIPPED): KHÔNG cho phép Hủy (CANCELLED), chỉ được Hoàn (RETURNED) hoặc Thành công (DELIVERED)
-                                        // - Nếu chưa giao (PENDING/PROCESSING): KHÔNG cho phép Hoàn (RETURNED), chỉ được Hủy (CANCELLED)
                                         const isInvalidCancel = key === 'CANCELLED' && selectedOrder.status === 'SHIPPED';
                                         const isInvalidReturn = key === 'RETURNED' && selectedOrder.status !== 'SHIPPED';
 
                                         return (
-                                            <Option
-                                                key={key}
-                                                value={key}
-                                                disabled={isBackward || isInvalidCancel || isInvalidReturn}
-                                            >
+                                            <Option key={key} value={key} disabled={isBackward || isInvalidCancel || isInvalidReturn}>
                                                 {val.label}
                                             </Option>
                                         );
@@ -259,8 +267,7 @@ const OrderManager: React.FC = () => {
                             <Descriptions.Item label="Điện thoại">{selectedOrder.receiverPhone}</Descriptions.Item>
                             <Descriptions.Item label="Địa chỉ">{selectedOrder.receiverAddress}</Descriptions.Item>
                             <Descriptions.Item label="Ngày đặt">{dayjs(selectedOrder.createdAt).format('DD/MM/YYYY HH:mm')}</Descriptions.Item>
-
-                            {/* 🔥 MỚI THÊM: Hàng thanh toán trong Drawer */}
+                            
                             <Descriptions.Item label="Thanh toán">
                                 <Space>
                                     <Tag color={selectedOrder.paymentMethod === 'VNPAY' ? 'blue' : 'default'} style={{ margin: 0 }}>
@@ -274,6 +281,12 @@ const OrderManager: React.FC = () => {
                                 </Space>
                             </Descriptions.Item>
 
+                            {/* 🔥 HIỂN THỊ LÝ DO NẾU ĐƠN BỊ HỦY / HOÀN */}
+                            {selectedOrder.reason && (['CANCELLED', 'RETURNED'].includes(selectedOrder.status)) && (
+                                <Descriptions.Item label="Lý do">
+                                    <Text type="danger" strong>{selectedOrder.reason}</Text>
+                                </Descriptions.Item>
+                            )}
                         </Descriptions>
 
                         <div>
@@ -282,7 +295,7 @@ const OrderManager: React.FC = () => {
                                 columns={itemColumns} dataSource={selectedOrder.items} rowKey="id" pagination={false} size="small"
                                 expandable={{
                                     expandedRowRender,
-                                    rowExpandable: record => record.comboItems && record.comboItems.length > 0,
+                                    rowExpandable: record => !!(record.comboItems && record.comboItems.length > 0),
                                     defaultExpandAllRows: true
                                 }}
                             />
@@ -293,6 +306,27 @@ const OrderManager: React.FC = () => {
                     </Space>
                 )}
             </Drawer>
+
+            {/* 🔥 MODAL NHẬP LÝ DO HỦY/HOÀN */}
+            <Modal
+                title={pendingStatus === 'CANCELLED' ? "Xác nhận Hủy đơn hàng" : "Xác nhận Hoàn đơn hàng"}
+                open={isReasonModalVisible}
+                onOk={() => handleUpdateStatus(pendingStatus, reasonText)}
+                onCancel={() => setIsReasonModalVisible(false)}
+                okText="Xác nhận"
+                cancelText="Hủy bỏ"
+                okButtonProps={{ danger: true }}
+            >
+                <div style={{ marginBottom: 8 }}>
+                    <Text>Vui lòng nhập lý do để lưu lại hệ thống:</Text>
+                </div>
+                <Input.TextArea
+                    rows={4}
+                    placeholder={pendingStatus === 'CANCELLED' ? "Ví dụ: Khách gọi điện yêu cầu hủy, hết hàng..." : "Ví dụ: Khách bom hàng, Hàng bị vỡ khi ship..."}
+                    value={reasonText}
+                    onChange={(e) => setReasonText(e.target.value)}
+                />
+            </Modal>
         </div>
     );
 };

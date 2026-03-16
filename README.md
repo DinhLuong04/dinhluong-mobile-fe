@@ -1,73 +1,138 @@
-# React + TypeScript + Vite
+DinhLuong Mobile 
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Frontend của DinhLuong Mobile — một nền tảng thương mại điện tử bán điện thoại và phụ kiện, cung cấp giao diện người dùng cho việc duyệt sản phẩm, mua hàng và quản lý tài khoản.
+Ứng dụng được xây dựng bằng React, TypeScript và Vite, kết nối với hệ thống backend thông qua RESTful API.
 
-Currently, two official plugins are available:
+🧩 Tổng quan
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+Ngôn ngữ: TypeScript
+Framework: React 18
+Build Tool: Vite
+Routing: React Router
+HTTP Client: Axios
+State Management: React Context API
+Styling: Twind (CSS-in-JS) + CSS Modules
+Deployment: Vercel
 
-## React Compiler
+Hệ thống cung cấp giao diện cho các chức năng như duyệt sản phẩm, quản lý giỏ hàng, thanh toán và quản trị hệ thống.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+🚀 Tính năng chính
 
-## Expanding the ESLint configuration
+📱 Danh mục & sản phẩm
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+Xem danh sách sản phẩm theo danh mục
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+Xem chi tiết sản phẩm
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+Lọc và tìm kiếm sản phẩm
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+🛒 Giỏ hàng & thanh toán
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Thêm / xóa sản phẩm khỏi giỏ hàng
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+Cập nhật số lượng
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+Tiến hành thanh toán
+
+👤 Quản lý tài khoản
+
+Đăng ký / đăng nhập
+
+Cập nhật thông tin cá nhân
+
+Xem lịch sử đơn hàng
+
+Quản lý voucher
+
+⚖️ So sánh sản phẩm
+
+So sánh nhiều sản phẩm cùng lúc để hỗ trợ quyết định mua hàng
+
+💬 Hỗ trợ khách hàng
+
+Chatbot hỗ trợ
+
+Live chat với hệ thống
+
+🛠 Admin Dashboard
+
+Quản lý sản phẩm
+
+Quản lý đơn hàng
+
+Quản lý người dùng
+
+📱 Responsive Design
+
+Tương thích trên mobile, tablet và desktop
+
+🛠️ Yêu cầu hệ thống
+
+Node.js: 16+
+Package Manager: npm hoặc yarn
+
+Kiểm tra phiên bản:
+
+node -v
+npm -v
+▶️ Cài đặt & chạy dự án
+Clone repository
+git clone <repository-url>
+cd shop-ecommerce
+Cài đặt dependencies
+npm install
+Chạy ở môi trường development
+npm run dev
+
+Ứng dụng chạy tại:
+
+http://localhost:5173
+📦 Build production
+npm run build
+
+Preview production build:
+
+npm run preview
+📂 Cấu trúc dự án
+src
+│
+├── api/              # Axios client và cấu hình API
+├── assets/           # Hình ảnh, CSS
+├── components/       # Component tái sử dụng
+│
+├── contexts/         # React Context (state management)
+├── hooks/            # Custom hooks
+│
+├── layouts/          # Layout của trang
+├── pages/            # Các trang chính
+│
+├── routes/           # Cấu hình routing
+├── service/          # API services
+├── types/            # TypeScript types
+└── utils/            # Hàm tiện ích
+🔗 API & Backend
+
+Frontend kết nối với hệ thống Backend REST API.
+
+Cấu hình API nằm tại:
+
+src/config/api.config.ts
+src/api/axiosClient.ts
+
+Axios được sử dụng để xử lý:
+
+HTTP Requests
+
+Interceptors
+
+Authentication token
+
+
+
+📧 Liên hệ
+
+Ban Dinh Luong
+
+Email: bandinhluong220204@gmail.com
+
+GitHub: https://github.com/DinhLuong04

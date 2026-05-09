@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { message, Modal } from 'antd'; // 1. IMPORT MESSAGE VÀ MODAL TỪ ANTD
+import { message, Modal, Input } from 'antd'; // 🔥 IMPORT THÊM INPUT
 import "./OrderDetail.css";
 
 // --- ĐỊNH NGHĨA TYPE DỮ LIỆU ---
@@ -15,7 +15,7 @@ interface OrderItemResponse {
   id: number;
   productVariantId: number;
   productName: string;
-  slug: string; // <-- Đã thêm slug
+  slug: string;
   variantName?: string;
   imageUrl: string;
   quantity: number;
@@ -60,6 +60,10 @@ const OrderDetail: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
+  // 🔥 STATE CHO MODAL HỦY ĐƠN
+  const [isCancelModalVisible, setIsCancelModalVisible] = useState<boolean>(false);
+  const [cancelReason, setCancelReason] = useState<string>('');
+
   useEffect(() => {
     const fetchOrderDetail = async () => {
       try {
@@ -93,38 +97,46 @@ const OrderDetail: React.FC = () => {
     if (id) fetchOrderDetail();
   }, [id]);
 
-  // --- HÀM HỦY ĐƠN HÀNG ĐÃ ĐƯỢC NÂNG CẤP ---
-  const handleCancelOrder = () => {
-    if (!order) return;
+  // 🔥 HÀM MỞ MODAL
+  const showCancelModal = () => {
+    setCancelReason(''); // Clear lý do cũ
+    setIsCancelModalVisible(true);
+  };
 
-    // 2. SỬ DỤNG MODAL.CONFIRM
-    Modal.confirm({
-      title: 'Xác nhận hủy đơn hàng',
-      content: `Bạn có chắc chắn muốn hủy đơn hàng #${order.id} không?`,
-      okText: 'Xác nhận hủy',
-      cancelText: 'Đóng',
-      okType: 'danger',
-      onOk: async () => {
-        try {
-            const localUserStr = localStorage.getItem('user');
-            const token = localUserStr ? JSON.parse(localUserStr).token : null;
-            const response = await fetch(`http://localhost:8080/api/orders/${order.id}/cancel`, {
-                method: 'PUT',
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
-            const json = await response.json();
-            
-            if (response.ok && json.status === 'success') {
-                message.success("Hủy đơn hàng thành công!"); // 3. THAY THẾ ALERT
-                setOrder({ ...order, status: 'CANCELLED' }); // Cập nhật UI
-            } else {
-                message.error(json.message || "Không thể hủy đơn hàng lúc này."); // 4. THAY THẾ ALERT
-            }
-        } catch (error) {
-            message.error("Lỗi kết nối máy chủ."); // 5. THAY THẾ ALERT
+  // 🔥 HÀM XÁC NHẬN HỦY VÀ GỌI API (Có truyền reason)
+  const confirmCancelOrder = async () => {
+    if (!order) return;
+    
+    if (!cancelReason.trim()) {
+      message.warning("Vui lòng nhập lý do hủy đơn!");
+      return;
+    }
+
+    try {
+        const localUserStr = localStorage.getItem('user');
+        const token = localUserStr ? JSON.parse(localUserStr).token : null;
+        
+        const response = await fetch(`http://localhost:8080/api/orders/${order.id}/cancel`, {
+            method: 'PUT',
+            headers: { 
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json' // Bắt buộc khai báo JSON để gửi body
+            },
+            body: JSON.stringify({ reason: cancelReason }) // Gửi reason xuống Backend
+        });
+        
+        const json = await response.json();
+        
+        if (response.ok && json.status === 'success') {
+            message.success("Hủy đơn hàng thành công!"); 
+            setOrder({ ...order, status: 'CANCELLED' }); // Cập nhật lại UI lập tức
+            setIsCancelModalVisible(false); // Đóng Modal
+        } else {
+            message.error(json.message || "Không thể hủy đơn hàng lúc này."); 
         }
-      }
-    });
+    } catch (error) {
+        message.error("Lỗi kết nối máy chủ."); 
+    }
   };
 
   // --- RENDERING TẠM THỜI ---
@@ -194,7 +206,7 @@ const OrderDetail: React.FC = () => {
         </div>
       </div>
 
-      {/* Danh sách sản phẩm (MỖI SP ĐỀU CÓ NÚT BẤM) */}
+      {/* Danh sách sản phẩm */}
       <div className="od-card">
         <h3 className="od-card-title">Sản phẩm đã mua</h3>
         <div className="od-product-list">
@@ -228,7 +240,6 @@ const OrderDetail: React.FC = () => {
                     {Number(item.priceAtPurchase).toLocaleString('vi-VN')}đ
                   </div>
                   
-                  {/* 🔥 CÁC NÚT ĐÁNH GIÁ / MUA LẠI NẰM CẠNH MỖI SẢN PHẨM */}
                   {order.status === 'DELIVERED' && (
                     <div style={{ display: 'flex', gap: '8px', marginTop: '10px' }}>
                        <button 
@@ -279,12 +290,34 @@ const OrderDetail: React.FC = () => {
         <div className="od-total-amount">{Number(order.totalAmount).toLocaleString('vi-VN')}đ</div>
       </div>
 
-      {/* THANH CÔNG CỤ Ở ĐÁY TRANG (Chỉ còn nút Hủy) */}
+      {/* THANH CÔNG CỤ Ở ĐÁY TRANG */}
       <div className="od-card od-action-card" style={{ display: 'flex', justifyContent: 'flex-end', gap: '15px', marginTop: '15px' }}>
           {order.status === 'PENDING' && (
-              <button className="oh-btn oh-btn-danger" onClick={handleCancelOrder}>Hủy đơn hàng</button>
+              // 🔥 GỌI HÀM MỞ MODAL THAY VÌ CONFIRM
+              <button className="oh-btn oh-btn-danger" onClick={showCancelModal}>Hủy đơn hàng</button>
           )}
       </div>
+
+      {/* 🔥 MODAL NHẬP LÝ DO HỦY ĐƠN */}
+      <Modal
+        title="Xác nhận Hủy đơn hàng"
+        open={isCancelModalVisible}
+        onOk={confirmCancelOrder}
+        onCancel={() => setIsCancelModalVisible(false)}
+        okText="Xác nhận hủy"
+        cancelText="Đóng"
+        okButtonProps={{ danger: true }}
+      >
+        <div style={{ marginBottom: 10 }}>
+          <p>Vui lòng cho chúng tôi biết lý do bạn hủy đơn hàng này để cải thiện dịch vụ:</p>
+        </div>
+        <Input.TextArea
+          rows={4}
+          placeholder="Ví dụ: Tôi muốn thay đổi địa chỉ giao hàng, Tôi đổi ý..."
+          value={cancelReason}
+          onChange={(e) => setCancelReason(e.target.value)}
+        />
+      </Modal>
 
     </div>
   );

@@ -89,12 +89,12 @@ const LoginPage: React.FC = () => {
     login(userData); // Gọi hàm từ useAuth context
     window.dispatchEvent(new Event('cartUpdated'));
 
-    // Điều hướng dựa trên Role
-    if (userRole === 'ADMIN' || userRole === 'ROLE_ADMIN') {
-        navigate('/admin');
-    } else {
+    // // Điều hướng dựa trên Role
+    // if (userRole === 'ADMIN' || userRole === 'ROLE_ADMIN') {
+    //     navigate('/admin');
+    // } else {
         navigate('/');
-    }
+    
 };
 
   const loginGoogleAction = useGoogleLogin({

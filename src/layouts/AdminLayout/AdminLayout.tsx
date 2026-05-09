@@ -33,7 +33,7 @@ const AdminLayout: React.FC = () => {
 
     const handleLogout = () => {
         logout();
-        navigate('/login');
+        window.location.href = 'http://localhost:8080/admin/login';
     };
 
     // --- CẤU TRÚC MENU DỰA TRÊN DATABASE ---

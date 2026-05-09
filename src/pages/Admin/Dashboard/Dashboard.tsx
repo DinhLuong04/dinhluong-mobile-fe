@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { Button, message } from 'antd';
+import { DownloadOutlined } from '@ant-design/icons';
 import { Card, Col, Row, Statistic, Table, Tag, Typography, List, Avatar, Progress, Space, Select, DatePicker, Spin, Empty } from 'antd';
 import {
     DollarOutlined, CheckCircleOutlined, UserAddOutlined, BellOutlined,
@@ -8,7 +10,7 @@ import {
     LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer,
     PieChart, Pie, Cell, Legend, BarChart, Bar, RadialBarChart, RadialBar
 } from 'recharts';
-
+import { dashboardService } from '../../../service/dashboard.service';
 const { Title, Text } = Typography;
 const { Option } = Select;
 const { RangePicker } = DatePicker;
@@ -40,6 +42,7 @@ const formatVND = (value: number | string) => new Intl.NumberFormat('vi-VN', { s
 const Dashboard: React.FC = () => {
     const [data, setData] = useState<DashboardData | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(true);
+    const [isExporting, setIsExporting] = useState<boolean>(false);
     const [timeFilter, setTimeFilter] = useState<string>('this_month');
     const getAuthToken = () => {
         const user = localStorage.getItem('user');
@@ -48,35 +51,50 @@ const Dashboard: React.FC = () => {
     // ==========================================
     // 3. GIẢ LẬP GỌI API THEO FILTER
     // ==========================================
+ const handleExportExcel = async () => {
+    try {
+        setIsExporting(true);
 
+        // Gọi service
+        const blob = await dashboardService.exportExcel(timeFilter);
+
+        // Tạo link tải file
+        const url = window.URL.createObjectURL(blob);
+
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `dashboard_${timeFilter}.xlsx`;
+
+        document.body.appendChild(link);
+        link.click();
+
+        // Cleanup
+        link.remove();
+        window.URL.revokeObjectURL(url);
+
+        message.success('Xuất Excel thành công!');
+    } catch (error: any) {
+        console.error(error);
+        message.error(error.message || 'Không thể xuất Excel!');
+    } finally {
+        setIsExporting(false);
+    }
+};
     useEffect(() => {
-        const fetchDashboardData = async () => {
+       const fetchDashboardData = async () => {
             setIsLoading(true);
             try {
-                // Gọi API thật
-                const response = await fetch(`http://localhost:8080/api/admin/dashboard?time=${timeFilter}`, {
-                    method: 'GET',
-                    headers: { 
-                        'Authorization': `Bearer ${getAuthToken()}` 
-                    }
-                });
-
-                const json = await response.json();
-
-                // Kiểm tra status từ server trả về
-                if (response.ok && json.status === 'success') {
-                    setData(json.data); // Cập nhật state bằng dữ liệu thật
-                } else {
-                    console.error("Lỗi từ server:", json.message);
-                    // Có thể thêm message.error(json.message) của Antd ở đây nếu muốn báo lỗi lên UI
-                }
-            } catch (error) {
-                console.error("Lỗi kết nối khi tải dữ liệu Dashboard:", error);
+                // Code gọn gàng hơn rất nhiều
+                const dashboardData = await dashboardService.getDashboardData(timeFilter);
+                setData(dashboardData);
+            } catch (error: any) {
+                console.error("Lỗi:", error);
+                message.error(error.message || 'Không thể tải dữ liệu!');
             } finally {
                 setIsLoading(false);
             }
         };
-
+       
         fetchDashboardData();
     }, [timeFilter]); // Gọi lại API mỗi khi timeFilter thay đổi
 
@@ -101,6 +119,18 @@ const Dashboard: React.FC = () => {
                         <Option value="this_year">Năm nay</Option>
                         <Option value="custom">Tùy chỉnh...</Option>
                     </Select>
+
+                    {/* Thêm nút Xuất Excel vào đây */}
+    <Button 
+        type="primary" 
+        icon={<DownloadOutlined />} 
+        size="large" 
+        onClick={handleExportExcel}
+        loading={isExporting}
+        style={{ backgroundColor: '#107c41', borderColor: '#107c41' }} // Màu xanh chuẩn của Excel
+    >
+        Xuất Excel
+    </Button>
                 </Space>
             </div>
 

@@ -1,34 +1,31 @@
-// src/utils/viewedProductHelper.ts
-import type { Product } from '../types/Product.types';
+// src/utils/viewedHistory.ts
+import type { ProductCardResponse } from '../types/product.types';
 
 const VIEWED_KEY = 'dlm_viewed_products';
 const MAX_ITEMS = 10; 
 
-// Hàm dùng để THÊM vào LocalStorage (Gọi khi click)
-export const addProductToViewedHistory = (product: Product) => {
+export const addProductToViewedHistory = (product: ProductCardResponse) => {
     try {
         const stored = localStorage.getItem(VIEWED_KEY);
-        let currentList: Product[] = [];
+        let currentList: ProductCardResponse[] = [];
         
         if (stored) {
             currentList = JSON.parse(stored);
-        }
-
-        // 1. Xóa sản phẩm nếu đã tồn tại (để chốc nữa đẩy nó lên vị trí đầu tiên)
+        }    
+        
+        // Lọc bỏ sản phẩm nếu đã tồn tại để tránh trùng lặp
         const filteredList = currentList.filter(p => p.id !== product.id);
-
-        // 2. Thêm vào đầu mảng và chỉ lấy tối đa 10 sản phẩm
+        
+        // Đẩy sản phẩm mới nhất lên đầu và cắt giữ lại tối đa MAX_ITEMS
         const newList = [product, ...filteredList].slice(0, MAX_ITEMS);
 
-        // 3. Lưu ngược lại vào Local Storage
         localStorage.setItem(VIEWED_KEY, JSON.stringify(newList));
     } catch (error) {
         console.error("Lỗi khi lưu sản phẩm đã xem:", error);
     }
 };
 
-// Hàm dùng để ĐỌC từ LocalStorage (Gọi khi hiển thị)
-export const getViewedProductsFromHistory = (): Product[] => {
+export const getViewedProductsFromHistory = (): ProductCardResponse[] => {
     try {
         const stored = localStorage.getItem(VIEWED_KEY);
         if (stored) {

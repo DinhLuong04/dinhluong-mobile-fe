@@ -1,102 +1,24 @@
-// src/components/Header/Search/SearchBar.tsx
-import React, { useState, useRef, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom'; 
+import React from 'react';
 import './SearchBar.css';
 import SearchContent from '../SearchContent/SearchContent';
 import SearchSuggestions from '../SearchSuggestions/SearchSuggestions';
-import useDebounce from '../../../hooks/useDebounce'; 
-import { productService } from '../../../service/productService';
-import type { Product } from '../../../types/Product.types';
+import { useSearchBar } from './useSearchBar';
 
 const SearchBar: React.FC = () => {
-    const [isSearchOpen, setIsSearchOpen] = useState(false);
-    const [searchQuery, setSearchQuery] = useState('');
-    const [suggestedProducts, setSuggestedProducts] = useState<Product[]>([]);
-    const [isLoading, setIsLoading] = useState(false);
-
-    const debouncedQuery = useDebounce(searchQuery, 500);
-    const searchRef = useRef<HTMLDivElement>(null);
-    // Thêm ref cho input để focus lại sau khi bấm nút X
-    const inputRef = useRef<HTMLInputElement>(null);
-    const navigate = useNavigate();
-
-    // Khóa cuộn trang khi mở search full màn hình trên Mobile
-    useEffect(() => {
-        const isMobile = window.innerWidth <= 768;
-        if (isSearchOpen && isMobile) {
-            document.body.style.overflow = 'hidden';
-        } else {
-            document.body.style.overflow = 'auto';
-        }
-        return () => { document.body.style.overflow = 'auto'; };
-    }, [isSearchOpen]);
-
-    useEffect(() => {
-        if (!debouncedQuery.trim()) {
-            setSuggestedProducts([]);
-            return;
-        }
-
-        const fetchSuggestions = async () => {
-            setIsLoading(true);
-            try {
-                const products = await productService.getSuggestions(debouncedQuery);
-                setSuggestedProducts(products);
-            } catch (error) {
-                console.error(error);
-            } finally {
-                setIsLoading(false);
-            }
-        };
-
-        fetchSuggestions();
-    }, [debouncedQuery]);
-
-    useEffect(() => {
-        const handleClickOutside = (event: MouseEvent) => {
-            if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
-                setIsSearchOpen(false);
-            }
-        };
-        document.addEventListener('mousedown', handleClickOutside);
-        return () => document.removeEventListener('mousedown', handleClickOutside);
-    }, []);
-
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setSearchQuery(e.target.value);
-        if (!isSearchOpen) setIsSearchOpen(true);
-    };
-
-    const handleSearchSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        if (!searchQuery.trim()) return;
-
-        const currentHistory = JSON.parse(localStorage.getItem('search_history') || '[]');
-        if (!currentHistory.includes(searchQuery)) {
-            const newHistory = [searchQuery, ...currentHistory].slice(0, 5);
-            localStorage.setItem('search_history', JSON.stringify(newHistory));
-        }
-
-        setIsSearchOpen(false);
-        navigate(`/search?keyword=${searchQuery}`); 
-    };
-
-    const handleKeywordSelect = (keyword: string) => {
-        setSearchQuery(keyword);
-        setIsSearchOpen(true);
-    };
-
-    // Hàm đóng search khi bấm nút Back trên mobile
-    const handleCloseSearch = () => {
-        setIsSearchOpen(false);
-        setSearchQuery(''); 
-    };
-
-    // Hàm xóa chữ khi bấm nút X
-    const handleClearSearch = () => {
-        setSearchQuery('');
-        inputRef.current?.focus(); // Tự động trỏ nháy chuột lại vào ô input
-    };
+    const {
+        isSearchOpen,
+        setIsSearchOpen,
+        searchQuery,
+        suggestedProducts,
+        isLoading,
+        searchRef,
+        inputRef,
+        handleInputChange,
+        handleSearchSubmit,
+        handleKeywordSelect,
+        handleCloseSearch,
+        handleClearSearch
+    } = useSearchBar();
 
     return (
         <div id='search' className={`inner-search ${isSearchOpen ? 'mobile-active' : ''}`} ref={searchRef}>
@@ -154,6 +76,6 @@ const SearchBar: React.FC = () => {
             )}
         </div>
     );
-}
+};
 
 export default SearchBar;

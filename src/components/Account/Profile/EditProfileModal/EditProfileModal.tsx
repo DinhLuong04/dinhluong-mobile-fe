@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { message } from 'antd'; // 1. IMPORT MESSAGE TỪ ANTD
+import React from 'react';
+import { useEditProfile } from './useEditProfile';
 
 interface EditProfileModalProps {
     isOpen: boolean;
@@ -9,106 +9,25 @@ interface EditProfileModalProps {
         phone: string;
         avatar: string;
     };
-    onSaveSuccess: () => void; // Hàm gọi để báo cho Profile load lại data
+    onSaveSuccess: () => void; 
 }
 
-export const EditProfileModal: React.FC<EditProfileModalProps> = ({ isOpen, onClose, initialData, onSaveSuccess }) => {
-    // Local state cho form
-    const [editForm, setEditForm] = useState({
-        fullName: "",
-        phone: "",
-        avatarPreview: "",
-        avatarFile: null as File | null
-    });
+export const EditProfileModal: React.FC<EditProfileModalProps> = ({ 
+    isOpen, 
+    onClose, 
+    initialData, 
+    onSaveSuccess 
+}) => {
+    const {
+        editForm,
+        isLoading,
+        handleEditImageChange,
+        handlePhoneChange,
+        handleFullNameChange,
+        handleSaveProfile
+    } = useEditProfile({ isOpen, initialData, onSaveSuccess, onClose });
 
-    const [isLoading, setIsLoading] = useState(false);
-
-    // Lấy token
-    const getToken = () => {
-        const userStr = localStorage.getItem('user');
-        return userStr ? JSON.parse(userStr).token : '';
-    };
-
-    // Đồng bộ dữ liệu ban đầu khi modal mở lên
-    useEffect(() => {
-        if (isOpen) {
-            setEditForm({
-                fullName: initialData.fullName || "",
-                phone: initialData.phone || "",
-                avatarPreview: initialData.avatar || "https://cdn-static.smember.com.vn/_next/static/media/avata-ant.b574f3e9.svg",
-                avatarFile: null
-            });
-        }
-    }, [isOpen, initialData]);
-
-    // Không render gì nếu modal đang đóng
     if (!isOpen) return null;
-
-    // Xử lý chọn ảnh
-    const handleEditImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (e.target.files && e.target.files[0]) {
-            const file = e.target.files[0];
-            const imageUrl = URL.createObjectURL(file);
-            setEditForm(prev => ({
-                ...prev,
-                avatarPreview: imageUrl,
-                avatarFile: file
-            }));
-        }
-    };
-
-    // Xử lý lưu form
-    const handleSaveProfile = async () => {
-        try {
-            setIsLoading(true);
-            const formData = new FormData();
-            formData.append("fullName", editForm.fullName);
-            formData.append("phone", editForm.phone);
-            if (editForm.avatarFile) {
-                formData.append("avatar", editForm.avatarFile);
-            }
-
-            const res = await fetch('http://localhost:8080/api/users/profile', {
-                method: 'PUT',
-                headers: {
-                    'Authorization': `Bearer ${getToken()}`
-                    // Không set Content-Type để trình duyệt tự lo boundary cho form-data
-                },
-                body: formData
-            });
-
-            const data = await res.json();
-            if (data.code === 200) {
-                const oldUserStr = localStorage.getItem('user');
-                if (oldUserStr) {
-                    const oldUser = JSON.parse(oldUserStr);
-                    const updatedUser = {
-                        ...oldUser,
-                        fullName: data.data.fullName,
-                        avatar: data.data.avatarUrl // Lưu ý trường avatarUrl trả về từ DB
-                    };
-                    localStorage.setItem('user', JSON.stringify(updatedUser));
-                }
-
-                // 2. BẮN TÍN HIỆU ĐỂ ACCOUNT HEADER TỰ ĐỘNG ĐỔI ẢNH
-                window.dispatchEvent(new Event('userUpdated'));
-
-                // 3. THAY THẾ ALERT BẰNG MESSAGE.SUCCESS
-                message.success("Cập nhật thông tin thành công!");
-                onSaveSuccess(); // Báo cho Profile.tsx fetch lại dữ liệu mới
-                onClose();       // Đóng modal
-            } else {
-                // 4. THAY THẾ ALERT BẰNG MESSAGE.ERROR
-                message.error(data.message || "Lỗi cập nhật");
-            }
-        } catch (error) {
-            console.error("Lỗi cập nhật profile:", error);
-            // 5. THAY THẾ ALERT BẰNG MESSAGE.ERROR
-            message.error("Có lỗi xảy ra, vui lòng thử lại sau.");
-        } finally {
-            setIsLoading(false);
-        }
-    };
 
     return (
         <div className="modal-overlay" onClick={onClose} style={{
@@ -125,7 +44,6 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({ isOpen, onCl
                     <button onClick={onClose} disabled={isLoading} style={{ background: 'none', border: 'none', fontSize: '20px', cursor: 'pointer' }}>&times;</button>
                 </div>
 
-                {/* Chỗ đổi Avatar */}
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px' }}>
                     <img src={editForm.avatarPreview} alt="Preview" style={{ width: '80px', height: '80px', borderRadius: '50%', objectFit: 'cover', border: '1px solid #ccc' }} />
                     <input type="file" id="modal-avatar-upload" accept="image/*" onChange={handleEditImageChange} style={{ display: 'none' }} disabled={isLoading} />
@@ -134,25 +52,24 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({ isOpen, onCl
                     </label>
                 </div>
 
-                {/* Input Họ tên */}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
                     <label style={{ fontSize: '14px', fontWeight: 'bold', color: '#333' }}>Họ và tên</label>
                     <input
                         type="text"
                         value={editForm.fullName}
-                        onChange={e => setEditForm({ ...editForm, fullName: e.target.value })}
+                        onChange={e => handleFullNameChange(e.target.value)}
                         disabled={isLoading}
                         style={{ padding: '10px', borderRadius: '4px', border: '1px solid #ccc', outline: 'none' }}
                     />
                 </div>
 
-                {/* Input SĐT */}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
                     <label style={{ fontSize: '14px', fontWeight: 'bold', color: '#333' }}>Số điện thoại</label>
                     <input
-                        type="text"
+                        type="tel"
                         value={editForm.phone}
-                        onChange={e => setEditForm({ ...editForm, phone: e.target.value })}
+                        maxLength={10}
+                        onChange={e => handlePhoneChange(e.target.value)}
                         disabled={isLoading}
                         style={{ padding: '10px', borderRadius: '4px', border: '1px solid #ccc', outline: 'none' }}
                     />

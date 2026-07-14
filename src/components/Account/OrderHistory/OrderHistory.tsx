@@ -1,234 +1,143 @@
-import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { message, Modal, Input } from 'antd'; // 🔥 IMPORT THÊM INPUT
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { Modal, Input } from 'antd';
+import { useOrderHistory, STATUS_LABEL_MAP } from './useOrderHistory';
 import "./OrderHistory.css";
 
-// 1. Định nghĩa các Interface cho TypeScript
-interface LocalUser { id?: number; name?: string; email?: string; avatar?: string; token?: string; }
-interface OrderResponse { id: number; totalAmount: number; status: string; createdAt: string; items?: { slug: string }[]; }
-interface ApiResponse<T> { status: string; code: number; message: string; data: T; }
-
-// 2. Map tên Tab hiển thị sang Status Enum của Spring Boot
-const STATUS_MAP: Record<string, string> = {
-  "Tất cả": "ALL", "Chờ xác nhận": "PENDING", "Đang chuẩn bị": "PROCESSING",
-  "Chờ giao hàng": "SHIPPED", "Đã giao hàng": "DELIVERED", "Đã huỷ": "CANCELLED"
-};
-
-const STATUS_LABEL_MAP: Record<string, string> = {
-  PENDING: "Chờ xác nhận", PROCESSING: "Đang xử lý", SHIPPED: "Đang giao hàng",
-  DELIVERED: "Đã giao hàng", RETURNED: "Chuyển hoàn (Bom)", CANCELLED: "Đã huỷ"
-};
-
 const OrderHistory: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<string>("Tất cả");
-  const [orders, setOrders] = useState<OrderResponse[]>([]);
-  const [loading, setLoading] = useState<boolean>(false);
-  const navigate = useNavigate();
+  
+    const {
+        tabs, activeTab, setActiveTab,
+        orders, loading,
+        isCancelModalVisible, setIsCancelModalVisible, cancelReason, setCancelReason,
+        showCancelModal, confirmCancelOrder,
+        handleGoToDetail, handleGoToProductDetail
+    } = useOrderHistory();
 
-  // 🔥 STATE CHO MODAL HỦY ĐƠN
-  const [isCancelModalVisible, setIsCancelModalVisible] = useState<boolean>(false);
-  const [cancelingOrderId, setCancelingOrderId] = useState<number | null>(null);
-  const [cancelReason, setCancelReason] = useState<string>('');
-
-  const tabs = Object.keys(STATUS_MAP);
-
-  const getToken = () => {
-    const localUserStr = localStorage.getItem('user');
-    return localUserStr ? JSON.parse(localUserStr).token : null;
-  };
-
-  useEffect(() => {
-    const fetchOrders = async () => {
-      setLoading(true);
-      try {
-        const token = getToken();
-        if (!token) {
-          console.error("Không tìm thấy token, vui lòng đăng nhập lại!");
-          setLoading(false);
-          return;
-        }
-
-        const statusParam = STATUS_MAP[activeTab];
-        let url = 'http://localhost:8080/api/orders/my-orders';
-        if (statusParam !== "ALL") {
-          url += `?status=${statusParam}`;
-        }
-
-        const response = await fetch(url, { headers: { 'Authorization': `Bearer ${token}` } });
-
-        if (response.ok) {
-          const json: ApiResponse<OrderResponse[]> = await response.json();
-          if (json.status === 'success') {
-            setOrders(json.data);
-          }
-        }
-      } catch (error) {
-        console.error("Lỗi khi tải lịch sử đơn hàng:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchOrders();
-  }, [activeTab]);
-
-  // 🔥 HÀM MỞ MODAL NHẬP LÝ DO
-  const showCancelModal = (orderId: number) => {
-    setCancelingOrderId(orderId);
-    setCancelReason(''); // Clear lý do cũ
-    setIsCancelModalVisible(true);
-  };
-
-  // 🔥 HÀM XÁC NHẬN HỦY VÀ GỌI API
-  const confirmCancelOrder = async () => {
-    if (!cancelingOrderId) return;
-    
-    if (!cancelReason.trim()) {
-      message.warning("Vui lòng nhập lý do hủy đơn!");
-      return;
-    }
-
-    try {
-      const token = getToken();
-      const response = await fetch(`http://localhost:8080/api/orders/${cancelingOrderId}/cancel`, {
-        method: 'PUT',
-        headers: { 
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json' // 🔥 Cần có cái này để gửi body
-        },
-        body: JSON.stringify({ reason: cancelReason }) // 🔥 Gửi reason lên Backend
-      });
-      const json = await response.json();
-
-      if (response.ok && json.status === 'success') {
-        message.success("Hủy đơn hàng thành công!");
-        setOrders(prev => prev.map(o => o.id === cancelingOrderId ? { ...o, status: 'CANCELLED' } : o));
-        setIsCancelModalVisible(false); // Đóng Modal
-      } else {
-        message.error(json.message || "Không thể hủy đơn hàng lúc này.");
-      }
-    } catch (error) {
-      message.error("Lỗi kết nối máy chủ.");
-    }
-  };
-
-  const handleGoToDetail = (orderId: number) => {
-      navigate(`/member/order/${orderId}`);
-  };
-
-  const handleGoToProductDetail = (order: OrderResponse) => {
-      if (order.items && order.items.length > 0 && order.items[0].slug) {
-          navigate(`/product/${order.items[0].slug}`);
-      } else {
-          navigate(`/member/order/${order.id}`);
-      }
-  };
-
-  return (
-    <div className="order-history">
-      <div className="oh-mobile-header">Lịch sử mua hàng</div>
-      <div className="oh-container">
-        
-        {/* Tabs Navigation */}
-        <div className="oh-tabs-wrapper">
-          <div className="oh-tabs">
-            {tabs.map((tab) => (
-              <div 
-                key={tab}
-                className={`oh-tab-item ${activeTab === tab ? 'active' : ''}`}
-                onClick={() => setActiveTab(tab)}
-              >
-                {tab}
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Filter Bar */}
-        <div className="oh-filter-bar">
-          <span className="oh-title-desktop">Lịch sử mua hàng</span>
-        </div>
-
-        {/* Content Area */}
-        <div className="oh-content">
-          {loading ? (
-            <div style={{textAlign: 'center', padding: '50px'}}>Đang tải danh sách...</div>
-          ) : orders.length === 0 ? (
-            <div className="oh-empty-box">
-              <img src="https://cdn-static.smember.com.vn/_next/static/media/empty.f8088c4d.png" alt="No Orders" className="oh-empty-img" />
-              <div className="oh-empty-text">
-                Bạn chưa có đơn hàng nào. <Link to="/" className="oh-empty-link">Trang chủ</Link>
-              </div>
-            </div>
-          ) : (
-            <div className="order-list-render" style={{ maxHeight: '600px', overflowY: 'auto', overflowX: 'hidden', paddingRight: '10px' }}>
-              {orders.map(order => (
-                <div key={order.id} className="order-item-card" style={{border: '1px solid #ddd', margin: '15px 0', padding: '15px', borderRadius: '8px', backgroundColor: '#fff'}}>
-                  <div style={{display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #eee', paddingBottom: '10px', marginBottom: '10px'}}>
-                     <span style={{fontWeight: 'bold'}}>Mã đơn hàng: #{order.id}</span>
-                     <span style={{color: order.status === 'CANCELLED' ? '#999' : '#d70018', fontWeight: 'bold'}}>
-                        {STATUS_LABEL_MAP[order.status] || order.status}
-                     </span>
-                  </div>
-                  <div style={{marginBottom: '5px'}}>Ngày đặt: {new Date(order.createdAt).toLocaleDateString('vi-VN')}</div>
-                  <div style={{fontWeight: 'bold', fontSize: '16px', marginBottom: '15px'}}>
-                    Tổng tiền: {Number(order.totalAmount).toLocaleString('vi-VN')}đ
-                  </div>
-                  
-                  {/* THANH CÔNG CỤ */}
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px dashed #eee', paddingTop: '15px' }}>
-                    <div style={{ fontSize: '13px', color: '#666' }}>
-                        {order.status === 'DELIVERED' && 'Cảm ơn bạn đã mua sắm!'}
+    return (
+        <div className="order-history">
+            <div className="oh-mobile-header">Lịch sử mua hàng</div>
+            <div className="oh-container">
+                
+                {/* Tabs Navigation */}
+                <div className="oh-tabs-wrapper">
+                    <div className="oh-tabs">
+                        {tabs.map((tab) => (
+                            <div 
+                                key={tab}
+                                className={`oh-tab-item ${activeTab === tab ? 'active' : ''}`}
+                                onClick={() => setActiveTab(tab)}
+                            >
+                                {tab}
+                            </div>
+                        ))}
                     </div>
-                    <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-                        
-                        {order.status === 'PENDING' && (
-                            // 🔥 GỌI HÀM MỞ MODAL THAY VÌ GỌI API TRỰC TIẾP
-                            <button className="oh-btn oh-btn-danger" onClick={() => showCancelModal(order.id)}>Hủy đơn</button>
-                        )}
-                        
-                        {order.status === 'DELIVERED' && (
-                            <button className="oh-btn oh-btn-outline" onClick={() => handleGoToProductDetail(order)}>Đánh giá</button>
-                        )}
-                        {['DELIVERED', 'CANCELLED', 'RETURNED'].includes(order.status) && (
-                            <button className="oh-btn oh-btn-primary" onClick={() => handleGoToProductDetail(order)}>Mua lại</button>
-                        )}
-
-                        <button onClick={() => handleGoToDetail(order.id)} className="oh-btn oh-btn-outline" style={{textDecoration: 'none', display: 'flex', alignItems: 'center'}}>
-                            Xem chi tiết
-                        </button>
-                    </div>
-                  </div>
-
                 </div>
-              ))}
+
+                {/* Filter Bar */}
+                <div className="oh-filter-bar">
+                    <span className="oh-title-desktop">Lịch sử mua hàng</span>
+                </div>
+
+                {/* Content Area */}
+                <div className="oh-content">
+                    {loading ? (
+                        <div style={{textAlign: 'center', padding: '50px'}}>Đang tải danh sách...</div>
+                    ) : orders.length === 0 ? (
+                        <div className="oh-empty-box">
+                            <img src="https://cdn-static.smember.com.vn/_next/static/media/empty.f8088c4d.png" alt="No Orders" className="oh-empty-img" />
+                            <div className="oh-empty-text">
+                                Bạn chưa có đơn hàng nào. <Link to="/" className="oh-empty-link">Trang chủ</Link>
+                            </div>
+                        </div>
+                    ) : (
+                        <div className="order-list-render" style={{ maxHeight: '600px', overflowY: 'auto', overflowX: 'hidden', paddingRight: '10px' }}>
+                            {orders.map(order => (
+                                <div key={order.id} className="order-item-card" style={{ border: '1px solid #ddd', margin: '15px 0', padding: '15px', borderRadius: '8px', backgroundColor: '#fff' }}>
+                                    
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #eee', paddingBottom: '10px', marginBottom: '10px' }}>
+                                        <span style={{ fontWeight: 'bold' }}>Mã đơn hàng: #{order.id}</span>
+                                        <span style={{ color: order.status === 'CANCELLED' ? '#999' : '#d70018', fontWeight: 'bold' }}>
+                                            {STATUS_LABEL_MAP[order.status!] || order.status}
+                                        </span>
+                                    </div>
+
+                                    <div style={{ marginBottom: '8px' }}>
+                                        {order.items && order.items.length > 0 && (
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                                                <span style={{ color: '#555', fontSize: '14px' }}>
+                                                    Sản phẩm: <strong>{order.items[0].productName}</strong>
+                                                </span>
+                                                
+                                                {order.items[0].available === false && (
+                                                    <span style={{ 
+                                                        fontSize: '11px', color: '#fff', padding: '2px 6px', 
+                                                        borderRadius: '4px', backgroundColor: '#999'
+                                                    }}>
+                                                        Ngừng kinh doanh
+                                                    </span>
+                                                )}
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    <div style={{ marginBottom: '5px', fontSize: '13px', color: '#666' }}>
+                                        Ngày đặt: {order.createdAt ? new Date(order.createdAt).toLocaleDateString('vi-VN') : '---'}
+                                    </div>
+                                    <div style={{ fontWeight: 'bold', fontSize: '16px', marginBottom: '15px' }}>
+                                        Tổng tiền: {Number(order.totalAmount).toLocaleString('vi-VN')}đ
+                                    </div>
+
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px dashed #eee', paddingTop: '15px' }}>
+                                        <div style={{ fontSize: '13px', color: '#666' }}>
+                                            {order.status === 'DELIVERED' && 'Cảm ơn bạn đã mua sắm!'}
+                                        </div>
+                                        <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                                            {order.status === 'PENDING' && (
+                                                <button className="oh-btn oh-btn-danger" onClick={() => showCancelModal(order.id!)}>Hủy đơn</button>
+                                            )}
+
+                                            {order.status === 'DELIVERED' && order.items?.[0]?.available !== false && (
+                                                <button className="oh-btn oh-btn-outline" onClick={() => handleGoToProductDetail(order)}>Đánh giá</button>
+                                            )}
+                                            
+                                            {['DELIVERED', 'CANCELLED', 'RETURNED'].includes(order.status!) && order.items?.[0]?.available !== false && (
+                                                <button className="oh-btn oh-btn-primary" onClick={() => handleGoToProductDetail(order)}>Mua lại</button>
+                                            )}
+
+                                            <button onClick={() => handleGoToDetail(order.id!)} className="oh-btn oh-btn-outline" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center' }}>
+                                                Xem chi tiết
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </div>
             </div>
-          )}
-        </div>
-      </div>
 
-      {/* 🔥 MODAL NHẬP LÝ DO HỦY ĐƠN DÀNH CHO USER */}
-      <Modal
-        title="Xác nhận Hủy đơn hàng"
-        open={isCancelModalVisible}
-        onOk={confirmCancelOrder}
-        onCancel={() => setIsCancelModalVisible(false)}
-        okText="Xác nhận hủy"
-        cancelText="Đóng"
-        okButtonProps={{ danger: true }}
-      >
-        <div style={{ marginBottom: 10 }}>
-          <p>Vui lòng cho chúng tôi biết lý do bạn hủy đơn hàng này để cải thiện dịch vụ:</p>
+            <Modal
+                title="Xác nhận Hủy đơn hàng"
+                open={isCancelModalVisible}
+                onOk={confirmCancelOrder}
+                onCancel={() => setIsCancelModalVisible(false)}
+                okText="Xác nhận hủy"
+                cancelText="Đóng"
+                okButtonProps={{ danger: true }}
+            >
+                <div style={{ marginBottom: 10 }}>
+                    <p>Vui lòng cho chúng tôi biết lý do bạn hủy đơn hàng này để cải thiện dịch vụ:</p>
+                </div>
+                <Input.TextArea
+                    rows={4}
+                    placeholder="Ví dụ: Tôi muốn thay đổi địa chỉ giao hàng, Tôi đổi ý..."
+                    value={cancelReason}
+                    onChange={(e) => setCancelReason(e.target.value)}
+                />
+            </Modal>
         </div>
-        <Input.TextArea
-          rows={4}
-          placeholder="Ví dụ: Tôi muốn thay đổi địa chỉ giao hàng, Tôi đổi ý..."
-          value={cancelReason}
-          onChange={(e) => setCancelReason(e.target.value)}
-        />
-      </Modal>
-
-    </div>
-  );
+    );
 };
 
 export default OrderHistory;

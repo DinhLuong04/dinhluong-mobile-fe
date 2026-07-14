@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { message } from 'antd'; // 1. IMPORT MESSAGE TỪ ANTD
 import './StickyCompareBar.css';
-import type { Product } from '../../../types/Product.types'; 
+import type { Product } from '../../../types/product.types'; 
 
 interface StickyCompareBarProps {
     compareList: Product[]; 

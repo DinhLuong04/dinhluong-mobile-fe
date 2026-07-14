@@ -1,125 +1,24 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import './Chatbot.css';
-
-// 1. Định nghĩa kiểu dữ liệu khớp với JSON của bạn
-interface ChatProductDto {
-    id: number;
-    name: string;
-    slug: string;
-    image: string;
-    price: number;
-    originalPrice?: number;
-    discountLabel?: string;
-    configSummary?: string;
-}
-
-interface Message {
-    id: number;
-    text: string;
-    products?: ChatProductDto[];
-    sender: 'user' | 'bot';
-    timestamp: Date;
-}
+import { useChatbot } from './useChatbot';
+import type { ChatProductDto } from '../../types/chat.types';
 
 const Chatbot: React.FC = () => {
-    const [isOpen, setIsOpen] = useState(false);
-    
-    const [messages, setMessages] = useState<Message[]>([
-        {
-            id: 1,
-            text: "Xin chào! Mình là trợ lý ảo DLM Store. 👋\nMình có thể giúp gì cho bạn? (Ví dụ: *Tìm điện thoại 10 triệu*, *So sánh iPhone 15 và S24*...)",
-            sender: 'bot',
-            timestamp: new Date()
-        }
-    ]);
-    
-    const [inputText, setInputText] = useState("");
-    const [isLoading, setIsLoading] = useState(false);
-    const messagesEndRef = useRef<HTMLDivElement>(null);
+    const {
+        isOpen, setIsOpen,
+        messages,
+        inputText, setInputText,
+        isLoading,
+        messagesEndRef,
+        handleSendMessage,
+        handleKeyDown
+    } = useChatbot();
 
-    const scrollToBottom = () => {
-        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-    };
-
-    useEffect(() => {
-        scrollToBottom();
-    }, [messages, isOpen]);
-
-    const formatCurrency = (value: number) => {
+    const formatCurrency = (value?: number) => {
+        if (!value) return '0 đ';
         return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value);
-    };
-
-    const handleSendMessage = async () => {
-        if (!inputText.trim()) return;
-
-        const currentText = inputText; // Lưu lại text để gọi API
-
-        // 1. Thêm tin nhắn User vào UI ngay lập tức
-        const newUserMsg: Message = {
-            id: Date.now(),
-            text: currentText,
-            sender: 'user',
-            timestamp: new Date()
-        };
-        setMessages(prev => [...prev, newUserMsg]);
-        setInputText(""); // Xóa ô input
-        setIsLoading(true); // Hiện trạng thái đang gõ...
-
-        // 2. GỌI API THẬT ĐẾN SPRING BOOT BACKEND
-        try {
-            const response = await fetch('http://localhost:8080/api/chatbot', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    // Nếu API cần xác thực token, hãy bỏ comment dòng dưới:
-                    // 'Authorization': `Bearer ${getAuthToken()}` 
-                },
-                body: JSON.stringify({ message: currentText }) // Truyền ChatBotRequest
-            });
-
-            const json = await response.json();
-
-            // 3. Xử lý khi Backend trả về thành công (HTTP 200)
-            if (response.ok && json.data) {
-                const newBotMsg: Message = {
-                    id: Date.now() + 1,
-                    text: json.data.answer,           // Lấy câu trả lời từ bot
-                    products: json.data.products,     // Lấy danh sách sản phẩm (nếu có)
-                    sender: 'bot',
-                    timestamp: new Date()
-                };
-                setMessages(prev => [...prev, newBotMsg]);
-            } else {
-                // Xử lý khi Backend trả về lỗi (Code 400, 500...)
-                const errorMsg: Message = {
-                    id: Date.now() + 1,
-                    text: `⚠️ Xin lỗi, đã có lỗi xảy ra: ${json.message || "Vui lòng thử lại!"}`,
-                    sender: 'bot',
-                    timestamp: new Date()
-                };
-                setMessages(prev => [...prev, errorMsg]);
-            }
-
-        } catch (error) {
-            // Xử lý khi sập Server hoặc lỗi mạng (Network Error)
-            const errorMsg: Message = {
-                id: Date.now() + 1,
-                text: "⚠️ Xin lỗi, máy chủ hiện không phản hồi. Vui lòng kiểm tra lại kết nối mạng.",
-                sender: 'bot',
-                timestamp: new Date()
-            };
-            setMessages(prev => [...prev, errorMsg]);
-        } finally {
-            setIsLoading(false); // Tắt trạng thái đang gõ...
-        }
-    };
-
-    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-        if (e.key === 'Enter') {
-            handleSendMessage();
-        }
     };
 
     return (
@@ -160,19 +59,19 @@ const Chatbot: React.FC = () => {
                                 )}
                             </div>
 
-                            {/* --- PHẦN RENDER SẢN PHẨM TRƯỢT NGANG --- */}
+                            {/* --- RENDER SẢN PHẨM TRƯỢT NGANG --- */}
                             {msg.sender === 'bot' && msg.products && msg.products.length > 0 && (
                                 <div className="bot-products-container">
-                                    {msg.products.map(product => (
+                                    {msg.products.map((product: ChatProductDto, index: number) => (
                                         <a 
-                                            key={product.id} 
+                                            key={product.id || index} 
                                             href={`/product/${product.slug}`} 
                                             target="_blank" 
                                             rel="noopener noreferrer"
                                             className="product-card-chat"
                                         >
                                             <div className="img-wrapper">
-                                                <img src={product.image} alt={product.name} />
+                                                {product.image && <img src={product.image} alt={product.name || 'Sản phẩm'} />}
                                             </div>
                                             <h5>{product.name}</h5>
                                             
@@ -180,7 +79,7 @@ const Chatbot: React.FC = () => {
                                                 {formatCurrency(product.price)}
                                             </p>
                                             
-                                            {product.originalPrice && product.originalPrice > product.price && (
+                                            {product.originalPrice && product.price && product.originalPrice > product.price && (
                                                 <span className="original-price">
                                                     {formatCurrency(product.originalPrice)}
                                                 </span>
@@ -195,7 +94,6 @@ const Chatbot: React.FC = () => {
                                     ))}
                                 </div>
                             )}
-                            {/* -------------------------------------- */}
                             
                             <div className="message-time">
                                 {msg.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}

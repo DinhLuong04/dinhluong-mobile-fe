@@ -1,18 +1,15 @@
 import { createContext, useContext } from 'react';
-import type { User } from '../types/auth.types'; // Import từ file types
+import type { LoginResponse } from '../types/auth.types'; // Import từ file types
 
-// Định nghĩa kiểu dữ liệu cho Context
 export interface AuthContextType {
-    user: User | null;
+    user: LoginResponse | null;
     isLogin: boolean;
-    login: (userData: User) => void;
+    login: (userData: LoginResponse) => void;
     logout: () => void;
 }
 
-// 1. Tạo Context (nhưng không export default)
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// 2. Tạo Hook useAuth tại đây
 export const useAuth = () => {
     const context = useContext(AuthContext);
     if (!context) {

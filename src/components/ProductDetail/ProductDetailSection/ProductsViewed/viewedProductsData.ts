@@ -1,5 +1,5 @@
 // src/components/Home/ViewedProducts/ViewedProductsData.ts
-import { type Product } from "../../../../types/Product.types"; // Import type Product
+import { type Product } from "../../../../types/product.types"; // Import type Product
 
 export const viewedProducts: Product[] = [
     {

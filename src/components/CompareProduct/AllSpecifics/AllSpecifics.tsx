@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import type { ProductDetail, SpecGroup, SpecItem } from '../../../types/Product.types'; 
+import type { ProductDetail, SpecGroup, SpecItem } from '../../../types/product.types'; 
 import './AllSpecifics.css';
 
 interface Props {

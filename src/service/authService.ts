@@ -1,64 +1,86 @@
-
-import httpClient from "../api/axiosClient";
+// src/services/auth.service.ts
+import httpClient from '../api/httpClient';
 import { API_CONFIG } from '../config/api.config';
-import type { LoginRequest, AuthData, LoginResponse, RegisterRequest } from "../types/auth.types"; 
+import type { ApiResponse } from '../types/common.types';
+import type { 
+    LoginRequest, 
+    RegisterRequest, 
+    LoginResponse, 
+    Oauth2LoginRequest,
+    ResetPasswordRequest,
+    TokenRefreshRequest
+} from '../types/auth.types';
 
 export const authService = {
-    register: async (registerData: RegisterRequest): Promise<any> => {
-        const response = await httpClient.post<any>(
+    register: async (registerData: RegisterRequest): Promise<ApiResponse<unknown>> => {
+        return httpClient.post<ApiResponse<unknown>>(
             API_CONFIG.AUTH.REGISTER, 
             registerData
         );
+    },
 
-        if (response.code && response.code !== 200) {
-            throw new Error(response.message || 'Đăng ký thất bại');
-        }
-
-        return response;
-    }
-    ,
-    login: async (credentials: LoginRequest): Promise<AuthData> => {
-        const response = await httpClient.post<LoginResponse>(
+    login: async (credentials: LoginRequest): Promise<LoginResponse> => {
+        const response = await httpClient.post<ApiResponse<LoginResponse>>(
             API_CONFIG.AUTH.LOGIN, 
             credentials
         );
-        if (response.code !== 200) {
-            throw new Error(response.message || 'Login failed');
-        }
-        const authData = response.data;
-        return authData;
+        return response.data;
     },
 
-    loginGoogle: async (idToken: string): Promise<AuthData> => {
-        const response = await httpClient.post<AuthData>(
+    loginGoogle: async (idToken: string): Promise<LoginResponse> => {
+        const payload: Oauth2LoginRequest = { id_token: idToken };
+        const response = await httpClient.post<ApiResponse<LoginResponse>>(
             API_CONFIG.AUTH.LOGIN_GOOGLE,
-            { id_token: idToken }
+            payload
         );
-        
-        return response;
+        return response.data;
     },
-     loginFacebook: async (idToken: string): Promise<AuthData> => {
-        const response = await httpClient.post<AuthData>(
+
+    loginFacebook: async (idToken: string): Promise<LoginResponse> => {
+        const payload: Oauth2LoginRequest = { id_token: idToken };
+        const response = await httpClient.post<ApiResponse<LoginResponse>>(
             API_CONFIG.AUTH.LOGIN_FACEBOOK,
-            { id_token: idToken }
+            payload
         );
-        return response;
+        return response.data;
     },
+
     forgotPassword: async (email: string): Promise<string> => {
-        const url = `${API_CONFIG.AUTH.FORGOT_PASSWORD}?email=${email}`;
-        const response = await httpClient.post<any>(
-             url,
-             null
+        const response = await httpClient.post<ApiResponse<unknown>>(
+            API_CONFIG.AUTH.FORGOT_PASSWORD, 
+            null, 
+            { params: { email } }
         );
         return response.message || "Đã gửi OTP";
     },
 
-    resetPassword: async (data: any): Promise<string> => {
-        
-        const response = await httpClient.post<any>(
-             API_CONFIG.AUTH.RESET_PASSWORD, 
+    resetPassword: async (data: ResetPasswordRequest): Promise<string> => {
+        const response = await httpClient.post<ApiResponse<unknown>>(
+            API_CONFIG.AUTH.RESET_PASSWORD, 
             data
         );
         return response.message || "Đổi mật khẩu thành công";
+    },
+
+    logout: async (refreshToken: string): Promise<ApiResponse<unknown>> => {
+        const payload: TokenRefreshRequest = { refreshToken };
+        return httpClient.post<ApiResponse<unknown>>(
+            API_CONFIG.AUTH.LOGOUT,
+            payload
+        );
+    },
+    resendVerification: async (email: string): Promise<ApiResponse<unknown>> => {
+        return httpClient.post<ApiResponse<unknown>>(
+            API_CONFIG.AUTH.RESEND_VERIFICATION,
+            null,
+            { params: { email } }
+        );
+    },
+
+    verifyEmail: async (code: string): Promise<ApiResponse<unknown>> => {
+        return httpClient.get<ApiResponse<unknown>>(
+            API_CONFIG.AUTH.VERIFY_EMAIL,
+            { params: { code } }
+        );
     }
-}
+};

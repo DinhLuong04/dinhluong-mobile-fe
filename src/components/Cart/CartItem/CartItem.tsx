@@ -1,5 +1,5 @@
 import React from "react";
-import type { CartItem as CartItemType, CartComboItem } from "../../../types/Product.types";
+import type { CartItem as CartItemType, CartComboItem } from "../../../types/product.types";
 import { QuantityInput } from "../QuantityInput/QuantityInput";
 import "./CartItem.css";
 

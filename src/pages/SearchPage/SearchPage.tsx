@@ -2,7 +2,7 @@ import React, { useState, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import ProductList from '../../components/Products/ProductList/ProductList';
 import AdvanceFilter from '../../components/Fillter/Fillter';
-import type { ProductFilterParams } from '../../types/Product.types';
+import type { ProductFilterParams } from '../../types/product.types';
 import './SearchPage.css';
 import ViewedProducts from '../../components/ProductDetail/ProductDetailSection/ProductsViewed/ViewedProducts';
 import EmptySearch from '../../components/EmptySearch/EmptySearch';

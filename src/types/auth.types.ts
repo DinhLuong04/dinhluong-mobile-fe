@@ -1,34 +1,33 @@
 export interface LoginRequest {
-  email: string;
-  password: string;
+    email?: string;
+    password?: string;
 }
 
 export interface RegisterRequest {
-  fullName: string;
-  email: string;
-  password: string;
+    fullName: string;
+    email: string;
+    password: string;
 }
 
-export interface AuthData {
-  id: number;
-  name: string;
-  email: string;
-  avatar?: string;
-  typeAccount: string;
-  token: string;
-  role?: string; // Bổ sung dòng này
+export interface TokenRefreshRequest {
+    refreshToken: string;
 }
 
-export interface ApiResponse<T> {
-  status: string;
-  code: number;
-  message: string;
-  timestamp: string;
-  data: T;
-}
-export interface User {
-  name: string;
-  token?: string;
+export interface Oauth2LoginRequest {
+    id_token?: string;
 }
 
-export type LoginResponse = ApiResponse<AuthData>;
+export interface LoginResponse {
+    token?: string;
+    refreshToken?: string;
+    id?: number;
+    email?: string;
+    name?: string;
+    avatar?: string;
+    typeAccount?: string;
+}
+export interface ResetPasswordRequest {
+    token?: string; 
+    newPassword?: string;
+    confirmPassword?: string;
+}

@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React from 'react';
 import './Notification.css';
+import { useNotification } from './useNotification';
 
 interface NotificationProps {
     onClose: () => void;
@@ -8,109 +8,13 @@ interface NotificationProps {
     setUnreadCount: (count: number) => void;
 }
 
-interface NotificationItem {
-    id: number;
-    type: 'ORDER_STATUS' | 'PROMOTION' | 'CHAT';
-    message: string;
-    read: boolean;
-    createdAt: string;
-}
-
 const Notification: React.FC<NotificationProps> = ({ onClose, refreshTrigger, setUnreadCount }) => {
-    const [notifications, setNotifications] = useState<NotificationItem[]>([]);
-    const [loading, setLoading] = useState(true);
-    const navigate = useNavigate();
-
-    const getLocalUser = () => {
-        const userStr = localStorage.getItem('user');
-        return userStr ? JSON.parse(userStr) : null;
-    };
-
-    useEffect(() => {
-        const user = getLocalUser();
-        if (!user || !user.token) {
-            setLoading(false);
-            return;
-        }
-
-        const fetchNotifications = async () => {
-            try {
-                const res = await fetch('http://localhost:8080/api/notifications', {
-                    headers: { 'Authorization': `Bearer ${user.token}` }
-                });
-                const json = await res.json();
-                if (json.status === 'success') {
-                    setNotifications(json.data);
-                    
-                    // LÔGIC MỚI: Đếm số thông báo chưa đọc và cập nhật ra ngoài
-                    const unread = json.data.filter((n: NotificationItem) => !n.read).length;
-                    setUnreadCount(unread);
-                }
-            } catch (error) {
-                console.error("Lỗi tải thông báo", error);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchNotifications();
-    }, [refreshTrigger, setUnreadCount]); // Thêm setUnreadCount vào dependency
-
-    // Hàm đánh dấu đã đọc tất cả
-    const markAllAsRead = async () => {
-        const user = getLocalUser();
-        if (!user || !user.token) return;
-
-        try {
-            await fetch('http://localhost:8080/api/notifications/read-all', {
-                method: 'PUT',
-                headers: { 'Authorization': `Bearer ${user.token}` }
-            });
-            setNotifications(prev => prev.map(n => ({ ...n, read: true })));
-            setUnreadCount(0); // Xóa sạch chấm đỏ
-        } catch (error) {
-            console.error("Lỗi khi đánh dấu đã đọc", error);
-        }
-    };
-
-    // LÔGIC MỚI: Xử lý khi click vào 1 thông báo
-    const handleNotificationClick = async (notif: NotificationItem) => {
-        onClose(); // Đóng popup ngay lập tức để tạo cảm giác mượt mà
-
-        // Nếu thông báo này CHƯA ĐỌC, gọi API đánh dấu đã đọc
-        if (!notif.read) {
-            const user = getLocalUser();
-            if (user && user.token) {
-                try {
-                    // Gọi API update trạng thái của 1 thông báo (Bạn cần có API này ở Backend)
-                    await fetch(`http://localhost:8080/api/notifications/${notif.id}/read`, {
-                        method: 'PUT',
-                        headers: { 'Authorization': `Bearer ${user.token}` }
-                    });
-                    
-                    // Cập nhật lại state danh sách thông báo (đổi màu trắng)
-                    setNotifications(prev => prev.map(n => n.id === notif.id ? { ...n, read: true } : n));
-                    
-                    // Trừ đi 1 số lượng chưa đọc hiện tại
-                    setUnreadCount(notifications.filter(n => !n.read).length - 1);
-                } catch (error) {
-                    console.error("Lỗi khi đọc 1 thông báo", error);
-                }
-            }
-        }
-
-        // Chuyển hướng trang
-        if (notif.type === 'ORDER_STATUS') {
-            const match = notif.message.match(/#(\d+)/);
-            if (match && match[1]) {
-                navigate(`/member/order/${match[1]}`);
-            } else {
-                navigate(`/member/order`); 
-            }
-        } else if (notif.type === 'PROMOTION') {
-            navigate('/member/voucher'); // Chỉnh lại theo Route đúng của bạn
-        }
-    };
+    const {
+        notifications,
+        loading,
+        handleMarkAllAsRead,
+        handleNotificationClick
+    } = useNotification(onClose, refreshTrigger, setUnreadCount);
 
     return (
         <div className="notification-container" style={{
@@ -131,9 +35,8 @@ const Notification: React.FC<NotificationProps> = ({ onClose, refreshTrigger, se
             }}>
                 <strong style={{ fontSize: '16px', color: '#333', margin: 0 }}>Thông báo</strong>
                 
-                {/* Chỉ hiển thị nút này nếu có ít nhất 1 thông báo chưa đọc */}
                 {notifications.some(n => !n.read) && (
-                    <span onClick={markAllAsRead} style={{ cursor: 'pointer', color: '#cb1c22', fontSize: '13px', fontWeight: '500' }}>
+                    <span onClick={handleMarkAllAsRead} style={{ cursor: 'pointer', color: '#cb1c22', fontSize: '13px', fontWeight: '500' }}>
                         Đánh dấu đã đọc ✓
                     </span>
                 )}
@@ -155,13 +58,13 @@ const Notification: React.FC<NotificationProps> = ({ onClose, refreshTrigger, se
                                 borderBottom: '1px solid #f0f0f0', 
                                 display: 'flex', 
                                 gap: '15px',
-                                backgroundColor: notif.read ? '#fff' : '#fef2f2', // Thay đổi sang màu đỏ nhạt hợp với FPT/DinhLuongMobile
+                                backgroundColor: notif.read ? '#fff' : '#fef2f2',
                                 cursor: 'pointer',
                                 transition: 'background-color 0.2s'
                             }}
                         >
                             <div style={{ fontSize: '24px' }}>
-                                {notif.type === 'ORDER_STATUS' ? '📦' : notif.type === 'PROMOTION' ? '🎉' : '💬'}
+                                {notif.type === 'ORDER' ? '📦' : notif.type === 'PROMOTION' ? '🎉' : '💬'}
                             </div>
                             <div>
                                 <p style={{ margin: '0 0 6px 0', fontSize: '14px', lineHeight: '1.4', fontWeight: notif.read ? '400' : '600', color: '#333' }}>

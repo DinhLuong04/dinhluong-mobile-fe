@@ -1,77 +1,19 @@
-import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { authService } from '../../service/authService';
-import '../Login/Login.css'; // Tái sử dụng CSS của Login
+import React from 'react';
+import { Link } from 'react-router-dom';
+import '../Login/Login.css';
+import { useForgotPassword } from './useForgotPassword';
 
 const ForgotPasswordPage: React.FC = () => {
-  const navigate = useNavigate();
-
-  // --- STATE QUẢN LÝ ---
-  const [step, setStep] = useState(1); // 1: Nhập Email, 2: Nhập OTP & Pass mới
-  const [email, setEmail] = useState('');
-  const [otp, setOtp] = useState('');
-  const [newPassword, setNewPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  
-  const [isLoading, setIsLoading] = useState(false);
-  const [message, setMessage] = useState({ type: '', content: '' }); // type: 'success' | 'error'
-  const [countdown, setCountdown] = useState(0); // Đếm ngược gửi lại OTP
-
-  // --- XỬ LÝ ĐẾM NGƯỢC ---
-  useEffect(() => {
-    if (countdown > 0) {
-      const timer = setTimeout(() => setCountdown(countdown - 1), 1000);
-      return () => clearTimeout(timer);
-    }
-  }, [countdown]);
-
-  // --- BƯỚC 1: GỬI EMAIL LẤY OTP ---
-  const handleSendOtp = async (e?: React.FormEvent) => {
-    if (e) e.preventDefault();
-    setIsLoading(true);
-    setMessage({ type: '', content: '' });
-
-    try {
-      await authService.forgotPassword(email);
-      setStep(2); // Chuyển sang bước 2
-      setCountdown(60); // Bắt đầu đếm ngược 60s
-      setMessage({ type: 'success', content: '✅ Mã OTP đã được gửi tới email của bạn!' });
-    } catch (error: any) {
-      setMessage({ type: 'error', content: error.message || 'Lỗi gửi OTP' });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  // --- BƯỚC 2: ĐỔI MẬT KHẨU ---
-  const handleResetPassword = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (newPassword !== confirmPassword) {
-      setMessage({ type: 'error', content: 'Mật khẩu xác nhận không khớp!' });
-      return;
-    }
-
-    setIsLoading(true);
-    setMessage({ type: '', content: '' });
-
-    try {
-      await authService.resetPassword({
-        email,
-        otp,
-        newPassword
-      });
-      
-      // Thành công -> Thông báo và chuyển về Login sau 2s
-      setMessage({ type: 'success', content: '🎉 Đổi mật khẩu thành công! Đang chuyển hướng...' });
-      setTimeout(() => navigate('/login'), 2000);
-      
-    } catch (error: any) {
-      setMessage({ type: 'error', content: error.message || 'Đổi mật khẩu thất bại' });
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const {
+    step,
+    formData,
+    isLoading,
+    message,
+    countdown,
+    handleChange,
+    handleSendOtp,
+    handleResetPassword
+  } = useForgotPassword();
 
   return (
     <div className="auth-page-container">
@@ -83,11 +25,11 @@ const ForgotPasswordPage: React.FC = () => {
             <p style={{ textAlign: 'center', color: '#666', fontSize: '14px', marginTop: '10px' }}>
               {step === 1 
                 ? "Nhập email của bạn để nhận mã xác thực" 
-                : `Đã gửi mã OTP tới: ${email}`}
+                : `Đã gửi mã OTP tới: ${formData.email}`}
             </p>
           </div>
 
-          {/* Hiển thị thông báo */}
+          {/* HIỂN THỊ THÔNG BÁO */}
           {message.content && (
             <div style={{
               padding: '10px',
@@ -103,17 +45,18 @@ const ForgotPasswordPage: React.FC = () => {
           )}
 
           {step === 1 ? (
-            // --- FORM BƯỚC 1 ---
+            // --- FORM BƯỚC 1: LẤY OTP ---
             <form onSubmit={handleSendOtp}>
               <div className="input-group">
-                <label className="input-label">Email đăng ký</label>
+                <label className="input-label" htmlFor="email">Email đăng ký</label>
                 <input 
                   type="email" 
+                  id="email"
                   className="input-field" 
                   placeholder="name@example.com" 
                   required 
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  value={formData.email}
+                  onChange={handleChange}
                   disabled={isLoading}
                 />
               </div>
@@ -123,43 +66,48 @@ const ForgotPasswordPage: React.FC = () => {
               </button>
             </form>
           ) : (
-            // --- FORM BƯỚC 2 ---
+            // --- FORM BƯỚC 2: ĐỔI MẬT KHẨU ---
             <form onSubmit={handleResetPassword}>
               <div className="input-group">
-                <label className="input-label">Mã OTP (6 số)</label>
+                <label className="input-label" htmlFor="otp">Mã OTP (6 số)</label>
                 <input 
                   type="text" 
+                  id="otp"
                   className="input-field" 
                   placeholder="Nhập mã OTP trong email" 
                   required 
-                  value={otp}
-                  onChange={(e) => setOtp(e.target.value)}
+                  value={formData.otp}
+                  onChange={handleChange}
                   disabled={isLoading}
                 />
               </div>
 
               <div className="input-group">
-                <label className="input-label">Mật khẩu mới</label>
+                <label className="input-label" htmlFor="newPassword">Mật khẩu mới</label>
                 <input 
                   type="password" 
+                  id="newPassword"
                   className="input-field" 
                   placeholder="Nhập mật khẩu mới" 
                   required 
-                  value={newPassword}
-                  onChange={(e) => setNewPassword(e.target.value)}
+                  minLength={6}
+                  value={formData.newPassword}
+                  onChange={handleChange}
                   disabled={isLoading}
                 />
               </div>
 
               <div className="input-group">
-                <label className="input-label">Xác nhận mật khẩu</label>
+                <label className="input-label" htmlFor="confirmPassword">Xác nhận mật khẩu</label>
                 <input 
                   type="password" 
+                  id="confirmPassword"
                   className="input-field" 
                   placeholder="Nhập lại mật khẩu mới" 
                   required 
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  minLength={6}
+                  value={formData.confirmPassword}
+                  onChange={handleChange}
                   disabled={isLoading}
                 />
               </div>
@@ -189,6 +137,7 @@ const ForgotPasswordPage: React.FC = () => {
             </form>
           )}
 
+          {/* QUAY LẠI */}
           <div style={{ textAlign: 'center', marginTop: '30px', borderTop: '1px solid #eee', paddingTop: '20px' }}>
             <Link to="/login" style={{ textDecoration: 'none', color: '#333', fontSize: '14px' }}>
               ← Quay lại Đăng nhập

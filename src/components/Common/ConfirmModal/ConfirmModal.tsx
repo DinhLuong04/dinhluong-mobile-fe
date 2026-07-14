@@ -1,5 +1,5 @@
 import React from "react";
-import "./ConfirmModal.css"; // Nhớ đổi tên file CSS luôn nhé
+import "./ConfirmModal.css"; 
 
 interface ConfirmModalProps {
   isOpen: boolean;
@@ -8,11 +8,11 @@ interface ConfirmModalProps {
   onClose: () => void;
   onConfirm: () => void;
   
-  // --- CÁC PROP MỚI ĐỂ TÙY BIẾN ---
-  type?: "alert" | "confirm"; // alert: 1 nút, confirm: 2 nút
-  confirmText?: string;       // Chữ trên nút chính (VD: Đăng nhập)
-  cancelText?: string;        // Chữ trên nút phụ (VD: Đăng ký / Hủy)
-  onCancel?: () => void;      // Hàm chạy khi bấm nút phụ (nếu muốn khác default close)
+
+  type?: "alert" | "confirm"; 
+  confirmText?: string;      
+  cancelText?: string;      
+  onCancel?: () => void;      
 }
 
 export const ConfirmModal: React.FC<ConfirmModalProps> = ({
@@ -22,18 +22,18 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
   onClose,
   onConfirm,
   type = "confirm",
-  confirmText = "Đồng ý",   // Mặc định
-  cancelText = "Hủy bỏ",    // Mặc định
+  confirmText = "Đồng ý",  
+  cancelText = "Hủy bỏ",    
   onCancel,
 }) => {
   if (!isOpen) return null;
 
-  // Xử lý click nút phụ (Cancel/Register)
+ 
   const handleCancel = () => {
     if (onCancel) {
-        onCancel(); // Nếu có hàm riêng thì chạy
+        onCancel(); 
     } else {
-        onClose();  // Mặc định là đóng modal
+        onClose();  
     }
   };
 
@@ -64,7 +64,6 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
             )}
             
             <button 
-                // SỬA LẠI ĐOẠN NÀY: CHỈ GỌI onConfirm()
                 onClick={() => onConfirm()} 
                 className={`btn-confirm-alert ${type === 'alert' ? 'w-full' : 'w-half'}`}
             >

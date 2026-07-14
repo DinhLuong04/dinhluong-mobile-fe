@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import Slider from 'rc-slider';
 import 'rc-slider/assets/index.css'; 
 import './Fillter.css'; 
-import type { ProductFilterParams } from "../../types/Product.types"
+import type { ProductFilterParams } from "../../types/product.types"
 
 // --- Icons ---
 const ChevronDownIcon = () => (<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3.2 5.7C3.5 5.4 4 5.4 4.3 5.7L8 9.2L11.7 5.7C12 5.4 12.5 5.4 12.8 5.7C13.1 6 13.1 6.5 12.8 6.8L8.5 10.8C8.2 11.1 7.8 11.1 7.5 10.8L3.2 6.8C2.9 6.5 2.9 6 3.2 5.7Z" fill="#090D14"/></svg>);

@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import ProductCard from '../../../Products/ProductCard/ProductCard'; 
 import './viewedProducts.css';
-import type { Product } from '../../../../types/Product.types';
+import type { Product } from '../../../../types/product.types';
 
 // 1. Import hàm đọc lịch sử
 import { getViewedProductsFromHistory } from '../../../../utils/viewedProductHelper';

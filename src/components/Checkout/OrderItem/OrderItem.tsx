@@ -20,7 +20,16 @@ export const OrderItem = ({ items }: any) => {
             {/* SẢN PHẨM CHÍNH */}
             <div className="order-product-row">
               <div className="order-product-img-box">
-                <img src={item.image} alt={item.name} className="order-product-img" />
+                <img
+                  src={
+                    item.thumbnail ||
+                    item.image ||
+                    item.imageUrl ||
+                    "https://placehold.co/100x100"
+                  }
+                  alt={item.name}
+                  className="order-product-img"
+                />
               </div>
               <div className="order-product-info">
                 <div className="order-product-name-row">
@@ -29,8 +38,8 @@ export const OrderItem = ({ items }: any) => {
                     <span className="order-product-variant-badge">Màu: {item.colorName}</span>
                   </div>
                   <div className="order-product-meta-right">
-                     <span className="order-product-qty">x{item.quantity}</span>
-                     <span className="order-price-current">{item.price.toLocaleString('vi-VN')}đ</span>
+                    <span className="order-product-qty">x{item.quantity}</span>
+                    <span className="order-price-current">{item.price.toLocaleString('vi-VN')}đ</span>
                   </div>
                 </div>
               </div>
@@ -46,7 +55,15 @@ export const OrderItem = ({ items }: any) => {
                   {combos.map((combo: any) => (
                     <div key={combo.id} className="order-combo-item">
                       <div className="order-combo-item-img-box">
-                        <img src={combo.image} className="product-img" />
+                        <img
+                          src={
+                            combo.thumbnail ||
+                            combo.image ||
+                            combo.imageUrl ||
+                            "https://placehold.co/100x100"
+                          }
+                          className="product-img"
+                        />
                       </div>
                       <div className="order-combo-item-content">
                         <div className="order-combo-item-name">{combo.name}</div>

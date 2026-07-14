@@ -1,25 +1,24 @@
-/* src/assets/RegisterHeader.css */
+
 
 :root {
   --header-bg-gradient: linear-gradient(5deg, #cb1c22 67.61%, #d9503f 95.18%);
   --white: #ffffff;
   --text-gray: #6b7280;
-  --text-dark: #090d14; /* Màu chữ đen */
+  --text-dark: #090d14; 
   --container-width: 1240px;
-  --border-color: #e5e7eb; /* border-neutral-gray-2 */
+  --border-color: #e5e7eb; 
 }
 
-/* --- Reset cơ bản --- */
 * {
   box-sizing: border-box;
 }
 
 body {
   margin: 0;
-  font-family: sans-serif; /* Hoặc font bạn đang dùng */
+  font-family: sans-serif; 
 }
 
-/* --- Layout Chung --- */
+
 .fpt-header-wrapper {
     position: sticky;
     top: 0;

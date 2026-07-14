@@ -1,6 +1,6 @@
 import React from 'react';
 import './ProductCard.css';
-import type { Product } from '../../../types/Product.types';
+import type { Product } from '../../../types/product.types';
 import { useNavigate } from 'react-router-dom';
 export interface ProductSpec {
     icon: string;

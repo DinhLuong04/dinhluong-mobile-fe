@@ -1,6 +1,3 @@
-// menuData.ts
-
-// 1. Định nghĩa kiểu dữ liệu (Interface)
 export interface TrendIcon {
   id: number;
   name: string;
@@ -24,8 +21,7 @@ export interface CategoryItem {
   label: string;
   hasMegaMenu: boolean;
   path: string;
-  // --- THÊM DÒNG NÀY ---
-  bannerImages?: string[]; // Dấu ? nghĩa là không bắt buộc, có danh mục có, có danh mục không
+  bannerImages?: string[]; 
 }
 
 // 2. Dữ liệu mẫu
@@ -71,12 +67,11 @@ export const mainCategories: CategoryItem[] = [
     label: "Điện Thoại", 
     hasMegaMenu: true, 
     path: "/dien-thoai",
-    // --- THÊM DỮ LIỆU BANNER Ở ĐÂY ---
     bannerImages: [
         "https://cdn2.fptshop.com.vn/unsafe/256x0/filters:format(webp):quality(75)/RC_1_83129d2313.png",
         "https://cdn2.fptshop.com.vn/unsafe/256x0/filters:format(webp):quality(75)/opt1_36152d3691.png"
     ]
   },
-  { id: 2, label: "Phụ Kiện", hasMegaMenu: false, path: "/phu-kien" }, // Các mục khác không có banner thì thôi
+  { id: 2, label: "Phụ Kiện", hasMegaMenu: false, path: "/phu-kien" }, 
   { id: 3, label: "Tin tức", hasMegaMenu: false, path: "#" },
 ];

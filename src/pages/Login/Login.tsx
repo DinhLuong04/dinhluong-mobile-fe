@@ -1,18 +1,12 @@
-import React, { useState, useEffect } from 'react';
-import { Link, useNavigate, useSearchParams } from 'react-router-dom';
-import { authService } from '../../service/authService';
-import { useAuth } from '../../contexts/AuthContext';
-import './Login.css';
-import { useGoogleLogin, type TokenResponse } from '@react-oauth/google';
+import React from 'react';
+import { Link } from 'react-router-dom';
 import FacebookLogin from 'react-facebook-login/dist/facebook-login-render-props';
-import type { AuthData } from '../../types/auth.types';
-import httpClient from '../../api/axiosClient';
 import { BackToHomeButton } from '../../components/Common/BackToHomeButton/BackToHomeButton';
-import { message, Modal } from 'antd'; // 1. THÊM IMPORT NÀY TỪ ANTD
+import { useLogin } from './useLogin'; 
+import './Login.css';
 
 const FACEBOOK_APP_ID = import.meta.env.VITE_FACEBOOK_CLIENT_ID;
 
-// --- SVG ICONS (Giữ nguyên) ---
 const GoogleIcon = () => (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
@@ -29,196 +23,38 @@ const FacebookIcon = () => (
 );
 
 const LoginPage: React.FC = () => {
-  const navigate = useNavigate();
-  const { login } = useAuth();
-  const [searchParams] = useSearchParams();
-
-  const [formData, setFormData] = useState({ email: '', password: '' });
-  const [fieldErrors, setFieldErrors] = useState({ email: '', password: '', general: '' });
-  const [isLoading, setIsLoading] = useState(false);
-  const [successMsg, setSuccessMsg] = useState('');
-
-  // --- LOGIC GIỮ NGUYÊN ---
-  useEffect(() => {
-    const isVerified = searchParams.get('verified');
-    const errorParam = searchParams.get('error');
-
-    if (isVerified === 'true') {
-        setSuccessMsg("✅ Kích hoạt tài khoản thành công! Bạn có thể đăng nhập.");
-        window.history.replaceState({}, document.title, window.location.pathname);
-    } 
-    if (isVerified === 'false' && errorParam) {
-        setFieldErrors(prev => ({ ...prev, general: decodeURIComponent(errorParam) }));
-    }
-  }, [searchParams]);
-
-  const handleLoginSuccess = (authData: AuthData) => {
-    let userRole = 'USER'; // Mặc định là USER
-
-    try {
-        if (authData.token) {
-            // Cắt chuỗi JWT lấy phần Payload
-            const base64Url = authData.token.split('.')[1];
-            const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-            
-            // Decode an toàn cho Unicode (TSX hỗ trợ tốt)
-            const jsonPayload = decodeURIComponent(
-                window.atob(base64).split('').map(function(c) {
-                    return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-                }).join('')
-            );
-            
-            const decodedToken = JSON.parse(jsonPayload);
-            userRole = decodedToken.role || 'USER'; // Lấy role từ token
-        }
-    } catch (error) {
-        console.error("Lỗi giải mã token:", error);
-    }
-
-    // Gán dữ liệu với Type an toàn
-    const userData: AuthData = {
-        id: authData.id,
-        name: authData.name,
-        email: authData.email,
-        avatar: authData.avatar,
-        typeAccount: authData.typeAccount,
-        token: authData.token,
-        role: userRole, 
-    };
-    
-    login(userData); // Gọi hàm từ useAuth context
-    window.dispatchEvent(new Event('cartUpdated'));
-
-    // // Điều hướng dựa trên Role
-    // if (userRole === 'ADMIN' || userRole === 'ROLE_ADMIN') {
-    //     navigate('/admin');
-    // } else {
-        navigate('/');
-    
-};
-
-  const loginGoogleAction = useGoogleLogin({
-    onSuccess: async (tokenResponse: TokenResponse) => {
-      try {
-        setIsLoading(true);
-        const authData = await authService.loginGoogle(tokenResponse.access_token);
-        handleLoginSuccess(authData); 
-      } catch (error: any) {
-        console.error("Google Login Error:", error);
-        setFieldErrors(prev => ({ ...prev, general: 'Đăng nhập Google thất bại' }));
-      } finally {
-        setIsLoading(false);
-      }
-    },
-    onError: () => {
-       setFieldErrors(prev => ({ ...prev, general: 'Kết nối Google thất bại' }));
-    }
-  });
-
-  const handleFacebookResponse = async (response: any) => {
-      if (!response.accessToken) {
-          console.log("Facebook Login Cancelled or Failed", response);
-          return;
-      }
-      try {
-          setIsLoading(true);
-          const authData = await authService.loginFacebook(response.accessToken);
-          handleLoginSuccess(authData); 
-      } catch (error: any) {
-          console.error("Facebook Login Error:", error);
-          setFieldErrors(prev => ({ ...prev, general: 'Đăng nhập Facebook thất bại' }));
-      } finally {
-          setIsLoading(false);
-      }
-  };
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { id, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [id === 'login-username' ? 'email' : 'password']: value
-    }));
-    if (fieldErrors.email || fieldErrors.password || fieldErrors.general) {
-       setFieldErrors(prev => ({
-         ...prev,
-         general: '',
-         [id === 'login-username' ? 'email' : 'password']: ''
-       }));
-    }
-  };
-
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setIsLoading(true);
-    setFieldErrors({ email: '', password: '', general: '' });
-    setSuccessMsg('');
-
-    try {
-      const authData = await authService.login({
-        email: formData.email,
-        password: formData.password
-      });
-      handleLoginSuccess(authData); 
-    } catch (error: any) {
-      let msg = error.message || 'Đăng nhập thất bại';
-      const lowerMsg = msg.toLowerCase();
-      const newErrors = { email: '', password: '', general: '' };
-
-      if (lowerMsg.includes('email không tồn tại')) {
-        newErrors.email = 'Email không tồn tại trên hệ thống';
-      } else if (lowerMsg.includes('sai mật khẩu')) {
-        newErrors.password = 'Sai mật khẩu. Vui lòng thử lại';
-      } else if (lowerMsg.includes('chưa được kích hoạt') || lowerMsg.includes('chưa xác thực')) {
-         newErrors.general = msg;
-         
-         // 2. THAY THẾ window.confirm VÀ alert BẰNG Modal.confirm VÀ message
-         Modal.confirm({
-            title: 'Tài khoản chưa kích hoạt',
-            content: 'Tài khoản chưa được kích hoạt. Bạn có muốn hệ thống gửi lại email xác thực không?',
-            okText: 'Gửi lại',
-            cancelText: 'Hủy',
-            onOk: async () => {
-                // Đưa logic gửi API vào hàm onOk của Modal
-                try {
-                    await httpClient.post(`/auth/resend-verification?email=${formData.email}`, null);
-                    message.success("Đã gửi lại email xác thực! Vui lòng kiểm tra hộp thư.");
-                } catch (err: any) {
-                    message.error("Gửi lại thất bại: " + (err.response?.data?.message || err.message));
-                }
-            }
-         });
-
-      } else {
-        newErrors.general = msg;
-      }
-      setFieldErrors(newErrors);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const {
+    formData,
+    fieldErrors,
+    isLoading,
+    successMsg,
+    handleChange,
+    handleSubmit,
+    loginGoogleAction,
+    handleFacebookResponse
+  } = useLogin();
 
   return (
-    
     <div className="auth-page-container">
-      
       <div className="auth-card">
         
         <div className="auth-form-side">
           <BackToHomeButton />
-          {/* HEADER CHỈ CÒN TIÊU ĐỀ */}
+          
           <div className="auth-form-header">
             <h3 className="auth-title">Đăng nhập</h3>
           </div>
 
+          {/* FORM ĐĂNG NHẬP THƯỜNG */}
           <form onSubmit={handleSubmit}>
             {successMsg && (
-                <div style={{ color: '#155724', backgroundColor: '#d4edda', borderColor: '#c3e6cb', padding: '10px', borderRadius: '5px', marginBottom: '15px', fontSize: '14px', textAlign: 'center' }}>
+                <div className="alert-success-msg" style={{ color: '#155724', backgroundColor: '#d4edda', borderColor: '#c3e6cb', padding: '10px', borderRadius: '5px', marginBottom: '15px', fontSize: '14px', textAlign: 'center' }}>
                     {successMsg}
                 </div>
             )}
 
             {fieldErrors.general && (
-              <div style={{ color: '#d9503f', marginBottom: '15px', textAlign: 'center', fontSize: '14px' }}>
+              <div className="alert-error-msg" style={{ color: '#d9503f', marginBottom: '15px', textAlign: 'center', fontSize: '14px' }}>
                 ⚠️ {fieldErrors.general}
               </div>
             )}
@@ -254,33 +90,27 @@ const LoginPage: React.FC = () => {
             </div>
 
             <button type="submit" className="btn-submit" disabled={isLoading}>
-              {isLoading ? "Signing In..." : "Đăng nhập"}
+              {isLoading ? "Đang xử lý..." : "Đăng nhập"}
             </button>
 
             <div className="form-footer">
               <label className="checkbox-container">
                 <input type="checkbox" defaultChecked />
                 <span className="checkmark"></span>
-                Remember Me
+                Ghi nhớ đăng nhập
               </label>
               <Link to="/forgot-password" className="link-forgot">Quên mật khẩu?</Link>
             </div>
           </form>
 
-          {/* --- PHẦN MỚI THÊM VÀO --- */}
-          
-          {/* Dòng kẻ ngang phân cách */}
-          <div style={{ 
-            display: 'flex', 
-            alignItems: 'center', 
-            margin: '25px 0 15px 0' 
-          }}>
+          {/* DÒNG KẺ PHÂN CÁCH SOCIAL */}
+          <div className="social-divider" style={{ display: 'flex', alignItems: 'center', margin: '25px 0 15px 0' }}>
              <div style={{ flex: 1, height: '1px', backgroundColor: '#e0e0e0' }}></div>
              <span style={{ padding: '0 10px', color: '#888', fontSize: '13px' }}>Hoặc đăng nhập với</span>
              <div style={{ flex: 1, height: '1px', backgroundColor: '#e0e0e0' }}></div>
           </div>
 
-          {/* Nhóm nút Social Login chuyển xuống đây */}
+          {/* SOCIAL LOGIN */}
           <div className="social-group" style={{ marginBottom: '20px' }}>
               <button 
                 type="button" 
@@ -293,7 +123,7 @@ const LoginPage: React.FC = () => {
               </button>
               
               <FacebookLogin
-                appId={FACEBOOK_APP_ID}
+                appId={FACEBOOK_APP_ID || ''}
                 autoLoad={false}
                 fields="name,email,picture"
                 callback={handleFacebookResponse}
@@ -310,15 +140,16 @@ const LoginPage: React.FC = () => {
                 )}
               />
           </div>
-          {/* --- KẾT THÚC PHẦN MỚI --- */}
 
         </div>
 
+        {/* BANNER BÊN PHẢI */}
         <div className="auth-banner-side">
           <h2 className="auth-banner-heading">Chào mừng đến với DinhLuongMobile</h2>
           <p className="auth-banner-text">Bạn chưa có tài khoản?</p>
           <Link to="/register" className="btn-switch-page">Đăng ký</Link>
         </div>
+
       </div>
     </div>
   );

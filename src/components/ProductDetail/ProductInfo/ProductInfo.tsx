@@ -1,191 +1,29 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { message } from 'antd'; 
 import "./ProductInfo.css";
-import type { ProductDetail, VariantDetail } from '../../../types/Product.types';
+
+import type { ProductDetailResponse } from '../../../types/product.types';
 import { ConfirmModal } from '../../Common/ConfirmModal/ConfirmModal';
+import { useProductInfo } from './useProductInfo';
 
 interface ProductInfoProps {
-    product: ProductDetail;
+    product: ProductDetailResponse;
     onVariantChange?: (variantId: number | null) => void;
 }
 
 const ProductInfo: React.FC<ProductInfoProps> = ({ product, onVariantChange }) => {
-    const { 
-        name, 
-        storageOptions = [], 
-        colorOptions = [], 
-        variants = [], 
-        promotions = [],
-        installmentText,
-        originalPrice: defaultOriginalPrice,
-        price: defaultPrice
-    } = product;
-
     const navigate = useNavigate();
-
-    // 1. State lựa chọn (Input của User)
-    const [selectedStorage, setSelectedStorage] = useState<string>(() => storageOptions.length > 0 ? storageOptions[0] : "");
-    const [selectedColor, setSelectedColor] = useState<string>(() => colorOptions.length > 0 ? colorOptions[0].name : "");
-
-    // State quản lý hiển thị Modal Yêu cầu đăng nhập
-    const [showLoginModal, setShowLoginModal] = useState(false);
-    const [loginMessage, setLoginMessage] = useState("");
-
-    // 2. Logic tìm biến thể
-    const selectedVariant = useMemo(() => {
-        if (!variants || variants.length === 0) return null;
-        return variants.find((v: VariantDetail) => 
-            v.rom === selectedStorage && v.colorName === selectedColor
-        );
-    }, [selectedStorage, selectedColor, variants]);
-
-    // 3. Bắn ID ra ngoài
-    useEffect(() => {
-        if (onVariantChange) {
-           onVariantChange(selectedVariant ? Number(selectedVariant.id) : null);
-        }
-    }, [selectedVariant, onVariantChange]);
-
-    // 4. Xác định giá trị hiển thị
-    const displayPrice = selectedVariant ? selectedVariant.price : defaultPrice;
-    const currentSku = selectedVariant ? selectedVariant.sku : "---";
-    const currentStock = selectedVariant ? selectedVariant.stock : 0;
     
-    // Logic giá gốc: Hiện tại lấy giá gốc chung, nếu variant có giá gốc riêng thì sửa ở đây
-    const currentOriginalPrice = defaultOriginalPrice; 
+    const {
+        selectedStorage, setSelectedStorage,
+        selectedColor, setSelectedColor,
+        showLoginModal, setShowLoginModal, loginMessage,
+        displayPrice, currentSku, currentStock, currentOriginalPrice,
+        discountPercent, formatCurrency,
+        handleAddMainToCart, handleBuyNow
+    } = useProductInfo(product, onVariantChange);
 
-    // Helper: Format tiền tệ
-    const formatCurrency = (amount: number) => {
-        return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
-    };
-
-    // Helper: Tính % giảm giá
-    const discountPercent = useMemo(() => {
-        if (currentOriginalPrice > displayPrice && currentOriginalPrice > 0) {
-            return Math.round(((currentOriginalPrice - displayPrice) / currentOriginalPrice) * 100);
-        }
-        return 0;
-    }, [displayPrice, currentOriginalPrice]);
-
-    // ==========================================
-    // HÀM 1: THÊM VÀO GIỎ HÀNG
-    // ==========================================
-    const handleAddMainToCart = async () => {
-        if (!selectedVariant) {
-            message.warning("Vui lòng chọn phiên bản sản phẩm!");
-            return;
-        }
-
-        // Kiểm tra hết hàng
-        if (currentStock <= 0) {
-            message.warning("Sản phẩm này hiện đang tạm hết hàng!");
-            return;
-        }
-
-        const userStr = localStorage.getItem('user'); 
-        if (!userStr) {
-            setLoginMessage("Vui lòng đăng nhập để thêm sản phẩm này vào giỏ hàng nhé!");
-            setShowLoginModal(true);
-            return;
-        }
-
-        const user = JSON.parse(userStr);
-
-        try {
-            const response = await fetch(`http://localhost:8080/api/cart/add/${user.id}`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${user.token}`
-                },
-                body: JSON.stringify({
-                    productVariantId: selectedVariant.id,
-                    quantity: 1,
-                    comboVariantIds: [] 
-                })
-            });
-
-            if (response.ok) {
-                message.success("Đã thêm sản phẩm vào giỏ hàng!");
-                window.dispatchEvent(new Event('cartUpdated')); 
-            } else {
-                message.error("Có lỗi xảy ra khi thêm vào giỏ hàng!");
-            }
-        } catch (error) {
-            console.error("Lỗi:", error);
-            message.error("Lỗi kết nối đến máy chủ!");
-        }
-    };
-
-    // ==========================================
-    // HÀM 2: MUA NGAY (CHUYỂN SANG TRANG THANH TOÁN)
-    // ==========================================
-    const handleBuyNow = () => {
-        if (!selectedVariant) {
-            message.warning("Vui lòng chọn phiên bản sản phẩm trước khi mua!");
-            return;
-        }
-
-        // Kiểm tra hết hàng
-        if (currentStock <= 0) {
-            message.warning("Sản phẩm này hiện đang tạm hết hàng!");
-            return;
-        }
-
-        const userStr = localStorage.getItem('user'); 
-        if (!userStr) {
-            setLoginMessage("Vui lòng đăng nhập để tiến hành thanh toán!");
-            setShowLoginModal(true);
-            return;
-        }
-
-        // --- ĐÓNG GÓI DATA GIỐNG HỆT CART ---
-        
-        // 1. Lấy ảnh tương ứng với màu đang chọn
-        const currentImage = colorOptions.find(c => c.name === selectedColor)?.img || "https://placehold.co/100x100";
-
-        // 2. Tạo 1 Item giả lập cấu trúc của CartItemType
-        const buyNowItem = {
-            id: `buy_now_${selectedVariant.id}`, 
-            productVariantId: selectedVariant.id,
-            name: name,
-            colorName: selectedColor,
-            rom: selectedStorage,
-            price: displayPrice,
-            originalPrice: currentOriginalPrice > 0 ? currentOriginalPrice : displayPrice,
-            quantity: 1, 
-            thumbnail: currentImage,
-            checked: true,
-            combos: [] 
-        };
-
-        // 3. Tính toán tiền nong cho UI Summary
-        const calcTotalPrice = buyNowItem.originalPrice;
-        const calcFinalPrice = buyNowItem.price;
-        const calcTotalDiscount = Math.max(0, calcTotalPrice - calcFinalPrice);
-
-        // 4. Lắp ráp Payload chuẩn xác như bên CartPage.tsx
-        const checkoutPayload = {
-            idsForBackend: [{
-                variantId: selectedVariant.id,
-                quantity: 1,
-                comboIds: []
-            }],
-            uiData: {
-                items: [buyNowItem],
-                summary: {
-                    totalPrice: calcTotalPrice,
-                    totalDiscount: calcTotalDiscount,
-                    finalPrice: calcFinalPrice
-                }
-            }
-        };
-
-        // 5. Lưu Payload và bay sang trang Checkout
-        localStorage.setItem('CHECKOUT_PAYLOAD', JSON.stringify(checkoutPayload));
-        navigate('/Checkout'); 
-    };
+    const { name, storageOptions = [], colorOptions = [], promotions = [], installmentText } = product;
 
     return (
         <div className="pd-right-col">
@@ -227,9 +65,9 @@ const ProductInfo: React.FC<ProductInfoProps> = ({ product, onVariantChange }) =
                         <button
                             key={color.name}
                             className={`pd-btn-option ${selectedColor === color.name ? 'active' : ''}`}
-                            onClick={() => setSelectedColor(color.name)}
+                            onClick={() => setSelectedColor(color.name || '')}
                         >
-                            <img src={color.img || "https://placehold.co/20x20"} alt={color.name} className="pd-color-img" />
+                            <img src={color.img  || product.thumbnail || "https://placehold.co/20x20"} alt={color.name} className="pd-color-img" />
                             <span className="opt-text">{color.name}</span>
                             {selectedColor === color.name && <span className="pd-check-triangle"></span>}
                         </button>
@@ -314,16 +152,12 @@ const ProductInfo: React.FC<ProductInfoProps> = ({ product, onVariantChange }) =
                 isOpen={showLoginModal}
                 title="Yêu cầu đăng nhập"
                 message={loginMessage}
-                confirmText="Đăng nhập"    // Sửa chữ nút chính
-                cancelText="Đóng"          // Sửa chữ nút phụ
-                
-                // 1. Khi bấm Đăng nhập -> Tắt modal và bay sang trang Login
+                confirmText="Đăng nhập"
+                cancelText="Đóng" 
                 onConfirm={() => {
                     setShowLoginModal(false);
                     navigate('/login'); 
                 }}
-                
-                // 2. Khi bấm Đóng hoặc dấu X -> Chỉ tắt modal, ở lại trang hiện tại
                 onClose={() => setShowLoginModal(false)} 
             />
         </div>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import type { ProductDetail } from '../../../types/Product.types';
+import type { ProductDetail } from '../../../types/product.types';
 import './CompareProductInfor.css';
 import { Link } from 'react-router-dom';
 interface Props {

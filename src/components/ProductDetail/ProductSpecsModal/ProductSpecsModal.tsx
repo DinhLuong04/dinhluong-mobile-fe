@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import "./ProductSpecsModal.css";
 
 // 1. Import Type
-import type { SpecGroup } from '../../../types/Product.types';
+import type { SpecGroup } from '../../../types/product.types';
 
 // 2. Định nghĩa Props
 interface ProductSpecsModalProps {

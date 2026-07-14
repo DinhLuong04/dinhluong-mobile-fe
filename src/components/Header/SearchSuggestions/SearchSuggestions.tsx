@@ -2,7 +2,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import './SearchSuggestions.css';
-import type { Product } from '../../../types/Product.types';
+import type { Product } from '../../../types/product.types';
 
 interface SearchSuggestionsProps {
     query: string;

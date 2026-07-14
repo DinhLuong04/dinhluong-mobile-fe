@@ -5,7 +5,7 @@ import ProductList from "../ProductList/ProductList";
 import AdvanceFilter from "../../Fillter/Fillter"; 
 import "./ProductSection.css";
 
-import type { ProductFilterParams } from "../../../types/Product.types";
+import type { ProductFilterParams } from "../../../types/product.types";
 
 const ProductSection = () => {
     const [isFilterOpen, setIsFilterOpen] = useState(false);

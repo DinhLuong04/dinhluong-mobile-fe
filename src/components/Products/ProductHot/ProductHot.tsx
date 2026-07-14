@@ -1,57 +1,23 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState } from 'react';
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { useCompare } from '../../../contexts/CompareContext';
-import type { Product } from '../../../types/Product.types';
+import type { ProductCardResponse } from '../../../types/product.types';
 import './ProductHot.css';
 import ProductCard from '../ProductCard/ProductCard';
-
-// 1. IMPORT SERVICE Y HỆT BÊN PRODUCT LIST
-import { productService } from '../../../service/productService'; 
+import { useProductHot } from './useProductHot';
 
 const ProductHot: React.FC = () => {
     const { addToCompare } = useCompare();
+    const { products, loading } = useProductHot();
 
-    const [products, setProducts] = useState<Product[]>([]);
-    const [loading, setLoading] = useState<boolean>(true);
-
-    // 2. FETCH VÀ MAP DATA THEO CHUẨN MỚI
-    useEffect(() => {
-        const fetchHotProducts = async () => {
-            try {
-                // Gọi qua service
-                const responseData = await productService.getFeaturedProducts(10);
-
-                // Map y hệt như bên màn ProductList
-                const cleanData: Product[] = responseData.map((item: any) => ({
-                    ...item,
-                    // Fix dự phòng: Nhỡ DTO backend vẫn trả thumbnailUrl thì map qua image cho thẻ Card
-                    image: item.image || item.thumbnailUrl, 
-                    price: item.price || item.displayPrice, 
-                    
-                    discountNote: item.discountNote ?? undefined,
-                    installmentText: item.installmentText ?? undefined,
-                    promotionText: item.promotionText ?? undefined,
-                    originalPrice: item.originalPrice ?? 0,
-                }));
-
-                setProducts(cleanData);
-            } catch (error) {
-                console.error("Lỗi khi tải sản phẩm Hot Sale:", error);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchHotProducts();
-    }, []);
-
-    const handleCompare = (product: Product) => {
+    const handleCompare = (product: ProductCardResponse) => {
         console.log('Đã thêm so sánh:', product.name);
-        addToCompare(product);
+        // Casting nhẹ nếu Context đang yêu cầu type Product cũ
+        addToCompare(product as any);
     };
 
-    // --- CÁC HÀM XỬ LÝ SCROLL (Giữ nguyên không đổi) ---
+    // --- XỬ LÝ KÉO THẢ CHUỘT (DRAG TO SCROLL) ---
     const scrollRef = useRef<HTMLDivElement>(null);
     const isDown = useRef(false);
     const startX = useRef(0);

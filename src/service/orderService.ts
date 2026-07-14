@@ -1,144 +1,78 @@
-// src/service/order.service.ts
-
-const BASE_URL = 'http://localhost:8080/api/admin/orders';
-
-const getAuthToken = () => {
-    const userStr = localStorage.getItem('user');
-    return userStr ? JSON.parse(userStr).token : '';
-};
-
-const getHeaders = (isJson = false) => ({
-    Authorization: `Bearer ${getAuthToken()}`,
-    ...(isJson && { 'Content-Type': 'application/json' }),
-});
+// src/service/orderService.ts
+import httpClient from '../api/httpClient';
+import { API_CONFIG } from '../config/api.config';
+import type { PlaceOrderRequest } from '../types/order.types';
+import type { ApiResponse } from '../types/common.types';
 
 export const orderService = {
-
-    // 1. Lấy danh sách đơn hàng (🔥 ĐÃ THÊM PHÂN TRANG)
-    getOrders: async (status: string, keyword: string) => {
-        const queryParams = new URLSearchParams({
-            status,
-            keyword
-        }).toString();
-
-        const response = await fetch(`${BASE_URL}?${queryParams}`, {
-            method: 'GET',
-            headers: getHeaders(),
-        });
-
-        const json = await response.json();
-
-        if (response.ok && json.status === 'success') {
-            return json.data; // Trả về mảng trực tiếp
+  
+    placeOrder: async (payload: PlaceOrderRequest): Promise<any> => {
+        
+        const response = await httpClient.post<any>(
+            API_CONFIG.ORDERS.PLACE_ORDER,
+            payload
+        );
+        if (response.code !== 200 && response.status !== 'success') {
+            throw response; 
         }
-
-        throw new Error(json.message || 'Không thể tải danh sách đơn hàng');
+        return response; 
     },
 
-    // 2. 🔥 Lấy thống kê đơn hàng cho Mini Dashboard
-    getOrderStats: async () => {
-        const response = await fetch(`${BASE_URL}/stats`, {
-            method: 'GET',
-            headers: getHeaders(),
-        });
-
-        const json = await response.json();
-
-        if (response.ok && json.status === 'success') {
-            return json.data;
-        }
-
-        throw new Error(json.message || 'Không thể tải thống kê đơn hàng');
-    },
-
-    // 3. Cập nhật trạng thái 1 đơn hàng (Giữ nguyên)
-    updateOrderStatus: async (
-        orderId: number,
-        status: string,
-        reason?: string
-    ) => {
-        const response = await fetch(
-            `${BASE_URL}/${orderId}/status`,
-            {
-                method: 'PUT',
-                headers: getHeaders(true),
-                body: JSON.stringify({
-                    status,
-                    reason: reason || null
-                }),
-            }
+    getMyOrders: async (status?: string): Promise<any> => {
+        const response = await httpClient.get<ApiResponse<any>>(
+            API_CONFIG.ORDERS.MY_ORDERS,
+            { params: { status } } 
         );
 
-        const json = await response.json();
-
-        if (response.ok && json.status === 'success') {
-            return json.data;
+        if (response.code !== 200) {
+            throw new Error(response.message || 'Không thể tải danh sách đơn hàng');
         }
 
-        throw new Error(json.message || 'Không thể cập nhật trạng thái');
+        return response.data;
     },
 
-    // 4. 🔥 Cập nhật trạng thái HÀNG LOẠT (Bulk Actions)
-    updateBulkStatus: async (
-        orderIds: number[],
-        newStatus: string,
-        reason?: string
-    ) => {
-        const response = await fetch(`${BASE_URL}/bulk-status`, {
-            method: 'PUT',
-            headers: getHeaders(true),
-            body: JSON.stringify({
-                orderIds,
-                newStatus,
-                reason: reason || null
-            }),
-        });
-
-        const json = await response.json();
-
-        if (response.ok && json.status === 'success') {
-            return json.data;
-        }
-
-        throw new Error(json.message || 'Không thể cập nhật hàng loạt');
-    },
-
-    // 5. Export Excel (Giữ nguyên)
-    exportExcel: async (status: string, keyword: string) => {
-
-        const queryParams = new URLSearchParams({
-            status,
-            keyword
-        }).toString();
-
-        const response = await fetch(
-            `${BASE_URL}/export?${queryParams}`,
-            {
-                method: 'GET',
-                headers: getHeaders(),
-            }
+    getRecentOrders: async (): Promise<any> => {
+        const response = await httpClient.get<ApiResponse<any>>(
+            API_CONFIG.ORDERS.RECENT_ORDERS
         );
 
-        if (!response.ok) {
-            throw new Error('Không thể xuất Excel');
+        if (response.code !== 200) {
+            throw new Error(response.message || 'Không thể tải đơn hàng gần đây');
         }
 
-        const blob = await response.blob();
+        return response.data;
+    },
 
-        // xử lý download luôn tại service
-        const url = window.URL.createObjectURL(blob);
+    getOrderDetail: async (orderId: number): Promise<any> => {
+        const response = await httpClient.get<ApiResponse<any>>(
+            API_CONFIG.ORDERS.GET_DETAIL(orderId)
+        );
 
-        const link = document.createElement('a');
-        link.href = url;
+        if (response.code !== 200) {
+            throw new Error(response.message || 'Không thể tải chi tiết đơn hàng');
+        }
 
-        link.download = `orders_${status}_${Date.now()}.xlsx`;
+        return response.data;
+    },
 
-        document.body.appendChild(link);
+    cancelOrder: async (orderId: number, reason?: string): Promise<any> => {
+        const response = await httpClient.put<ApiResponse<any>>(
+            API_CONFIG.ORDERS.CANCEL(orderId),
+            { reason }
+        );
+        if (response.code !== 200) throw new Error(response.message || 'Lỗi khi hủy đơn hàng');
+        return response.data;
+    },
+    
+    verifyVnpay: async (queryString: string): Promise<any> => {
+       const response = await httpClient.get<ApiResponse<any>>(
+            `${API_CONFIG.ORDERS.VNPAY_RETURN}${queryString}`
+        );
 
-        link.click();
+        if (response.code !== 200) {
+            throw response;
+        }
 
-        link.remove();
-
-        window.URL.revokeObjectURL(url);
+        return response.data;
     }
 };

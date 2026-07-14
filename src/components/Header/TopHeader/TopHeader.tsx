@@ -1,4 +1,3 @@
-import React from 'react';
 import Logo from '../Logo/Logo';
 import BtnCategory from '../BtnCategory/BtnCategory';
 import SearchBar from '../SearchBar/SearchBar';

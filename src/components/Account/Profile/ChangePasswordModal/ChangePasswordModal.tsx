@@ -1,70 +1,24 @@
-import React, { useState } from 'react';
-import { message } from 'antd'; 
+import React from 'react';
+import { useChangePassword } from './useChangePassword';
+
 interface ChangePasswordModalProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
 export const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({ isOpen, onClose }) => {
-  const [oldPassword, setOldPassword] = useState('');
-  const [newPassword, setNewPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [errorMsg, setErrorMsg] = useState('');
-
-  const getToken = () => {
-    const userStr = localStorage.getItem('user');
-    return userStr ? JSON.parse(userStr).token : '';
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setErrorMsg('');
-
-    if (newPassword.length < 6) {
-      setErrorMsg("Mật khẩu mới phải có ít nhất 6 ký tự");
-      return;
-    }
-
-    if (newPassword !== confirmPassword) {
-      setErrorMsg("Mật khẩu xác nhận không khớp");
-      return;
-    }
-
-    try {
-      setIsLoading(true);
-      const res = await fetch('http://localhost:8080/api/users/change-password', { // Đổi lại path API theo Controller của bạn
-        method: 'PUT',
-        headers: {
-          'Authorization': `Bearer ${getToken()}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ oldPassword, newPassword, confirmPassword })
-      });
-
-      const data = await res.json();
-      
-      if (data.code === 200) {
-        message.success("Đổi mật khẩu thành công! Vui lòng đăng nhập lại với mật khẩu mới nếu cần.");
-        handleClose();
-      } else {
-        setErrorMsg(data.message || "Có lỗi xảy ra khi đổi mật khẩu");
-      }
-    } catch (error) {
-      console.error("Lỗi đổi mật khẩu:", error);
-      setErrorMsg("Lỗi kết nối đến máy chủ");
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleClose = () => {
-    setOldPassword('');
-    setNewPassword('');
-    setConfirmPassword('');
-    setErrorMsg('');
-    onClose();
-  };
+  const {
+    oldPassword,
+    setOldPassword,
+    newPassword,
+    setNewPassword,
+    confirmPassword,
+    setConfirmPassword,
+    isLoading,
+    errorMsg,
+    handleSubmit,
+    handleClose
+  } = useChangePassword({ onClose });
 
   if (!isOpen) return null;
 
@@ -94,6 +48,7 @@ export const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({ isOpen
               onChange={e => setOldPassword(e.target.value)}
               style={{ padding: '10px', borderRadius: '4px', border: '1px solid #ccc', outline: 'none' }}
               required
+              disabled={isLoading}
             />
           </div>
 
@@ -105,6 +60,8 @@ export const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({ isOpen
               onChange={e => setNewPassword(e.target.value)}
               style={{ padding: '10px', borderRadius: '4px', border: '1px solid #ccc', outline: 'none' }}
               required
+              minLength={6}
+              disabled={isLoading}
             />
           </div>
 
@@ -116,9 +73,11 @@ export const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({ isOpen
               onChange={e => setConfirmPassword(e.target.value)}
               style={{ padding: '10px', borderRadius: '4px', border: '1px solid #ccc', outline: 'none' }}
               required
+              minLength={6}
+              disabled={isLoading}
             />
           </div>
-
+          
           <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '10px' }}>
             <button type="button" onClick={handleClose} disabled={isLoading} style={{ padding: '10px 15px', border: '1px solid #ccc', background: '#fff', borderRadius: '4px', cursor: 'pointer' }}>Hủy</button>
             <button type="submit" disabled={isLoading} style={{ padding: '10px 15px', border: 'none', background: isLoading ? '#ccc' : '#cb1c22', color: '#fff', borderRadius: '4px', cursor: isLoading ? 'wait' : 'pointer', fontWeight: 'bold' }}>
@@ -130,3 +89,5 @@ export const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({ isOpen
     </div>
   );
 };
+
+export default ChangePasswordModal;

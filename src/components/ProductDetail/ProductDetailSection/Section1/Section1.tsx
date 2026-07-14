@@ -1,54 +1,25 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import "./Section1.css";
 
-// 1. Import các thành phần cần thiết
-import { useParams } from "react-router-dom";
-import { productService } from "../../../../service/productService"; // Kiểm tra lại đường dẫn
 import Breadcrumb from "../../Breadcrumb/Breadcrumb";
 import ProductGallery from "../../ProductGallery/ProductGallery";
 import ProductInfo from "../../ProductInfo/ProductInfo";
 import StickyProductBar from "../../StickyProductBar/StickyProductBar";
 import ProductSpecs from "../../ProductSpecs/ProductSpecs";
 
-// 2. Import Type đã định nghĩa (Quan trọng)
-import type { ProductDetail } from "../../../../types/Product.types";
+import type { ProductDetail, VariantDetail } from "../../../../types/product.types";
 
-const Section1: React.FC = () => {
+interface Section1Props {
+    product: ProductDetail;
+}
 
-    const { slug } = useParams<{ slug: string }>();
-    console.log(slug);
+const Section1: React.FC<Section1Props> = ({ product }) => {
     const [showStickyBar, setShowStickyBar] = useState<boolean>(false);
 
-    // 3. Định nghĩa kiểu cho State: Có thể là ProductDetail HOẶC null
-    const [product, setProduct] = useState<ProductDetail | null>(null);
-    const [loading, setLoading] = useState<boolean>(true);
-    const [error, setError] = useState<string | null>(null);
+    // 1. Khởi tạo state để lưu ID của biến thể đang được chọn
+    const [selectedVariantId, setSelectedVariantId] = useState<number | null>(null);
 
-    useEffect(() => {
-        const fetchDetail = async () => {
-            try {
-                setLoading(true);
-                // Gọi service
-                if (slug) {
-                    const data = await productService.getProductBySlug(slug);
-                    setProduct(data);
-                }
-            } catch (err) {
-                console.error("Lỗi:", err);
-                // 4. Xử lý lỗi trong TS (err là unknown)
-                if (err instanceof Error) {
-                    setError(err.message);
-                } else {
-                    setError("Đã có lỗi xảy ra");
-                }
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchDetail();
-    }, [slug]);
-
+    // Xử lý hiện/ẩn Sticky Bar khi cuộn trang
     useEffect(() => {
         const handleScroll = () => {
             if (window.scrollY > 300) {
@@ -59,55 +30,68 @@ const Section1: React.FC = () => {
         };
 
         window.addEventListener("scroll", handleScroll);
-
         return () => {
             window.removeEventListener("scroll", handleScroll);
         };
     }, []);
 
-    if (loading) return <div className="loading-container">Đang tải dữ liệu...</div>;
-    if (error) return <div className="error-container">Lỗi: {error}</div>;
-
-    // 5. Kiểm tra null trước khi render
-    if (!product) return <div className="not-found">Không tìm thấy sản phẩm</div>;
+    // 2. Tự động tìm thông tin chi tiết của biến thể dựa trên selectedVariantId
+    const selectedVariant = useMemo(() => {
+        if (!selectedVariantId || !product.variants) return null;
+        return product.variants.find((v: VariantDetail) => Number(v.id) === selectedVariantId) || null;
+    }, [selectedVariantId, product.variants]);
 
     return (
         <div className="Section-1-bg">
             <div className="container Section-1">
+
+                {/* 3. Truyền dữ liệu ĐỘNG từ selectedVariant vào StickyProductBar */}
                 <StickyProductBar
                     isVisible={showStickyBar}
                     name={product.name}
-                    // Kiểm tra mảng tồn tại trước khi truy cập index 0
-                    image={product.productImages?.length > 0 ? product.productImages[0] : product.thumbnail}
-                    price={product.price}
+                    // Ưu tiên: 1. Ảnh của variant đang chọn -> 2. Thumbnail của sản phẩm -> 3. Nếu không có lấy null đẩy cho StickyBar tự xử lý DEFAULT
+                    image={selectedVariant?.imageUrl || product.thumbnail || null}
+                    price={selectedVariant?.price || product.price}
                     originalPrice={product.originalPrice}
+                    sku={selectedVariant?.sku}
+                    productVariantId={selectedVariant?.id}
+                    stock={selectedVariant ? selectedVariant.stock : (product.totalStock || 0)}
+                    colorName={selectedVariant?.colorName}
+                    rom={selectedVariant?.rom}
                 />
 
-                <Breadcrumb productName={product.name} />
+                <Breadcrumb
+                    productName={product.name}
+                    categoryName={product.categoryName}
+                    brandName={product.brandName}
+                />
 
                 <div className="inner-section1-product-detail">
                     {/* Gallery */}
                     <ProductGallery
                         key={product.slug}
-                        images={
-                            (product.productImages && product.productImages.length > 0)
-                                ? product.productImages
-                                : [product.thumbnail || "https://placehold.co/600x400"]
-                        }
+                        images={product.productImages}
+                        thumbnail={product.thumbnailUrl || product.thumbnail} // Truyền thêm dòng này
                         highlightSpecs={product.highlightSpecs}
                         specsData={product.specsData}
                     />
 
                     {/* Info */}
-                    <ProductInfo product={product} />
+                    {/* 4. Truyền hàm setSelectedVariantId vào onVariantChange để nhận data từ ProductInfo bắn lên */}
+                    <ProductInfo
+                        product={product}
+                        onVariantChange={(variantId) => setSelectedVariantId(variantId)}
+                    />
 
                     {/* Mobile Specs */}
-                    <div className="pd-specs-mobile">
-                        <ProductSpecs
-                            highlightSpecs={product.highlightSpecs}
-                            specsData={product.specsData}
-                        />
-                    </div>
+                    {(product.highlightSpecs?.length > 0 || product.specsData?.length > 0) && (
+                        <div className="pd-specs-mobile">
+                            <ProductSpecs
+                                highlightSpecs={product.highlightSpecs}
+                                specsData={product.specsData}
+                            />
+                        </div>
+                    )}
                 </div>
             </div>
         </div>

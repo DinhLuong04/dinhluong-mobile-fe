@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import type { ProductDetail } from '../../../types/Product.types';
+import type { ProductDetail } from '../../../types/product.types';
 import './HighlightSpecs.css';
 
 interface Props {

@@ -1,7 +1,7 @@
 // src/contexts/CompareProvider.tsx
 import React, { useState, useEffect, type ReactNode } from 'react';
 import { message } from 'antd'; // 1. Import message
-import type { Product } from '../types/Product.types';
+import type { Product } from '../types/product.types';
 import { CompareContext } from '../contexts/CompareContext';
 
 export const CompareProvider: React.FC<{ children: ReactNode }> = ({ children }) => {

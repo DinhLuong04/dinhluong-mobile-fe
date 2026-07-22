@@ -1,7 +1,19 @@
-// src/components/MobileBottomNav/useMobileBottomNav.ts
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { notificationService } from '../../../service/notificationService';
+
+export interface NavItem {
+    id: string;
+    label: string;
+    path: string;
+    badge: number;
+}
+const NAV_ITEMS_CONFIG: Omit<NavItem, 'badge'>[] = [
+    { id: 'home', label: 'Trang chủ', path: '/' },
+    { id: 'orders', label: 'Đơn hàng', path: '/member/order' },
+    { id: 'notification', label: 'Thông báo', path: '#' },
+    { id: 'account', label: 'Tài khoản', path: '/member' }
+];
 
 export const useMobileBottomNav = (unreadNotifCount: number, setUnreadCount?: (count: number) => void) => {
     const navigate = useNavigate();
@@ -41,7 +53,7 @@ export const useMobileBottomNav = (unreadNotifCount: number, setUnreadCount?: (c
         if (setUnreadCount) setUnreadCount(count);
     };
 
-    const handleNavClick = (item: any) => {
+    const handleNavClick = (item: NavItem) => {
         if (item.id === 'notification') {
             setIsNotifOpen(true);
             return;
@@ -49,12 +61,11 @@ export const useMobileBottomNav = (unreadNotifCount: number, setUnreadCount?: (c
         navigate(item.path);            
     };
 
-    const NAV_ITEMS = [
-        { id: 'home', label: 'Trang chủ', path: '/', badge: 0 },
-        { id: 'orders', label: 'Đơn hàng', path: '/member/order', badge: 0 },
-        { id: 'notification', label: 'Thông báo', path: '#', badge: localUnreadCount },
-        { id: 'account', label: 'Tài khoản', path: '/member', badge: 0 }
-    ];
+    // Gắn badge vào cấu hình tĩnh
+    const NAV_ITEMS: NavItem[] = NAV_ITEMS_CONFIG.map(item => ({
+        ...item,
+        badge: item.id === 'notification' ? localUnreadCount : 0
+    }));
 
     let activeIndex = NAV_ITEMS.findIndex(item => {
         if (item.path === '/' && location.pathname === '/') return true;

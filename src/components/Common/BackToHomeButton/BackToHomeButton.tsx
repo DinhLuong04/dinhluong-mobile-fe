@@ -1,8 +1,6 @@
-import React from 'react';
-// 1. Phải import useNavigate từ react-router-dom
 import { useNavigate } from 'react-router-dom'; 
 
-// 2. Thêm chữ "export" ở đầu để các component khác có thể dùng
+
 export const BackToHomeButton = () => {
   const navigate = useNavigate();
   

@@ -1,4 +1,4 @@
-// src/types/product.types.ts
+
 import type { PageableObject, SortObject } from './common.types';
 
 // ==================== 1. PRODUCT CARD (Danh sách, Trang chủ) ====================

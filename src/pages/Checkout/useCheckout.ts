@@ -1,4 +1,3 @@
-// src/pages/Checkout/useCheckout.ts
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { message, Modal } from "antd";
@@ -106,8 +105,8 @@ export const useCheckout = () => {
             if (response.status === 'success' || response.code === 200) {
                 
                 // Nếu backend trả về kèm paymentUrl (dành cho VNPAY/Momo) thì redirect
-                if (response.data?.paymentUrl) {
-                    window.location.href = response.data.paymentUrl; 
+                if (response?.paymentUrl) {
+                    window.location.href = response.paymentUrl; 
                 } else {
                     // Nếu là COD (paymentUrl = null) thì chuyển hướng trang kết quả COD
                     navigate('/payment/result?type=cod&status=success'); 

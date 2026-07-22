@@ -1,19 +1,23 @@
 export interface CartComboItem {
     id: number | string;
     productVariantId?: number | string;
+    image?: string;
     name?: string;
     price: number;
     originalPrice?: number;
     checked?: boolean;
+    thumbnail?: string;
 }
 
 export interface CartItemType {
     id: number | string;
     productVariantId: number;
+    sku?: string;         
     name: string;
+    slug?: string;          
+    image?: string;        
     colorName?: string;
     rom?: string;
-    thumbnail?: string;
     
     price: number;
     originalPrice: number;

@@ -1,7 +1,13 @@
 import React from "react";
 import "./PaymentMethod.css";
 
-const PAYMENT_METHODS = [
+export interface PaymentMethodItem {
+    id: string;
+    label: string;
+    img: string;
+}
+
+const PAYMENT_METHODS: PaymentMethodItem[] = [
   {
     id: "cod",
     label: "Thanh toán khi nhận hàng",
@@ -14,39 +20,50 @@ const PAYMENT_METHODS = [
   },
 ];
 
-export const PaymentMethod = ({ selectedMethod, onChange }: any) => {
+interface PaymentMethodProps {
+    selectedMethod: string;
+    onChange: (methodId: string) => void;
+}
+
+export const PaymentMethod: React.FC<PaymentMethodProps> = ({ selectedMethod, onChange }) => {
   return (
-    <div className="payment-section">
-      <span className="payment-title">Phương thức thanh toán</span>
+    <section className="payment-section" aria-label="Phương thức thanh toán">
+      <h3 className="payment-title">Phương thức thanh toán</h3>
 
       <div className="payment-list">
-        {PAYMENT_METHODS.map((method) => (
-          <button
-            key={method.id}
-            className="payment-option"
-            type="button"
-            onClick={() => onChange(method.id)}
-          >
-            <input
-              type="radio"
-              name="payment_method"
-              checked={selectedMethod === method.id}
-              onChange={() => onChange(method.id)}
-              className="payment-radio"
-            />
+        {PAYMENT_METHODS.map((method) => {
+          const isSelected = selectedMethod === method.id;
 
-            <img
-              src={method.img}
-              alt={method.label}
-              className="payment-icon"
-            />
+          return (
+           
+            <label 
+              key={method.id}
+              className={`payment-option ${isSelected ? 'selected' : ''}`}
+            >
+              <input
+                type="radio"
+                name="payment_method"
+                checked={isSelected}
+                onChange={() => onChange(method.id)}
+                className="payment-radio"
+              />
 
-            <div className="payment-info">
-              <span className="payment-label">{method.label}</span>
-            </div>
-          </button>
-        ))}
+              <img
+                src={method.img}
+                alt={method.label}
+                className="payment-icon"
+                loading="lazy"
+              />
+
+              <div className="payment-info">
+                <span className="payment-label">{method.label}</span>
+              </div>
+            </label>
+          );
+        })}
       </div>
-    </div>
+    </section>
   );
 };
+
+export default PaymentMethod;

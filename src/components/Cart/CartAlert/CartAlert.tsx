@@ -1,5 +1,5 @@
 import React from "react";
-import "./CartAlert.css"; // Import file CSS
+import "./CartAlert.css"; 
 
 interface CartAlertProps {
   isOpen: boolean;

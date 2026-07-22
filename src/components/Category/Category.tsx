@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import "./Category.css";
-import { mainCategories } from "../../types/menuData"; // Giữ import của bạn
+import { mainCategories } from "../../types/menuData";
 import { useNavigate } from "react-router-dom";
 
 interface CategoryProps {
-    onClose?: () => void; // Thêm prop onClose
+    onClose?: () => void; 
 }
 
 const Category: React.FC<CategoryProps> = ({ onClose }) => {
@@ -15,7 +15,7 @@ const Category: React.FC<CategoryProps> = ({ onClose }) => {
 
   const handleCategoryClick = (path: string) => {
       navigate(path);
-      if (onClose) onClose(); // Đóng menu sau khi click chọn danh mục
+      if (onClose) onClose(); 
   };
 
   return (

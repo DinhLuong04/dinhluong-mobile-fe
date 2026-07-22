@@ -1,5 +1,5 @@
 import React from "react";
-import type { CartItem as CartItemType, CartComboItem } from "../../../types/product.types";
+import type { CartItemType, CartComboItem } from "../../../types/cart.types";
 import { QuantityInput } from "../QuantityInput/QuantityInput";
 import "./CartItem.css";
 
@@ -11,7 +11,7 @@ interface Props {
   onToggleCombo: (productId: number | string, comboId: number | string) => void;
 }
 
-// Component con ComboItem (tách ra để code gọn hơn)
+
 const ComboItem = ({ item, onToggle }: { item: CartComboItem, onToggle: () => void }) => (
   <div className="combo-item-wrapper">
     <input 

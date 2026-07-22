@@ -2,7 +2,6 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 import { chatService } from '../../service/chatService';
 import type { ChatProductDto } from '../../types/chat.types';
 
-
 export interface Message {
     id: number;
     text: string;
@@ -10,12 +9,14 @@ export interface Message {
     sender: 'user' | 'bot';
     timestamp: Date;
 }
-
+const generateNumericId = () => {
+    return Date.now() + Math.floor(Math.random() * 1000);
+};
 export const useChatbot = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [messages, setMessages] = useState<Message[]>([
         {
-            id: 1,
+            id: generateNumericId(), 
             text: "Xin chào! Mình là trợ lý ảo DLM Store. 👋\nMình có thể giúp gì cho bạn? (Ví dụ: *Tìm điện thoại 10 triệu*, *So sánh iPhone 15 và S24*...)",
             sender: 'bot',
             timestamp: new Date()
@@ -30,7 +31,9 @@ export const useChatbot = () => {
     }, []);
 
     useEffect(() => {
-        scrollToBottom();
+        if (isOpen) {
+            scrollToBottom();
+        }
     }, [messages, isOpen, scrollToBottom]);
 
     const handleSendMessage = async () => {
@@ -39,7 +42,7 @@ export const useChatbot = () => {
         const currentText = inputText;
 
         const newUserMsg: Message = {
-            id: Date.now(),
+            id: generateNumericId(),
             text: currentText,
             sender: 'user',
             timestamp: new Date()
@@ -53,7 +56,7 @@ export const useChatbot = () => {
             const responseData = await chatService.sendMessageToBot(currentText);
 
             const newBotMsg: Message = {
-                id: Date.now() + 1,
+                id: generateNumericId(),
                 text: responseData.answer || "Xin lỗi, tôi chưa hiểu rõ ý bạn.",
                 products: responseData.products,
                 sender: 'bot',
@@ -63,7 +66,7 @@ export const useChatbot = () => {
 
         } catch (error: any) {
             const errorMsg: Message = {
-                id: Date.now() + 1,
+                id: generateNumericId(),
                 text: `⚠️ Xin lỗi, đã có lỗi xảy ra: ${error.message || "Vui lòng thử lại!"}`,
                 sender: 'bot',
                 timestamp: new Date()

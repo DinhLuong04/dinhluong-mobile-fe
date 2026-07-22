@@ -1,17 +1,21 @@
 import React from "react";
 import "./OrderItem.css";
-import { ArrowRightIcon, GiftIcon, TrendingIcon } from "../Icons";
+import { TrendingIcon } from "../Icons";
+import type { CartItemType, CartComboItem } from "../../../types/cart.types";
 
-export const OrderItem = ({ items }: any) => {
+interface OrderItemProps {
+  items: CartItemType[];
+}
+
+export const OrderItem: React.FC<OrderItemProps> = ({ items }) => {
   if (!items || items.length === 0) return null;
 
   return (
     <div className="order-order-card">
-      <div className="order-header-title">Sản phẩm trong đơn ({items.length})</div>
+      <h3 className="order-header-title">Sản phẩm trong đơn ({items.length})</h3>
 
-      {items.map((item: any, index: number) => {
+      {items.map((item, index) => {
         const combos = item.combos || [];
-        const comboCurrentTotal = combos.reduce((sum: number, c: any) => sum + c.price, 0);
 
         return (
           <React.Fragment key={item.id}>
@@ -21,14 +25,10 @@ export const OrderItem = ({ items }: any) => {
             <div className="order-product-row">
               <div className="order-product-img-box">
                 <img
-                  src={
-                    item.thumbnail ||
-                    item.image ||
-                    item.imageUrl ||
-                    "https://placehold.co/100x100"
-                  }
+                  src={item.image || "https://placehold.co/100x100"}
                   alt={item.name}
                   className="order-product-img"
+                  loading="lazy"
                 />
               </div>
               <div className="order-product-info">
@@ -52,17 +52,14 @@ export const OrderItem = ({ items }: any) => {
                   <TrendingIcon /> <span>Phụ kiện mua kèm</span>
                 </div>
                 <div className="order-combo-list">
-                  {combos.map((combo: any) => (
+                  {combos.map((combo: CartComboItem) => (
                     <div key={combo.id} className="order-combo-item">
                       <div className="order-combo-item-img-box">
                         <img
-                          src={
-                            combo.thumbnail ||
-                            combo.image ||
-                            combo.imageUrl ||
-                            "https://placehold.co/100x100"
-                          }
+                          src={combo.image || "https://placehold.co/100x100"}
+                          alt={combo.name}
                           className="product-img"
+                          loading="lazy"
                         />
                       </div>
                       <div className="order-combo-item-content">

@@ -8,10 +8,10 @@ interface Props {
 }
 
 export const QuantityInput: React.FC<Props> = ({ value, max, onChange }) => {
-  // Dùng state nội bộ để giữ giá trị text khi user đang gõ
+
   const [inputValue, setInputValue] = useState<string>(value.toString());
 
-  // Đồng bộ lại UI nếu value từ component cha (server) thay đổi
+  // Đồng bộ lại UI 
   useEffect(() => {
     setInputValue(value.toString());
   }, [value]);
@@ -19,7 +19,6 @@ export const QuantityInput: React.FC<Props> = ({ value, max, onChange }) => {
   // Xử lý khi user đang gõ phím
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value;
-    // Dùng Regex chặn chữ cái, chỉ cho phép gõ số (hoặc để chuỗi rỗng khi xóa hết)
     if (/^\d*$/.test(val)) {
       setInputValue(val);
     }
@@ -65,7 +64,7 @@ export const QuantityInput: React.FC<Props> = ({ value, max, onChange }) => {
         type="text"
         value={inputValue}
         onChange={handleInputChange}
-        onBlur={handleBlur} // 🔥 Bắt sự kiện click ra ngoài để chốt số
+        onBlur={handleBlur} 
         className="qty-input"
         style={{ textAlign: 'center' }}
       />

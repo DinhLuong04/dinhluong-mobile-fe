@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
-import { message } from 'antd'; // 1. IMPORT MESSAGE TỪ ANTD
+import { message } from 'antd'; 
 import '../../../components/ProductDetail/ProductDetailSection/ProductReviews/ProductReviews.css'; 
 
-// Tái sử dụng lại StarIcon từ file của bạn
 const StarIcon = ({ fill = "#FBBF24", size = 16, onClick, onMouseEnter, onMouseLeave, style }: any) => (
     <svg width={size} height={size} viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" 
          onClick={onClick} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave} 
@@ -13,13 +12,12 @@ const StarIcon = ({ fill = "#FBBF24", size = 16, onClick, onMouseEnter, onMouseL
 
 interface ReviewModalProps {
     isOpen: boolean;
-    hasPurchased: boolean; // Flag xác định xem user đã mua hàng chưa
+    hasPurchased: boolean; 
     onClose: () => void;
     onSubmitReview: (rating: number, content: string, files: File[]) => void;
 }
 
 const ReviewModal: React.FC<ReviewModalProps> = ({ isOpen, hasPurchased, onClose, onSubmitReview }) => {
-    // States cho Form Đánh Giá
     const [rating, setRating] = useState<number>(5);
     const [hoverRating, setHoverRating] = useState<number>(0);
     const [content, setContent] = useState<string>("");
@@ -34,7 +32,6 @@ const ReviewModal: React.FC<ReviewModalProps> = ({ isOpen, hasPurchased, onClose
     };
 
     const submitForm = () => {
-        // 2. THAY THẾ ALERT BẰNG MESSAGE.WARNING
         if(!content.trim()) {
             message.warning("Vui lòng nhập nội dung đánh giá!"); 
             return;
@@ -60,7 +57,6 @@ const ReviewModal: React.FC<ReviewModalProps> = ({ isOpen, hasPurchased, onClose
                 {/* Body Modal */}
                 <div>
                     {!hasPurchased ? (
-                        /* GIAO DIỆN CHƯA MUA HÀNG (Mẫu FPT) */
                         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                             <img alt="reject-rating" width="291" height="180" src="https://cdn2.fptshop.com.vn/unsafe/640x0/filters:format(webp):quality(75)/estore-v2/img/reject-rating.png" />
                             <div style={{ marginBottom: '8px', fontSize: '18px', fontWeight: '600', color: '#111827', textAlign: 'center' }}>

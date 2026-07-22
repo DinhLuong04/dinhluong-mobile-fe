@@ -1,5 +1,5 @@
 import React from "react";
-import "./OrderSummary.css"; // Import file CSS
+import "./OrderSummary.css"; 
 
 interface Props {
   totalPrice: number;

@@ -94,7 +94,7 @@ export const useProductInfo = (product: ProductDetailResponse, onVariantChange?:
             price: displayPrice,
             originalPrice: currentOriginalPrice > 0 ? currentOriginalPrice : displayPrice,
             quantity: 1, 
-            thumbnail: currentImage,
+            image: currentImage,
             checked: true,
             combos: [] 
         };

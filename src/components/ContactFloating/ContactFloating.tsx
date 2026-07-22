@@ -4,7 +4,7 @@ import './ContactFloating.css';
 
 const ContactFloating: React.FC = () => {
     const [isExpanded, setIsExpanded] = useState(false);
-    const { openLiveChat } = useChat(); // Lấy hàm mở LiveChat từ context
+    const { openLiveChat } = useChat();
 
     return (
         <div className="contact-floating-wrapper">

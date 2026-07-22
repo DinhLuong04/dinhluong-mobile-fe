@@ -1,9 +1,16 @@
 import React from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import { Link } from 'react-router-dom'; 
 import './Chatbot.css';
 import { useChatbot } from './useChatbot';
 import type { ChatProductDto } from '../../types/chat.types';
+
+
+const formatCurrency = (value?: number) => {
+    if (!value) return '0 đ';
+    return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value);
+};
 
 const Chatbot: React.FC = () => {
     const {
@@ -16,23 +23,25 @@ const Chatbot: React.FC = () => {
         handleKeyDown
     } = useChatbot();
 
-    const formatCurrency = (value?: number) => {
-        if (!value) return '0 đ';
-        return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value);
-    };
-
     return (
-        <div className="chatbot-wrapper">
+        <aside className="chatbot-wrapper" aria-label="Hỗ trợ trực tuyến">
             <button 
+                type="button"
                 className={`chatbot-toggle-btn ${isOpen ? 'hide' : ''}`}
                 onClick={() => setIsOpen(true)}
+                aria-label="Mở cửa sổ chat"
             >
                 <span className="chatbot-tooltip">Chat hỗ trợ</span>
-                <img src="https://res.cloudinary.com/dhujtl4cm/image/upload/v1770127899/Chatbot_rejsct.jpg" alt="Icon" className="chatbot-icon-img" />
+                <img 
+                    src="https://res.cloudinary.com/dhujtl4cm/image/upload/v1770127899/Chatbot_rejsct.jpg" 
+                    alt="Bot Icon" 
+                    className="chatbot-icon-img" 
+                    loading="lazy"
+                />
             </button>
 
             <div className={`chatbot-window ${isOpen ? 'open' : ''}`}>
-                <div className="chatbot-header">
+                <header className="chatbot-header">
                     <div className="chatbot-title">
                         <span className="chatbot-avatar">🤖</span>
                         <div>
@@ -40,8 +49,10 @@ const Chatbot: React.FC = () => {
                             <span className="chatbot-status">Đang hoạt động</span>
                         </div>
                     </div>
-                    <button className="chatbot-close-btn" onClick={() => setIsOpen(false)}>✕</button>
-                </div>
+                    <button type="button" className="chatbot-close-btn" onClick={() => setIsOpen(false)} aria-label="Đóng chat">
+                        ✕
+                    </button>
+                </header>
 
                 <div className="chatbot-body">
                     {messages.map((msg) => (
@@ -62,16 +73,18 @@ const Chatbot: React.FC = () => {
                             {/* --- RENDER SẢN PHẨM TRƯỢT NGANG --- */}
                             {msg.sender === 'bot' && msg.products && msg.products.length > 0 && (
                                 <div className="bot-products-container">
-                                    {msg.products.map((product: ChatProductDto, index: number) => (
-                                        <a 
-                                            key={product.id || index} 
-                                            href={`/product/${product.slug}`} 
+                                    {msg.products.map((product: ChatProductDto) => (
+                                        <Link 
+                                            key={product.id} 
+                                            to={`/product/${product.slug}`} 
                                             target="_blank" 
                                             rel="noopener noreferrer"
                                             className="product-card-chat"
                                         >
                                             <div className="img-wrapper">
-                                                {product.image && <img src={product.image} alt={product.name || 'Sản phẩm'} />}
+                                                {product.image && (
+                                                    <img src={product.image} alt={product.name || 'Sản phẩm'} loading="lazy" />
+                                                )}
                                             </div>
                                             <h5>{product.name}</h5>
                                             
@@ -90,13 +103,13 @@ const Chatbot: React.FC = () => {
                                                     {product.discountLabel}
                                                 </span>
                                             )}
-                                        </a>
+                                        </Link>
                                     ))}
                                 </div>
                             )}
                             
                             <div className="message-time">
-                                {msg.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                {msg.timestamp.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })}
                             </div>
                         </div>
                     ))}
@@ -116,13 +129,19 @@ const Chatbot: React.FC = () => {
                         value={inputText}
                         onChange={(e) => setInputText(e.target.value)}
                         onKeyDown={handleKeyDown}
+                        aria-label="Nhập tin nhắn"
                     />
-                    <button onClick={handleSendMessage} disabled={isLoading || !inputText.trim()}>
+                    <button 
+                        type="button" 
+                        onClick={handleSendMessage} 
+                        disabled={isLoading || !inputText.trim()}
+                        aria-label="Gửi tin nhắn"
+                    >
                         ➤
                     </button>
                 </div>
             </div>
-        </div>
+        </aside>
     );
 };
 

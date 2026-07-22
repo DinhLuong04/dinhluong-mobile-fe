@@ -52,3 +52,11 @@ export interface OrderResponse {
     cancelledBy?: string;
     items?: OrderItemResponse[];
 }
+export interface CheckoutFormData {
+    receiverName: string;
+    receiverPhone: string;
+    receiverEmail: string;
+    deliveryType: string;
+    receiverAddress: string;
+    note: string;
+}
